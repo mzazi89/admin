@@ -28,8 +28,8 @@ export default function AdminSessions() {
   }, []);
 
   const run = async (number, action) => {
-    if (action === 'unlink' && !window.confirm(`Unlink ${number}? It will be disconnected (can be paired again).`)) return;
-    if (action === 'delete' && !window.confirm(`Delete ${number}? This permanently removes the session from the database.`)) return;
+    if (action === 'unlink' && !window.confirm(`Unlink ${number}? The bot will log it out of WhatsApp (can be paired again).`)) return;
+    if (action === 'delete' && !window.confirm(`Delete ${number}? This removes the session folder on the bot and the database row.`)) return;
     setBusy(`${number}:${action}`);
     setNotice('');
     try {
@@ -40,7 +40,7 @@ export default function AdminSessions() {
       });
       const d = await res.json();
       if (!res.ok) { setNotice(`❌ ${d.error || 'Failed'}`); setBusy(''); return; }
-      const label = { pause: 'Pausing', resume: 'Resuming', unlink: 'Unlinking', delete: 'Deleting' }[action];
+      const label = { unlink: 'Unlinking', delete: 'Deleting' }[action];
       setNotice(`⏳ ${label} ${number}… (bot applies within ~15s)`);
       setTimeout(load, 15000);
     } catch {
@@ -49,12 +49,10 @@ export default function AdminSessions() {
     }
   };
 
-  const statusColor = (s) =>
-    s === 'PAUSED'
-      ? { backgroundColor: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)' }
-      : s === 'ACTIVE'
-        ? { backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }
-        : { backgroundColor: 'rgba(100,116,139,0.12)', color: '#94a3b8', border: '1px solid rgba(100,116,139,0.3)' };
+  const statusColor = (active) =>
+    active
+      ? { backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }
+      : { backgroundColor: 'rgba(100,116,139,0.12)', color: '#94a3b8', border: '1px solid rgba(100,116,139,0.3)' };
 
   return (
     <div className="p-4 sm:p-6">
@@ -62,7 +60,8 @@ export default function AdminSessions() {
         <div>
           <h1 className="text-xl sm:text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>📱 WhatsApp Sessions</h1>
           <p className="text-xs mt-1" style={{ color: '#64748b' }}>
-            All paired numbers across every user — pause, resume, unlink or delete any session.
+            All paired numbers across every user. Active = the session folders the bot currently holds on disk.
+            Unlink logs the device out; Delete removes it from the bot&apos;s session folder and the database.
           </p>
         </div>
         <button onClick={() => { setLoading(true); load(); }}
@@ -103,8 +102,8 @@ export default function AdminSessions() {
                   <td className="px-4 py-3 text-xs" style={{ color: '#475569' }}>{s.id}</td>
                   <td className="px-4 py-3 font-mono font-bold" style={{ color: '#f0f4ff' }}>{s.phoneNumber}</td>
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={statusColor(s.status)}>
-                      {s.status || '—'}
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={statusColor(s.active)}>
+                      {s.active ? 'Active' : 'Offline'}
                     </span>
                   </td>
                   <td className="px-4 py-3" style={{ color: '#94a3b8' }}>
@@ -116,12 +115,6 @@ export default function AdminSessions() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1.5">
-                      <button onClick={() => run(s.phoneNumber, s.status === 'PAUSED' ? 'resume' : 'pause')}
-                        disabled={busy === `${s.phoneNumber}:${s.status === 'PAUSED' ? 'resume' : 'pause'}`}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{ color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', backgroundColor: 'rgba(245,158,11,0.06)', cursor: 'pointer' }}>
-                        {s.status === 'PAUSED' ? '▶ Resume' : '⏸ Pause'}
-                      </button>
                       <button onClick={() => run(s.phoneNumber, 'unlink')}
                         className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
                         style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>

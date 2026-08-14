@@ -1,6 +1,6 @@
 // MZAZI API — POST /api/admin/session-action
-// Admin: pause/resume/unlink/delete ANY paired WhatsApp session (no ownership
-// check — the bot skips ownership when no accountId is sent).
+// Admin: unlink (logout) / delete (logout + wipe) ANY paired WhatsApp session
+// (no ownership check — the bot skips ownership when no accountId is sent).
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
-const ACTIONS = ['unlink', 'delete', 'pause', 'resume'];
+const ACTIONS = ['unlink', 'delete'];
 
 async function verifyAdmin() {
   const cookieStore = await cookies();
@@ -46,9 +46,6 @@ export async function POST(request) {
     if (action === 'delete') {
       controlAction = 'unpair';
       payload = { number, mode: 'delete' };
-    } else if (action === 'pause' || action === 'resume') {
-      controlAction = 'pause';
-      payload = { number, paused: action === 'pause' };
     } else {
       controlAction = 'unpair';
       payload = { number };

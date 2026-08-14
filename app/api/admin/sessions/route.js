@@ -35,7 +35,26 @@ export async function GET() {
       LEFT JOIN users u ON u.id = ws."userId"
       ORDER BY ws.id DESC
     `;
-    return NextResponse.json({ sessions: rows });
+
+    // The bot reports which numbers it currently holds in ./database/sessions/
+    // (heartbeat → bot_status.session_numbers). Only those are truly ACTIVE;
+    // DB rows without a live bot session are shown as offline.
+    let botSessions = [];
+    let botOnline = false;
+    try {
+      const st = await sql`SELECT online, session_numbers FROM bot_status WHERE bot_id = 'main' LIMIT 1`;
+      if (st.length) {
+        botOnline = !!st[0].online;
+        try { botSessions = JSON.parse(st[0].session_numbers || '[]'); } catch { botSessions = []; }
+      }
+    } catch {}
+
+    const sessions = rows.map((r) => ({
+      ...r,
+      active: botSessions.includes(r.phoneNumber),
+    }));
+
+    return NextResponse.json({ sessions, botOnline });
   } catch (e) {
     console.error('Sessions error:', e.message);
     return NextResponse.json({ error: 'Failed to load sessions' }, { status: 500 });
