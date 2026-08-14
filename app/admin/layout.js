@@ -14,6 +14,7 @@ const LINKS = [
   { href: '/admin/commands', label: 'Bot Commands', icon: '📜' },
   { href: '/admin/bot', label: 'Bot Control', icon: '🤖' },
   { href: '/admin/sessions', label: 'Sessions', icon: '📱' },
+  { href: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ];
 
 // Unified admin shell with sidebar navigation (login page stays clean)
