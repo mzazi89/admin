@@ -1,0 +1,808 @@
+[
+ {
+  "path": "/api/ai/chat",
+  "upstream": "/ai/chat",
+  "category": "AI",
+  "name": "AI Chat",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/ai/flux",
+  "upstream": "/ai/flux",
+  "category": "AI",
+  "name": "Flux Image",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/ai/gpt",
+  "upstream": "/ai/gpt",
+  "category": "AI",
+  "name": "GPT Chat",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/ai/o3",
+  "upstream": "/ai/o3",
+  "category": "AI",
+  "name": "o3 Chat",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/ai/openai",
+  "upstream": "/ai/openai",
+  "category": "AI",
+  "name": "OpenAI Chat",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/download/github",
+  "upstream": "/downloader/github",
+  "category": "DOWNLOAD",
+  "name": "GitHub Download",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/download/twitter",
+  "upstream": "/downloader/twitter",
+  "category": "DOWNLOAD",
+  "name": "Twitter Download",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/download/ytmp3v1",
+  "upstream": "/downloader/ytmp3v1",
+  "category": "DOWNLOAD",
+  "name": "YouTube MP3 V1",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/download/ytmp4v1",
+  "upstream": "/downloader/ytmp4v1",
+  "category": "DOWNLOAD",
+  "name": "YouTube MP4 V1",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/fun/bible",
+  "upstream": "/fun/bible",
+  "category": "FUN",
+  "name": "Bible Verse",
+  "method": "GET",
+  "params": {
+   "required": [],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/fun/quote",
+  "upstream": "/fun/quote",
+  "category": "FUN",
+  "name": "Quote",
+  "method": "GET",
+  "params": {
+   "required": [],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/fun/quoteaudio",
+  "upstream": "/fun/quoteaudio",
+  "category": "FUN",
+  "name": "Quote Audio",
+  "method": "GET",
+  "params": {
+   "required": [],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/fun/quran",
+  "upstream": "/fun/quran",
+  "category": "FUN",
+  "name": "Quran Ayah",
+  "method": "GET",
+  "params": {
+   "required": [],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/fun/wyr",
+  "upstream": "/fun/wyr",
+  "category": "FUN",
+  "name": "Would You Rather",
+  "method": "GET",
+  "params": {
+   "required": [],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/search/gimage",
+  "upstream": "/search/gimage",
+  "category": "SEARCH",
+  "name": "Google Images",
+  "method": "GET",
+  "params": {
+   "required": [
+    "q"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/search/lyrics",
+  "upstream": "/search/lyrics",
+  "category": "SEARCH",
+  "name": "Song Lyrics",
+  "method": "GET",
+  "params": {
+   "required": [
+    "q"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/search/spotifyartist",
+  "upstream": "/search/spotifyartist",
+  "category": "SEARCH",
+  "name": "Spotify Artist",
+  "method": "GET",
+  "params": {
+   "required": [
+    "q"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/search/wikipedia",
+  "upstream": "/search/wikipedia",
+  "category": "SEARCH",
+  "name": "Wikipedia",
+  "method": "GET",
+  "params": {
+   "required": [
+    "q"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/social/igstalk",
+  "upstream": "/social/igstalk",
+  "category": "SOCIAL",
+  "name": "Instagram Profile",
+  "method": "GET",
+  "params": {
+   "required": [
+    "username"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/social/ttstalk",
+  "upstream": "/social/ttstalk",
+  "category": "SOCIAL",
+  "name": "TikTok Profile",
+  "method": "GET",
+  "params": {
+   "required": [
+    "username"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/tools/dictionary",
+  "upstream": "/tools/dictionary",
+  "category": "TOOLS",
+  "name": "Dictionary",
+  "method": "GET",
+  "params": {
+   "required": [
+    "word"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/tools/ephoto",
+  "upstream": "/tools/ephoto",
+  "category": "TOOLS",
+  "name": "Ephoto Text Effects",
+  "method": "GET",
+  "params": {
+   "required": [
+    "text"
+   ],
+   "optional": [
+    "effect"
+   ]
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/tools/ttp",
+  "upstream": "/tools/ttp",
+  "category": "TOOLS",
+  "name": "Text to Picture",
+  "method": "GET",
+  "params": {
+   "required": [
+    "text"
+   ],
+   "optional": [
+    "font"
+   ]
+  },
+  "examples": {},
+  "active": true
+ },
+ {
+  "path": "/api/ai/claude",
+  "upstream": "/ai/claude",
+  "category": "AI",
+  "name": "/ai/claude",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/compound",
+  "upstream": "/ai/compound",
+  "category": "AI",
+  "name": "/ai/compound",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/groq",
+  "upstream": "/ai/groq",
+  "category": "AI",
+  "name": "/ai/groq",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/perplexity",
+  "upstream": "/ai/perplexity",
+  "category": "AI",
+  "name": "/ai/perplexity",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/scite",
+  "upstream": "/ai/scite",
+  "category": "AI",
+  "name": "/ai/scite",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/tts",
+  "upstream": "/ai/tts",
+  "category": "AI",
+  "name": "/ai/tts",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/ai/whisper",
+  "upstream": "/ai/whisper",
+  "category": "AI",
+  "name": "/ai/whisper",
+  "method": "GET",
+  "params": {
+   "required": [
+    "prompt"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/capcut",
+  "upstream": "/downloader/capcut",
+  "category": "DOWNLOAD",
+  "name": "/downloader/capcut",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/facebookv2",
+  "upstream": "/downloader/facebookv2",
+  "category": "DOWNLOAD",
+  "name": "/downloader/facebookv2",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/gdrive",
+  "upstream": "/downloader/gdrive",
+  "category": "DOWNLOAD",
+  "name": "/downloader/gdrive",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/igdlv2",
+  "upstream": "/downloader/igdlv2",
+  "category": "DOWNLOAD",
+  "name": "/downloader/igdlv2",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/instagram",
+  "upstream": "/downloader/instagram",
+  "category": "DOWNLOAD",
+  "name": "/downloader/instagram",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/npm",
+  "upstream": "/downloader/npm",
+  "category": "DOWNLOAD",
+  "name": "/downloader/npm",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/spotify",
+  "upstream": "/downloader/spotify",
+  "category": "DOWNLOAD",
+  "name": "/downloader/spotify",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/spotifyv2",
+  "upstream": "/downloader/spotifyv2",
+  "category": "DOWNLOAD",
+  "name": "/downloader/spotifyv2",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/spotifyv3",
+  "upstream": "/downloader/spotifyv3",
+  "category": "DOWNLOAD",
+  "name": "/downloader/spotifyv3",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/video",
+  "upstream": "/downloader/video",
+  "category": "DOWNLOAD",
+  "name": "/downloader/video",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/videov2",
+  "upstream": "/downloader/videov2",
+  "category": "DOWNLOAD",
+  "name": "/downloader/videov2",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/yta",
+  "upstream": "/downloader/yta",
+  "category": "DOWNLOAD",
+  "name": "/downloader/yta",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytastream",
+  "upstream": "/downloader/ytastream",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytastream",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytmp3",
+  "upstream": "/downloader/ytmp3",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytmp3",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytplay",
+  "upstream": "/downloader/ytplay",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytplay",
+  "method": "GET",
+  "params": {
+   "required": [
+    "query"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytplayv2",
+  "upstream": "/downloader/ytplayv2",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytplayv2",
+  "method": "GET",
+  "params": {
+   "required": [
+    "query"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytplayv3",
+  "upstream": "/downloader/ytplayv3",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytplayv3",
+  "method": "GET",
+  "params": {
+   "required": [
+    "query"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytv",
+  "upstream": "/downloader/ytv",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytv",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytv4",
+  "upstream": "/downloader/ytv4",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytv4",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytv4play",
+  "upstream": "/downloader/ytv4play",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytv4play",
+  "method": "GET",
+  "params": {
+   "required": [
+    "query"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/download/ytvideo",
+  "upstream": "/downloader/ytvideo",
+  "category": "DOWNLOAD",
+  "name": "/downloader/ytvideo",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/search/shazam",
+  "upstream": "/search/shazam",
+  "category": "SEARCH",
+  "name": "/search/shazam",
+  "method": "GET",
+  "params": {
+   "required": [
+    "q"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/search/spotifyinfo",
+  "upstream": "/search/spotifyinfo",
+  "category": "SEARCH",
+  "name": "/search/spotifyinfo",
+  "method": "GET",
+  "params": {
+   "required": [
+    "url"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ },
+ {
+  "path": "/api/tools/resize",
+  "upstream": "/tools/resize",
+  "category": "TOOLS",
+  "name": "/tools/resize",
+  "method": "GET",
+  "params": {
+   "required": [
+    "image",
+    "width",
+    "height"
+   ],
+   "optional": []
+  },
+  "examples": {},
+  "active": false
+ }
+]
