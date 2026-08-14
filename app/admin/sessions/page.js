@@ -84,8 +84,9 @@ export default function AdminSessions() {
           No WhatsApp sessions found yet.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl scroll-x" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-          <table className="table-responsive w-full text-sm min-w-[720px]">
+        <>
+        <div className="hidden md:block overflow-x-auto rounded-xl scroll-x" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+          <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr style={{ borderBottom: '1px solid #1e3a8a', color: '#64748b', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 <th className="px-4 py-3 text-left">#</th>
@@ -132,6 +133,52 @@ export default function AdminSessions() {
             </tbody>
           </table>
         </div>
+
+        {/* ─── Mobile cards ─── */}
+        <div className="md:hidden space-y-3">
+          {sessions.map((s) => (
+            <div key={s.id} className="rounded-xl p-4" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs" style={{ color: '#475569' }}>#{s.id}</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={statusColor(s.active)}>
+                  {s.active ? 'Active' : 'Offline'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="font-mono font-bold text-base break-all" style={{ color: '#f0f4ff' }}>{s.phoneNumber}</p>
+                <button
+                  onClick={() => { navigator.clipboard?.writeText(s.phoneNumber); setNotice(`📋 Copied ${s.phoneNumber}`); setTimeout(() => setNotice(''), 2500); }}
+                  className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
+                  style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>
+                  Copy
+                </button>
+              </div>
+
+              <div className="space-y-1 text-xs mb-3" style={{ color: '#94a3b8' }}>
+                <div className="truncate">
+                  👤 <span style={{ color: '#cbd5e1' }}>{s.email || `user #${s.userId ?? '?'}`}</span>
+                  {s.firstname ? ` — ${s.firstname} ${s.lastname || ''}` : ''}
+                </div>
+                <div>🕒 {s.connectedAt ? `Linked ${new Date(s.connectedAt).toLocaleString()}` : 'Not connected'}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => run(s.phoneNumber, 'unlink')}
+                  className="py-2 rounded-lg text-xs font-bold"
+                  style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.35)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>
+                  Unlink
+                </button>
+                <button onClick={() => run(s.phoneNumber, 'delete')}
+                  className="py-2 rounded-lg text-xs font-bold"
+                  style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.35)', backgroundColor: 'rgba(248,113,113,0.06)', cursor: 'pointer' }}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        </>
       )}
     </div>
   );
