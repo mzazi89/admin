@@ -16,13 +16,12 @@ export async function POST(request) {
     if (!email || !password) return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 
+    // Fail closed: without configured credentials no password is accepted.
     let valid = false;
     if (ADMIN_PASSWORD_HASH) {
       valid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
     } else if (ADMIN_PASSWORD_PLAIN) {
       valid = password === ADMIN_PASSWORD_PLAIN;
-    } else {
-      valid = password === '42246776@aA';
     }
 
     if (!valid) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
