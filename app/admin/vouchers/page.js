@@ -204,7 +204,7 @@ export default function AdminVouchers() {
             <p className="text-sm text-center py-12" style={{ color: '#374151' }}>No vouchers created yet</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[640px]">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['Code', 'Amount', 'Status', 'Used By', 'Used At', 'Created'].map(h => (

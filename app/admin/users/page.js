@@ -65,7 +65,7 @@ export default function AdminUsers() {
             <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /></div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[640px]">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                     {['ID', 'Name', 'Email', 'Wallet Balance', 'Orders', 'Joined'].map(h => (

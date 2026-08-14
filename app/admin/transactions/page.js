@@ -87,7 +87,7 @@ export default function AdminTransactions() {
             <div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /></div>
           ) : tab === 'orders' ? (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[640px]">
                 <thead><tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                   {['Reference', 'User', 'Package', 'Amount', 'Status', 'Date'].map(h => (
                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>
@@ -110,7 +110,7 @@ export default function AdminTransactions() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[640px]">
                 <thead><tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                   {['User', 'Type', 'Amount', 'Description', 'Status', 'Date'].map(h => (
                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold uppercase tracking-wider" style={{ color: '#475569' }}>{h}</th>

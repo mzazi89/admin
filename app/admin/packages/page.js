@@ -146,7 +146,7 @@ export default function AdminPackages() {
               <div className="text-center py-16" style={{ color: '#374151' }}>No packages yet. Click "Add Package" to create one.</div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm min-w-[640px]">
                   <thead>
                     <tr style={{ borderBottom: '1px solid #1e3a8a' }}>
                       {['Name', 'Price', 'CPU', 'RAM', 'Disk', 'Popular', 'Active', 'Order', 'Actions'].map(h => (
