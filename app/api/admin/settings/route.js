@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
-const ALLOWED_KEYS = ['paystack_secret_key', 'pterodactyl_url', 'pterodactyl_api_key'];
+const ALLOWED_KEYS = ['paystack_secret_key', 'pterodactyl_url', 'pterodactyl_api_key', 'mzazi_api_key'];
 
 async function verifyAdmin() {
   const cookieStore = await cookies();
