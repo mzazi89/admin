@@ -9,6 +9,7 @@ const FIELDS = [
   { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },
   { key: 'pterodactyl_api_key', label: 'Pterodactyl API Key', placeholder: 'ptla_…', type: 'password' },
   { key: 'mzazi_api_key', label: 'MZAZI API Key', placeholder: 'key used by the bot API commands', type: 'password' },
+  { key: 'deepseek_api_key', label: 'DeepSeek AI Key (optional)', placeholder: 'sk-… — powers the AI assistant on the site', type: 'password' },
 ];
 
 export default function AdminSettings() {
