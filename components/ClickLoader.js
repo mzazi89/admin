@@ -2,10 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Logo from './Logo';
 
-// Custom full-screen loading animation (branded: glowing logo + rotating blue
-// rings + progress bar) that appears for 2 seconds — but only on real actions:
-// links, buttons, form submits and other interactive elements. Random clicks
-// on text/backgrounds do nothing. Visual-only (pointerEvents: none).
+// Full-screen transition loader — shown only on real actions
+// (links, buttons, form submits). Visual-only (pointerEvents: none).
 export default function ClickLoader() {
   const [visible, setVisible] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -24,14 +22,13 @@ export default function ClickLoader() {
       }, 2000);
     };
 
-    // Only clicks on actionable elements trigger the loader.
     const ACTIONABLE =
       'a[href], button, [role="button"], input[type="submit"], input[type="button"], select, summary, [tabindex]:not([tabindex="-1"])';
 
     const onClick = (event) => {
       const el = event.target?.closest ? event.target.closest(ACTIONABLE) : null;
-      if (!el) return;                       // plain text/background click → ignore
-      if (el.tagName === 'A' && el.target === '_blank') return; // opens new tab, page unchanged
+      if (!el) return;
+      if (el.tagName === 'A' && el.target === '_blank') return;
       if (el.disabled || el.getAttribute('aria-disabled') === 'true') return;
       show();
     };
@@ -57,43 +54,27 @@ export default function ClickLoader() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 18,
-        backgroundColor: 'rgba(2,4,9,0.92)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        gap: 22,
+        backgroundColor: 'rgba(11,13,15,0.94)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         pointerEvents: 'none',
         opacity: leaving ? 0 : 1,
         transition: 'opacity 0.45s ease',
       }}
     >
-      {/* Branded loader mark */}
-      <div
-        style={{
-          position: 'relative',
-          width: 116,
-          height: 116,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {/* rotating rings */}
-        <div className="loader-ring" style={{ inset: 0, borderTopColor: '#3b82f6', borderRightColor: 'rgba(59,130,246,0.25)', borderBottomColor: 'rgba(59,130,246,0.1)', borderLeftColor: 'rgba(59,130,246,0.1)', borderWidth: 3, animationDuration: '1.1s' }} />
-        <div className="loader-ring loader-ring-rev" style={{ inset: 10, borderWidth: 2, borderTopColor: '#60a5fa', borderRightColor: 'transparent', borderBottomColor: 'transparent', borderLeftColor: 'transparent', animationDuration: '0.9s' }} />
-        <Logo size={64} />
+      <div style={{ position: 'relative', width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="loader-ring" style={{ inset: 0, borderColor: 'rgba(242,169,59,0.12)', borderTopColor: '#F2A93B', borderWidth: 2, animationDuration: '1.3s' }} />
+        <div className="loader-ring loader-ring-rev" style={{ inset: 10, borderWidth: 1, borderColor: 'rgba(76,125,252,0.10)', borderTopColor: '#4C7DFC', animationDuration: '1.7s' }} />
+        <Logo size={44} />
       </div>
 
-      {/* Title */}
-      <div className="text-2xl font-extrabold tracking-tight" style={{ background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-        MZAZI TECH
-      </div>
-      <div className="text-sm" style={{ color: '#94a3b8', letterSpacing: '0.35em', textTransform: 'uppercase' }}>
-        Loading…
+      <div className="mono text-[11px] tracking-[0.4em] uppercase" style={{ color: '#79818A' }}>
+        Mzazi Tech
       </div>
 
-      {/* 5-second progress bar */}
-      <div style={{ width: 220, height: 4, borderRadius: 2, backgroundColor: '#1e3a8a', overflow: 'hidden', marginTop: 6 }}>
-        <div className="loader-bar" style={{ height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, #2563eb, #60a5fa)', boxShadow: '0 0 12px rgba(59,130,246,0.8)' }} />
+      <div style={{ width: 200, height: 2, borderRadius: 1, backgroundColor: '#1B2026', overflow: 'hidden' }}>
+        <div className="loader-bar" style={{ height: '100%', background: '#F2A93B' }} />
       </div>
     </div>
   );

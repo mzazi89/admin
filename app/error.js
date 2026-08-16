@@ -3,20 +3,19 @@
 // Global error boundary — professional error state instead of a white screen
 export default function GlobalError({ error, reset }) {
   return (
-    <div className="container-site py-28 text-center" style={{ minHeight: '70vh' }}>
-      <p className="text-5xl mb-4">😵</p>
-      <h1 className="text-2xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Something went wrong</h1>
-      <p className="text-sm mb-8 max-w-md mx-auto" style={{ color: '#94a3b8' }}>
-        An unexpected error occurred. Please try again — if it keeps happening, contact our support team.
-      </p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <button onClick={() => reset()}
-          className="px-6 py-3 rounded-xl font-bold text-white text-sm"
-          style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', cursor: 'pointer' }}>
-          Try Again
-        </button>
-        <a href="/" className="px-6 py-3 rounded-xl font-semibold text-sm"
-          style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>Back to Home</a>
+    <div className="container-site page-pad" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+      <div style={{ maxWidth: 680 }}>
+        <span className="eyebrow mb-6" style={{ display: 'flex' }}>System error</span>
+        <h1 className="headline" style={{ fontSize: 'clamp(2.2rem, 6vw, 3.4rem)' }}>
+          Something went<br />wrong
+        </h1>
+        <p className="lede mt-6 mb-10" style={{ maxWidth: 440 }}>
+          An unexpected error occurred. Try again — if it keeps happening, contact support.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <button onClick={() => reset()} className="btn btn-primary">Try again</button>
+          <a href="/admin/dashboard" className="btn btn-ghost">Back to dashboard</a>
+        </div>
       </div>
     </div>
   );

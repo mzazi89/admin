@@ -39,40 +39,35 @@ export default function AdminSessions() {
         body: JSON.stringify({ number, action }),
       });
       const d = await res.json();
-      if (!res.ok) { setNotice(`❌ ${d.error || 'Failed'}`); setBusy(''); return; }
+      if (!res.ok) { setNotice(d.error || 'Failed'); setBusy(''); return; }
       const label = { unlink: 'Unlinking', delete: 'Deleting' }[action];
-      setNotice(`⏳ ${label} ${number}… (bot applies within ~15s)`);
+      setNotice(`${label} ${number}… (bot applies within ~15s)`);
       setTimeout(load, 15000);
     } catch {
-      setNotice('❌ Connection error.');
+      setNotice('Connection error.');
       setBusy('');
     }
   };
 
-  const statusColor = (active) =>
-    active
-      ? { backgroundColor: 'rgba(34,197,94,0.12)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)' }
-      : { backgroundColor: 'rgba(100,116,139,0.12)', color: '#94a3b8', border: '1px solid rgba(100,116,139,0.3)' };
-
   return (
-    <div className="p-4 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+    <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>📱 WhatsApp Sessions</h1>
-          <p className="text-xs mt-1" style={{ color: '#64748b' }}>
+          <div className="eyebrow mb-4">Pairings</div>
+          <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>WhatsApp sessions</h1>
+          <p className="lede mt-3" style={{ maxWidth: 640, fontSize: '0.9rem' }}>
             All paired numbers across every user. Active = the session folders the bot currently holds on disk.
             Unlink logs the device out; Delete removes it from the bot&apos;s session folder and the database.
           </p>
         </div>
-        <button onClick={() => { setLoading(true); load(); }}
-          className="px-4 py-2 rounded-xl text-xs font-bold text-white"
-          style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', border: 'none', cursor: 'pointer' }}>
-          ⟳ Refresh
+        <button onClick={() => { setLoading(true); load(); }} className="btn btn-ghost" style={{ fontSize: 11 }}>
+          Refresh
         </button>
       </div>
 
       {notice && (
-        <div className="mb-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.3)', color: '#60a5fa' }}>
+        <div className="tag mb-5" style={{ padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em', color: '#AEB5BD' }}>
           {notice}
         </div>
       )}
@@ -80,104 +75,94 @@ export default function AdminSessions() {
       {loading ? (
         <div className="flex justify-center py-16"><div className="spinner" /></div>
       ) : sessions.length === 0 ? (
-        <div className="p-8 text-center text-sm rounded-xl" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', color: '#64748b' }}>
-          No WhatsApp sessions found yet.
+        <div className="card p-8 text-center">
+          <p className="mono" style={{ color: '#4C535B' }}>No WhatsApp sessions found yet.</p>
         </div>
       ) : (
         <>
-        <div className="hidden md:block overflow-x-auto rounded-xl scroll-x" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-          <table className="w-full text-sm min-w-[720px]">
-            <thead>
-              <tr style={{ borderBottom: '1px solid #1e3a8a', color: '#64748b', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                <th className="px-4 py-3 text-left">#</th>
-                <th className="px-4 py-3 text-left">Number</th>
-                <th className="px-4 py-3 text-left">Status</th>
-                <th className="px-4 py-3 text-left">Owner</th>
-                <th className="px-4 py-3 text-left">Linked</th>
-                <th className="px-4 py-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sessions.map((s) => (
-                <tr key={s.id} style={{ borderBottom: '1px solid rgba(30,58,138,0.35)' }}>
-                  <td className="px-4 py-3 text-xs" style={{ color: '#475569' }}>{s.id}</td>
-                  <td className="px-4 py-3 font-mono font-bold" style={{ color: '#f0f4ff' }}>{s.phoneNumber}</td>
-                  <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={statusColor(s.active)}>
-                      {s.active ? 'Active' : 'Offline'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3" style={{ color: '#94a3b8' }}>
-                    {s.email || `#${s.userId ?? '?'}`}
-                    {s.firstname && <div className="text-xs" style={{ color: '#475569' }}>{s.firstname} {s.lastname || ''}</div>}
-                  </td>
-                  <td className="px-4 py-3 text-xs" style={{ color: '#475569' }}>
-                    {s.connectedAt ? new Date(s.connectedAt).toLocaleString() : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      <button onClick={() => run(s.phoneNumber, 'unlink')}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>
-                        Unlink
-                      </button>
-                      <button onClick={() => run(s.phoneNumber, 'delete')}
-                        className="px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                        style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.3)', backgroundColor: 'rgba(248,113,113,0.06)', cursor: 'pointer' }}>
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ─── Mobile cards ─── */}
-        <div className="md:hidden space-y-3">
-          {sessions.map((s) => (
-            <div key={s.id} className="rounded-xl p-4" style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a' }}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs" style={{ color: '#475569' }}>#{s.id}</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase" style={statusColor(s.active)}>
-                  {s.active ? 'Active' : 'Offline'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="font-mono font-bold text-base break-all" style={{ color: '#f0f4ff' }}>{s.phoneNumber}</p>
-                <button
-                  onClick={() => { navigator.clipboard?.writeText(s.phoneNumber); setNotice(`📋 Copied ${s.phoneNumber}`); setTimeout(() => setNotice(''), 2500); }}
-                  className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
-                  style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.3)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>
-                  Copy
-                </button>
-              </div>
-
-              <div className="space-y-1 text-xs mb-3" style={{ color: '#94a3b8' }}>
-                <div className="truncate">
-                  👤 <span style={{ color: '#cbd5e1' }}>{s.email || `user #${s.userId ?? '?'}`}</span>
-                  {s.firstname ? ` — ${s.firstname} ${s.lastname || ''}` : ''}
-                </div>
-                <div>🕒 {s.connectedAt ? `Linked ${new Date(s.connectedAt).toLocaleString()}` : 'Not connected'}</div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => run(s.phoneNumber, 'unlink')}
-                  className="py-2 rounded-lg text-xs font-bold"
-                  style={{ color: '#60a5fa', border: '1px solid rgba(96,165,250,0.35)', backgroundColor: 'rgba(96,165,250,0.06)', cursor: 'pointer' }}>
-                  Unlink
-                </button>
-                <button onClick={() => run(s.phoneNumber, 'delete')}
-                  className="py-2 rounded-lg text-xs font-bold"
-                  style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.35)', backgroundColor: 'rgba(248,113,113,0.06)', cursor: 'pointer' }}>
-                  Delete
-                </button>
-              </div>
+          {/* Desktop table */}
+          <div className="hidden md:block card overflow-hidden">
+            <div className="scroll-x table-responsive">
+              <table className="table-plain" style={{ minWidth: 760 }}>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Number</th>
+                    <th>Status</th>
+                    <th>Owner</th>
+                    <th>Linked</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((s) => (
+                    <tr key={s.id}>
+                      <td className="mono" style={{ color: '#4C535B', fontSize: 12 }}>{s.id}</td>
+                      <td className="mono" style={{ fontWeight: 600, letterSpacing: '0.06em', color: '#E9E7E2' }}>{s.phoneNumber}</td>
+                      <td>
+                        <span className={`tag ${s.active ? 'tag-green' : ''}`}>
+                          <span className="dot" style={{ color: s.active ? '#3ECF8E' : '#4C535B', marginRight: 2 }} />
+                          {s.active ? 'Active' : 'Offline'}
+                        </span>
+                      </td>
+                      <td style={{ color: '#AEB5BD' }}>
+                        {s.email || `#${s.userId ?? '?'}`}
+                        {s.firstname && <div className="mono" style={{ fontSize: 11, color: '#4C535B' }}>{s.firstname} {s.lastname || ''}</div>}
+                      </td>
+                      <td className="mono" style={{ color: '#4C535B', fontSize: 12 }}>
+                        {s.connectedAt ? new Date(s.connectedAt).toLocaleString() : '—'}
+                      </td>
+                      <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                        <button onClick={() => run(s.phoneNumber, 'unlink')} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>
+                          Unlink
+                        </button>
+                        <button onClick={() => run(s.phoneNumber, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 12px' }}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Mobile rows */}
+          <div className="md:hidden space-y-3">
+            {sessions.map((s) => (
+              <div key={s.id} className="card" style={{ padding: '16px' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="mono" style={{ fontSize: 11, color: '#4C535B' }}>#{s.id}</span>
+                  <span className={`tag ${s.active ? 'tag-green' : ''}`} style={{ fontSize: 9.5, padding: '2px 8px' }}>
+                    {s.active ? 'Active' : 'Offline'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <p className="mono" style={{ fontWeight: 700, fontSize: 15, color: '#E9E7E2', margin: 0, overflowWrap: 'anywhere' }}>{s.phoneNumber}</p>
+                  <button
+                    onClick={() => { navigator.clipboard?.writeText(s.phoneNumber); setNotice(`Copied ${s.phoneNumber}`); setTimeout(() => setNotice(''), 2500); }}
+                    className="btn btn-dark flex-shrink-0"
+                    style={{ fontSize: 10, padding: '6px 12px' }}>
+                    Copy
+                  </button>
+                </div>
+
+                <div className="mono space-y-1 mb-3" style={{ fontSize: 11, color: '#79818A' }}>
+                  <div className="truncate">
+                    <span style={{ color: '#AEB5BD' }}>{s.email || `user #${s.userId ?? '?'}`}</span>
+                    {s.firstname ? ` — ${s.firstname} ${s.lastname || ''}` : ''}
+                  </div>
+                  <div>{s.connectedAt ? `Linked ${new Date(s.connectedAt).toLocaleString()}` : 'Not connected'}</div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => run(s.phoneNumber, 'unlink')} className="btn btn-ghost" style={{ fontSize: 10, padding: '9px' }}>Unlink</button>
+                  <button onClick={() => run(s.phoneNumber, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '9px' }}>Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

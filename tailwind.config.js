@@ -8,42 +8,55 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: {
-          primary: '#0a0a0f',
-          secondary: '#111121',
-          card: '#16182a',
-          border: '#1e2d4a',
+        ink: {
+          DEFAULT: '#E9E7E2',
+          soft: '#AEB5BD',
+          mute: '#79818A',
+          dim: '#4C535B',
         },
-        blue: {
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+        base: {
+          DEFAULT: '#0B0D0F',
+          raised: '#0F1215',
+          surface: '#14181D',
+          surface2: '#1A1F25',
         },
+        line: {
+          DEFAULT: '#262C33',
+          soft: '#1B2026',
+        },
+        amber: {
+          DEFAULT: '#F2A93B',
+          deep: '#C97F1E',
+          bright: '#FFB84A',
+        },
+        cobalt: {
+          DEFAULT: '#4C7DFC',
+          deep: '#2E55D0',
+        },
+        good: '#3ECF8E',
+        bad: '#E5484D',
+      },
+      fontFamily: {
+        display: ['Space Grotesk', 'Manrope', 'sans-serif'],
+        body: ['Manrope', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'blue-gradient': 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-        'dark-gradient': 'linear-gradient(180deg, #0a0a0f, #111121)',
       },
       boxShadow: {
-        'glow-blue': '0 0 20px rgba(37, 99, 235, 0.4), 0 0 40px rgba(37, 99, 235, 0.1)',
-        'glow-blue-sm': '0 0 10px rgba(59, 130, 246, 0.3)',
-        'card': '0 4px 24px rgba(0, 0, 0, 0.4)',
-      },
-      animation: {
-        'float': 'float 4s ease-in-out infinite',
-        'pulse-slow': 'pulse 3s ease-in-out infinite',
-        'shimmer': 'shimmer 2s linear infinite',
+        'lift': '0 18px 44px rgba(0,0,0,0.35)',
+        'amber': '0 8px 24px rgba(242,169,59,0.22)',
       },
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-8px)' },
+        fadeUp: {
+          'from': { opacity: '0', transform: 'translateY(14px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
         },
+      },
+      animation: {
+        'fade-up': 'fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both',
       },
     },
   },

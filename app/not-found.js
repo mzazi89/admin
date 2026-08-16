@@ -2,19 +2,22 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="container-site py-28 text-center" style={{ minHeight: '70vh' }}>
-      <p className="text-7xl font-extrabold mb-4" style={{ background: 'linear-gradient(135deg,#60a5fa,#3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>404</p>
-      <h1 className="text-2xl font-extrabold mb-3" style={{ color: '#f0f4ff' }}>Page Not Found</h1>
-      <p className="text-sm mb-8 max-w-md mx-auto" style={{ color: '#94a3b8' }}>
-        The page you're looking for doesn't exist or has been moved. Let's get you back on track.
-      </p>
-      <div className="flex flex-wrap justify-center gap-3">
-        <Link href="/" className="px-6 py-3 rounded-xl font-bold text-white text-sm"
-          style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', textDecoration: 'none' }}>Back to Home</Link>
-        <Link href="/api" className="px-6 py-3 rounded-xl font-semibold text-sm"
-          style={{ color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)', textDecoration: 'none' }}>Explore the API</Link>
-        <Link href="/contact" className="px-6 py-3 rounded-xl font-semibold text-sm"
-          style={{ color: '#94a3b8', border: '1px solid #1e3a8a', textDecoration: 'none' }}>Contact Support</Link>
+    <div className="container-site page-pad" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+      <div className="relative" style={{ maxWidth: 720 }}>
+        <span className="eyebrow mb-6" style={{ display: 'flex' }}>Error 404</span>
+        <h1 className="headline" style={{ fontSize: 'clamp(3rem, 9vw, 6rem)' }}>
+          Page not<br />found
+        </h1>
+        <p className="lede mt-6 mb-10" style={{ maxWidth: 420 }}>
+          The page you are looking for does not exist or has been moved. Head back to the admin panel.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/dashboard" className="btn btn-primary">Go to dashboard</Link>
+          <Link href="/" className="btn btn-ghost">Back to site</Link>
+        </div>
+        <div className="mono mt-16" style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4C535B' }}>
+          Mzazi Tech Inc · Admin console
+        </div>
       </div>
     </div>
   );

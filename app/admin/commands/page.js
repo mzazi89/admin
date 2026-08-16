@@ -14,35 +14,6 @@ const EMPTY = {
   code: '',
 };
 
-const inputStyle = {
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: '10px',
-  background: '#02040a',
-  color: '#e2e8f0',
-  border: '1px solid #1e3a8a',
-  fontSize: '14px',
-  outline: 'none',
-};
-const btnPrimary = {
-  background: 'linear-gradient(135deg,#f87171,#dc2626)',
-  color: '#fff',
-  border: 'none',
-  padding: '10px 18px',
-  borderRadius: '10px',
-  fontWeight: 600,
-  cursor: 'pointer',
-};
-const btnGhost = {
-  background: 'rgba(30,32,48,0.5)',
-  color: '#94a3b8',
-  border: '1px solid #1e3a8a',
-  padding: '8px 14px',
-  borderRadius: '10px',
-  cursor: 'pointer',
-  fontSize: '13px',
-};
-
 export default function CommandsPage() {
   const [commands, setCommands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -152,7 +123,7 @@ export default function CommandsPage() {
         if (!res.ok) throw new Error(data.error || 'Failed to update');
       }
       setModal(null);
-      setNotice('✅ Saved — the bot will use this in ~15 seconds.');
+      setNotice('Saved — the bot will use this in ~15 seconds.');
       setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
@@ -168,7 +139,7 @@ export default function CommandsPage() {
       const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(name)}`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to delete');
-      setNotice('✅ Deleted — the bot will stop using it in ~15 seconds.');
+      setNotice('Deleted — the bot will stop using it in ~15 seconds.');
       setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
@@ -195,7 +166,7 @@ export default function CommandsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to toggle');
-      setNotice(cmd.enabled ? '✅ Disabled — takes effect in ~15 seconds.' : '✅ Enabled — takes effect in ~15 seconds.');
+      setNotice(cmd.enabled ? 'Disabled — takes effect in ~15 seconds.' : 'Enabled — takes effect in ~15 seconds.');
       setTimeout(() => setNotice(''), 4000);
       load();
     } catch (e) {
@@ -203,148 +174,160 @@ export default function CommandsPage() {
     }
   };
 
-  const page = (
-    <div className="page-pad" style={{ maxWidth: 1200, margin: '0 auto' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 800, color: '#f1f5f9', marginBottom: 4 }}>🤖 Bot Commands</h1>
-      <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
-        {commands.length} commands hosted on mzazi.shop — saves go live on the bot within ~15 seconds.
-      </p>
+  return (
+    <div style={{ maxWidth: 1180, margin: '0 auto' }}>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="eyebrow mb-4">Bot registry</div>
+        <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>Bot commands</h1>
+        <p className="lede mt-3" style={{ maxWidth: 600, fontSize: '0.92rem' }}>
+          {commands.length} commands hosted on mzazi.shop — saves go live on the bot within ~15 seconds.
+        </p>
+      </div>
 
       {notice && (
-        <div style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', color: '#4ade80', padding: '10px 14px', borderRadius: 10, marginBottom: 16, fontSize: 14 }}>
+        <div className="tag tag-green mb-5" style={{ padding: '10px 14px', textTransform: 'none', letterSpacing: '0.02em', width: '100%' }}>
           {notice}
         </div>
       )}
 
       {error && (
-        <div style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.35)', color: '#f87171', padding: '10px 14px', borderRadius: 10, marginBottom: 16, fontSize: 14 }}>
+        <div className="tag tag-red mb-5" style={{ padding: '10px 14px', textTransform: 'none', letterSpacing: '0.02em', width: '100%' }}>
           {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-        <input placeholder="Search commands…" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...inputStyle, maxWidth: 280 }} />
-        <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ ...inputStyle, maxWidth: 180, width: 'auto' }}>
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <input placeholder="Search commands" value={q} onChange={(e) => setQ(e.target.value)} className="input mono" style={{ maxWidth: 260, fontSize: 13 }} />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="input" style={{ maxWidth: 180, width: 'auto', fontSize: 13 }}>
           <option value="all">All categories</option>
           {categories.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        <button onClick={openAdd} style={{ ...btnPrimary, marginLeft: 'auto' }}>+ Add Command</button>
+        <button onClick={openAdd} className="btn btn-primary" style={{ marginLeft: 'auto' }}>Add command</button>
       </div>
 
-      <div style={{ background: 'rgba(30,32,48,0.5)', border: '1px solid #1e3a8a', borderRadius: 16, overflow: 'hidden' }}>
-        <div className="scroll-x">
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 720 }}>
-          <thead>
-            <tr style={{ background: '#02040a', color: '#64748b', textAlign: 'left' }}>
-              <th style={{ padding: '12px 16px' }}>Command</th>
-              <th style={{ padding: '12px 16px' }}>Category</th>
-              <th style={{ padding: '12px 16px' }}>Description</th>
-              <th style={{ padding: '12px 16px' }}>Flags</th>
-              <th style={{ padding: '12px 16px' }}>Status</th>
-              <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
-              <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: '#64748b' }}>Loading…</td></tr>
-            )}
-            {!loading && commands.length === 0 && (
-              <tr><td colSpan={6} style={{ padding: 24, textAlign: 'center', color: '#64748b' }}>No commands found. Add your first command.</td></tr>
-            )}
-            {commands.map((cmd) => (
-              <tr key={cmd.id} style={{ borderTop: '1px solid #1e3a8a' }}>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ color: '#f1f5f9', fontWeight: 600 }}>.{cmd.name}</div>
-                  {cmd.aliases.length > 0 && (
-                    <div style={{ color: '#475569', fontSize: 12, marginTop: 2 }}>aliases: {cmd.aliases.join(', ')}</div>
-                  )}
-                </td>
-                <td style={{ padding: '12px 16px', color: '#94a3b8' }}>{cmd.category}</td>
-                <td style={{ padding: '12px 16px', color: '#94a3b8', maxWidth: 300 }}>{cmd.description}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                    {cmd.ownerOnly && <span style={{ background: 'rgba(220,38,38,0.15)', color: '#f87171', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 600 }}>OWNER</span>}
-                    {cmd.adminOnly && <span style={{ background: 'rgba(245,158,11,0.15)', color: '#fbbf24', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 600 }}>ADMIN</span>}
-                    {cmd.groupOnly && <span style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa', borderRadius: 6, padding: '2px 8px', fontSize: 11, fontWeight: 600 }}>GROUP</span>}
-                  </div>
-                </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <button onClick={() => toggle(cmd)} style={{ ...btnGhost, padding: '4px 10px' }}>
-                    <span style={{ color: cmd.enabled ? '#4ade80' : '#64748b', fontWeight: 700 }}>{cmd.enabled ? '● ENABLED' : '○ DISABLED'}</span>
-                  </button>
-                </td>
-                <td style={{ padding: '12px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  <button onClick={() => openEdit(cmd)} style={btnGhost}>Edit</button>{' '}
-                  <button onClick={() => del(cmd.name)} style={{ ...btnGhost, color: '#f87171' }}>Delete</button>
-                </td>
+      {/* Table */}
+      <div className="card overflow-hidden">
+        <div className="scroll-x table-responsive">
+          <table className="table-plain" style={{ minWidth: 820 }}>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Flags</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {loading && (
+                <tr><td colSpan={6} style={{ padding: '48px 0', textAlign: 'center' }}><div className="spinner" style={{ margin: '0 auto' }} /></td></tr>
+              )}
+              {!loading && commands.length === 0 && (
+                <tr><td colSpan={6} style={{ padding: '48px 0', textAlign: 'center', color: '#4C535B' }}>No commands found. Add your first command.</td></tr>
+              )}
+              {commands.map((cmd) => (
+                <tr key={cmd.id}>
+                  <td data-label="Command">
+                    <div className="mono" style={{ color: '#E9E7E2', fontWeight: 600 }}>.{cmd.name}</div>
+                    {cmd.aliases.length > 0 && (
+                      <div className="mono" style={{ color: '#4C535B', fontSize: 11, marginTop: 2 }}>aliases: {cmd.aliases.join(', ')}</div>
+                    )}
+                  </td>
+                  <td data-label="Category" style={{ color: '#AEB5BD' }}>{cmd.category}</td>
+                  <td data-label="Description" style={{ color: '#AEB5BD', maxWidth: 300, fontSize: 13 }}>{cmd.description}</td>
+                  <td data-label="Flags">
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {cmd.ownerOnly && <span className="tag tag-red">Owner</span>}
+                      {cmd.adminOnly && <span className="tag tag-amber">Admin</span>}
+                      {cmd.groupOnly && <span className="tag">Group</span>}
+                    </div>
+                  </td>
+                  <td data-label="Status">
+                    <button onClick={() => toggle(cmd)} className="btn" style={{ fontSize: 10, padding: '5px 10px', borderColor: 'transparent', background: 'transparent', cursor: 'pointer' }}>
+                      <span className={`tag ${cmd.enabled ? 'tag-green' : ''}`}>
+                        <span className="dot" style={{ color: cmd.enabled ? '#3ECF8E' : '#4C535B', marginRight: 2 }} />
+                        {cmd.enabled ? 'Enabled' : 'Disabled'}
+                      </span>
+                    </button>
+                  </td>
+                  <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <button onClick={() => openEdit(cmd)} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>Edit</button>
+                    <button onClick={() => del(cmd.name)} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 12px' }}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
+      {/* Modal */}
       {modal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }}>
-          <div style={{ background: '#02040a', border: '1px solid #1e3a8a', borderRadius: 16, width: '100%', maxWidth: 640, maxHeight: '90vh', overflowY: 'auto', padding: 24 }}>
-            <h2 style={{ color: '#f1f5f9', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-              {modal.mode === 'add' ? '➕ Add Command' : `✏️ Edit .${modal.name}`}
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setModal(null)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#14181D', border: '1px solid #262C33', borderRadius: 6, width: '100%', maxWidth: 680, maxHeight: '90vh', overflowY: 'auto', padding: 26 }}>
+            <div className="eyebrow mb-3">{modal.mode === 'add' ? 'New command' : 'Edit command'}</div>
+            <h2 className="section-title mb-5" style={{ fontSize: '1.3rem' }}>
+              {modal.mode === 'add' ? 'Add command' : `Edit .${modal.name}`}
             </h2>
 
-            <div className="grid-2-responsive" style={{ marginBottom: 12 }}>
+            <div className="grid-2-responsive mb-4">
               <div>
-                <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Name (a-z, 0-9, _ -)</label>
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={inputStyle} disabled={modal.mode === 'edit'} placeholder="mycommand" />
+                <label className="label">Name (a-z, 0-9, _ -)</label>
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input mono" disabled={modal.mode === 'edit'} placeholder="mycommand" />
               </div>
               <div>
-                <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Aliases (comma separated)</label>
-                <input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} style={inputStyle} placeholder="mc, cmd" />
+                <label className="label">Aliases (comma separated)</label>
+                <input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} className="input" placeholder="mc, cmd" />
               </div>
               <div>
-                <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Category</label>
-                <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} style={inputStyle} />
+                <label className="label">Category</label>
+                <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input" />
               </div>
               <div>
-                <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Usage hint</label>
-                <input value={form.usage} onChange={(e) => setForm({ ...form, usage: e.target.value })} style={inputStyle} placeholder=".mycommand [arg]" />
+                <label className="label">Usage hint</label>
+                <input value={form.usage} onChange={(e) => setForm({ ...form, usage: e.target.value })} className="input mono" placeholder=".mycommand [arg]" />
               </div>
             </div>
 
-            <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>Description</label>
-            <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} style={{ ...inputStyle, marginBottom: 12 }} placeholder="What this command does" />
+            <label className="label">Description</label>
+            <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input" style={{ marginBottom: 16 }} placeholder="What this command does" />
 
-            <div style={{ display: 'flex', gap: 16, marginBottom: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 18, marginBottom: 16, flexWrap: 'wrap' }}>
               {[
                 ['ownerOnly', 'Owner only'],
                 ['adminOnly', 'Admin only'],
                 ['groupOnly', 'Groups only'],
                 ['enabled', 'Enabled'],
               ].map(([key, label]) => (
-                <label key={key} style={{ color: '#94a3b8', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.checked })} />
+                <label key={key} className="flex items-center gap-2" style={{ color: '#AEB5BD', fontSize: 13, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.checked })} style={{ accentColor: '#F2A93B' }} />
                   {label}
                 </label>
               ))}
             </div>
 
-            <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 4, display: 'block' }}>
-              Handler code {modal.mode === 'edit' && <span style={{ color: '#475569' }}>— the command's current code is loaded, edit as needed</span>}
+            <label className="label">
+              Handler code {modal.mode === 'edit' && <span style={{ color: '#4C535B' }}>— the command's current code is loaded, edit as needed</span>}
             </label>
             <textarea
               value={modal.loadingCode ? 'Loading current code…' : form.code}
               onChange={(e) => setForm({ ...form, code: e.target.value })}
               rows={10}
-              placeholder={modal.mode === 'edit' ? '// loading…' : "await mzazireply('Hello from the website! 🎉');"}
+              placeholder={modal.mode === 'edit' ? '// loading…' : "await mzazireply('Hello from the website!');"}
               readOnly={!!modal.loadingCode}
-              style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 13, marginBottom: 16, resize: 'vertical' }}
+              className="input mono"
+              style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12.5, marginBottom: 18, resize: 'vertical', lineHeight: 1.6 }}
             />
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(null)} style={btnGhost}>Cancel</button>
-              <button onClick={save} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.6 : 1 }}>
-                {saving ? 'Saving…' : 'Save Command'}
+              <button onClick={() => setModal(null)} className="btn btn-ghost">Cancel</button>
+              <button onClick={save} disabled={saving} className="btn btn-primary" style={{ opacity: saving ? 0.6 : 1 }}>
+                {saving ? 'Saving…' : 'Save command'}
               </button>
             </div>
           </div>
@@ -352,6 +335,4 @@ export default function CommandsPage() {
       )}
     </div>
   );
-
-  return page;
 }

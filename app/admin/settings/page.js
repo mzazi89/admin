@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 // Admin: bot settings stored in the shared Neon `settings` table.
 // The bot reads these (with env fallback) — saves apply within ~60s, no restart.
 const FIELDS = [
-  { key: 'paystack_secret_key', label: 'Paystack Secret Key', placeholder: 'sk_live_…', type: 'password' },
+  { key: 'paystack_secret_key', label: 'Paystack secret key', placeholder: 'sk_live_…', type: 'password' },
   { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },
-  { key: 'pterodactyl_api_key', label: 'Pterodactyl API Key', placeholder: 'ptla_…', type: 'password' },
-  { key: 'mzazi_api_key', label: 'MZAZI API Key', placeholder: 'key used by the bot API commands', type: 'password' },
-  { key: 'deepseek_api_key', label: 'DeepSeek AI Key (optional)', placeholder: 'sk-… — powers the AI assistant on the site', type: 'password' },
+  { key: 'pterodactyl_api_key', label: 'Pterodactyl API key', placeholder: 'ptla_…', type: 'password' },
+  { key: 'mzazi_api_key', label: 'MZAZI API key', placeholder: 'key used by the bot API commands', type: 'password' },
+  { key: 'deepseek_api_key', label: 'DeepSeek AI key (optional)', placeholder: 'sk-… — powers the AI assistant on the site', type: 'password' },
 ];
 
 export default function AdminSettings() {
@@ -43,37 +43,33 @@ export default function AdminSettings() {
         body: JSON.stringify(values),
       });
       const d = await res.json();
-      if (!res.ok) { setNotice(`❌ ${d.error || 'Failed to save'}`); setSaving(false); return; }
-      setNotice('✅ Saved — the bot will use these within ~60 seconds.');
+      if (!res.ok) { setNotice(d.error || 'Failed to save'); setSaving(false); return; }
+      setNotice('Saved — the bot will use these within ~60 seconds.');
     } catch {
-      setNotice('❌ Connection error.');
+      setNotice('Connection error.');
     } finally {
       setSaving(false);
     }
   };
 
-  const inputStyle = {
-    backgroundColor: '#02040a',
-    border: '1px solid #1e3a8a',
-    color: '#f0f4ff',
-    width: '100%',
-    borderRadius: 10,
-    padding: '10px 12px',
-    fontSize: 14,
-    outline: 'none',
-  };
-
   return (
-    <div className="p-4 sm:p-6">
-      <div className="mb-5">
-        <h1 className="text-xl sm:text-2xl font-extrabold" style={{ color: '#f0f4ff' }}>⚙️ Bot Settings</h1>
-        <p className="text-xs mt-1" style={{ color: '#64748b' }}>
+    <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="eyebrow mb-4">Configuration</div>
+        <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>Bot settings</h1>
+        <p className="lede mt-3" style={{ maxWidth: 620, fontSize: '0.92rem' }}>
           Stored in the shared Neon database — the bot reads them automatically (with env fallback), no server env vars or restarts needed.
         </p>
       </div>
 
       {notice && (
-        <div className="mb-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80' }}>
+        <div className="tag mb-6" style={{
+          padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em',
+          backgroundColor: notice.includes('Error') || notice.includes('Failed') ? 'rgba(229,72,77,0.06)' : 'rgba(62,207,142,0.06)',
+          borderColor: notice.includes('Error') || notice.includes('Failed') ? 'rgba(229,72,77,0.35)' : 'rgba(62,207,142,0.35)',
+          color: notice.includes('Error') || notice.includes('Failed') ? '#E5484D' : '#3ECF8E',
+        }}>
           {notice}
         </div>
       )}
@@ -81,27 +77,29 @@ export default function AdminSettings() {
       {loading ? (
         <div className="flex justify-center py-16"><div className="spinner" /></div>
       ) : (
-        <div className="max-w-xl space-y-5">
-          {FIELDS.map((f) => (
-            <div key={f.key}>
-              <label className="block text-sm font-medium mb-2" style={{ color: '#94a3b8' }}>{f.label}</label>
-              <input
-                type={f.type}
-                placeholder={f.placeholder}
-                value={values[f.key] || ''}
-                onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-                style={inputStyle}
-              />
-            </div>
-          ))}
+        <div className="card card-pad" style={{ padding: '26px' }}>
+          <div className="space-y-5">
+            {FIELDS.map((f) => (
+              <div key={f.key}>
+                <label className="label" htmlFor={`set-${f.key}`}>{f.label}</label>
+                <input
+                  id={`set-${f.key}`}
+                  type={f.type}
+                  placeholder={f.placeholder}
+                  value={values[f.key] || ''}
+                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+                  className="input mono"
+                  style={{ fontSize: 13 }}
+                />
+              </div>
+            ))}
+          </div>
 
-          <div className="pt-2">
-            <button onClick={save} disabled={saving}
-              className="px-6 py-2.5 rounded-xl text-sm font-bold text-white"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
-              {saving ? 'Saving…' : '💾 Save Settings'}
+          <div className="mt-6 pt-5" style={{ borderTop: '1px solid #1B2026' }}>
+            <button onClick={save} disabled={saving} className="btn btn-primary" style={{ opacity: saving ? 0.6 : 1 }}>
+              {saving ? 'Saving…' : 'Save settings'}
             </button>
-            <p className="text-[11px] mt-2" style={{ color: '#475569' }}>
+            <p className="mono mt-3" style={{ fontSize: 10.5, color: '#4C535B', margin: 0 }}>
               Leave a field empty to fall back to the bot&apos;s environment variable.
             </p>
           </div>
