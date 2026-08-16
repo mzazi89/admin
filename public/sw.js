@@ -1,6 +1,6 @@
 // MZAZI TECH — service worker
 // Minimal PWA worker: caches static build assets for offline-capable installs.
-const CACHE = 'mzazi-v1';
+const CACHE = 'mzazi-admin-v2';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -22,7 +22,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.startsWith('/api/')) return;
 
   // Network-first for pages (always fresh), cache-first for static assets
-  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icons/')) {
+  if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icons/') || url.pathname === '/icon' || url.pathname === '/apple-icon') {
     e.respondWith(
       caches.match(request).then(cached => {
         const network = fetch(request)
