@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -72,7 +72,7 @@ export default function AdminUsers() {
                       </span>
                     </td>
                     <td data-label="Email" style={{ color: '#AEB5BD' }}>{u.email}</td>
-                    <td data-label="Wallet balance" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtMtc(u.wallet_balance || 0)}</td>
+                    <td data-label="Wallet balance" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtKes(u.wallet_balance || 0)}</td>
                     <td data-label="Orders" style={{ color: '#AEB5BD' }}>{u.total_orders}</td>
                     <td data-label="Joined" className="mono" style={{ color: '#4C535B', fontSize: 12 }}>{new Date(u.created_at).toLocaleDateString()}</td>
                   </tr>

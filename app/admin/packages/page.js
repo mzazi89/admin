@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 const EMPTY = { name: '', price: '', cpu: '', ram: '', disk: '', description: '', popular: false, accent: '#2563eb', active: true, sort_order: '', expires_after_hours: '' };
 
@@ -120,7 +120,7 @@ export default function AdminPackages() {
                           <span style={{ fontWeight: 600, color: '#E9E7E2' }}>{pkg.name}</span>
                         </span>
                       </td>
-                      <td data-label="Price" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtMtc(pkg.price)}</td>
+                      <td data-label="Price" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtKes(pkg.price)}</td>
                       <td data-label="CPU" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtCpu(pkg.cpu)}</td>
                       <td data-label="RAM" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtRam(pkg.ram)}</td>
                       <td data-label="Disk" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtDisk(pkg.disk)}</td>
@@ -156,7 +156,7 @@ export default function AdminPackages() {
                   <input className="input" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Pro" />
                 </div>
                 <div>
-                  <label className="label">Price (MTC/mo)</label>
+                  <label className="label">Price (KES/mo)</label>
                   <input className="input" type="number" min="0" step="0.01" required value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="150" />
                 </div>
                 <div>
@@ -205,7 +205,7 @@ export default function AdminPackages() {
                 <p className="mono mb-2" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4C535B' }}>Preview</p>
                 <p style={{ fontWeight: 700, color: '#E9E7E2', margin: 0 }}>{form.name || 'Package Name'}</p>
                 <p className="stat-num" style={{ fontSize: '1.4rem', color: form.accent, margin: '6px 0' }}>
-                  {fmtMtc(form.price || 0)}<span className="mono" style={{ fontSize: '0.45em', fontWeight: 400, color: '#4C535B', marginLeft: 6 }}>/mo</span>
+                  {fmtKes(form.price || 0)}<span className="mono" style={{ fontSize: '0.45em', fontWeight: 400, color: '#4C535B', marginLeft: 6 }}>/mo</span>
                 </p>
                 <p className="mono" style={{ fontSize: 11, color: '#79818A', margin: 0 }}>{fmtCpu(form.cpu || 0)} · {fmtRam(form.ram || 0)} · {fmtDisk(form.disk || 0)}</p>
               </div>

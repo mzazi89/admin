@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 const STATUS_TAG = {
   completed: 'tag-green',
@@ -48,7 +48,7 @@ export default function AdminTransactions() {
       {data?.stats && (
         <div className="grid grid-cols-1 sm:grid-cols-2 mb-8" style={{ gap: 14 }}>
           <div className="card" style={{ padding: '22px 24px', gridColumn: '1 / -1' }}>
-            <div className="stat-num" style={{ color: '#F2A93B' }}>{fmtMtc(data.stats.total_revenue || 0)}</div>
+            <div className="stat-num" style={{ color: '#F2A93B' }}>{fmtKes(data.stats.total_revenue || 0)}</div>
             <div className="stat-label">Total revenue</div>
           </div>
           <div className="card" style={{ padding: '22px 24px' }}>
@@ -106,7 +106,7 @@ export default function AdminTransactions() {
                     <td data-label="Reference" className="mono" style={{ fontSize: 12, color: '#4C535B' }}>{(o.reference || '—').slice(-12)}</td>
                     <td data-label="User" style={{ color: '#AEB5BD' }}>{o.user_email}</td>
                     <td data-label="Package" style={{ color: '#E9E7E2', fontWeight: 600 }}>{o.package_name}</td>
-                    <td data-label="Amount" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtMtc(o.amount || 0)}</td>
+                    <td data-label="Amount" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtKes(o.amount || 0)}</td>
                     <td data-label="Status"><span className={`tag ${tagFor(o.status)}`}>{o.status}</span></td>
                     <td data-label="Date" className="mono" style={{ fontSize: 12, color: '#4C535B' }}>{new Date(o.created_at).toLocaleDateString()}</td>
                   </tr>
@@ -134,7 +134,7 @@ export default function AdminTransactions() {
                     <td data-label="User" style={{ color: '#AEB5BD' }}>{t.user_email}</td>
                     <td data-label="Type" className="mono" style={{ fontSize: 12, color: '#E9E7E2', textTransform: 'uppercase' }}>{t.type}</td>
                     <td data-label="Amount" style={{ color: t.type === 'debit' ? '#E5484D' : '#3ECF8E', fontWeight: 600 }}>
-                      {t.type === 'debit' ? '−' : '+'}{fmtMtc(t.amount)}
+                      {t.type === 'debit' ? '−' : '+'}{fmtKes(t.amount)}
                     </td>
                     <td data-label="Description" style={{ fontSize: 13, color: '#79818A', maxWidth: 320 }}>{t.description}</td>
                     <td data-label="Status"><span className={`tag ${tagFor(t.status)}`}>{t.status}</span></td>

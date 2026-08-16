@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
 
   const statCells = [
     { label: 'Total users', value: stats.totalUsers, href: '/admin/users', accent: false },
-    { label: 'Total revenue', value: fmtMtc(stats.totalRevenue), href: '/admin/transactions', accent: true },
+    { label: 'Total revenue', value: fmtKes(stats.totalRevenue), href: '/admin/transactions', accent: true },
     { label: 'Completed orders', value: stats.completedOrders, href: '/admin/transactions', accent: false },
     { label: 'Open inquiries', value: stats.openInquiries, href: '/admin/inquiries', accent: false },
   ];
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                     </p>
                   </div>
                   <span className="mono flex-shrink-0" style={{ fontSize: 11, color: '#3ECF8E' }}>
-                    {fmtMtc(u.wallet_balance || 0)}
+                    {fmtKes(u.wallet_balance || 0)}
                   </span>
                 </div>
               ))}

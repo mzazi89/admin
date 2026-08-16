@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fmtMtc } from '@/lib/currency';
+import { fmtKes } from '@/lib/currency';
 
 export default function AdminVouchers() {
   const [vouchers, setVouchers] = useState([]);
@@ -45,7 +45,7 @@ export default function AdminVouchers() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: `Voucher ${code.trim().toUpperCase()} activated for ${fmtMtc(amount)}` });
+        setMessage({ type: 'success', text: `Voucher ${code.trim().toUpperCase()} activated for ${fmtKes(amount)}` });
         setCode('');
         setAmount('');
         loadVouchers();
@@ -103,7 +103,7 @@ export default function AdminVouchers() {
               <p className="mono mt-1.5" style={{ fontSize: 10, color: '#4C535B' }}>{code.length}/6 characters</p>
             </div>
             <div>
-              <label className="label" htmlFor="v-amount">Amount (MTC)</label>
+              <label className="label" htmlFor="v-amount">Amount (KES)</label>
               <input
                 id="v-amount"
                 type="number"
@@ -129,7 +129,7 @@ export default function AdminVouchers() {
           <div className="mt-6 p-3.5" style={{ backgroundColor: '#0F1215', border: '1px solid #1B2026', borderRadius: 4, fontSize: 12.5, color: '#79818A', lineHeight: 1.65 }}>
             <span className="mono" style={{ color: '#3ECF8E', fontWeight: 600 }}>How it works</span>
             <br />
-            Enter any 6-character code (letters/numbers), set the amount in MTC, then activate. The code is immediately usable by one member to credit their wallet.
+            Enter any 6-character code (letters/numbers), set the amount in KES, then activate. The code is immediately usable by one member to credit their wallet.
           </div>
         </div>
 
@@ -148,7 +148,7 @@ export default function AdminVouchers() {
             <div className="stat-label">Used</div>
           </div>
           <div className="sm:col-span-3 card" style={{ padding: '22px 24px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-            <div className="stat-num" style={{ color: '#F2A93B' }}>{fmtMtc(usedTotal)}</div>
+            <div className="stat-num" style={{ color: '#F2A93B' }}>{fmtKes(usedTotal)}</div>
             <div className="stat-label">Total redeemed via vouchers</div>
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function AdminVouchers() {
                 {vouchers.map(v => (
                   <tr key={v.id}>
                     <td data-label="Code" className="mono" style={{ fontWeight: 600, letterSpacing: '0.18em', color: '#E9E7E2' }}>{v.code}</td>
-                    <td data-label="Amount" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtMtc(v.amount)}</td>
+                    <td data-label="Amount" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtKes(v.amount)}</td>
                     <td data-label="Status"><span className={`tag ${tagFor(v.status)}`}>{v.status}</span></td>
                     <td data-label="Used by" style={{ color: '#AEB5BD' }}>{v.used_by_email || '—'}</td>
                     <td data-label="Used at" className="mono" style={{ fontSize: 12, color: '#4C535B' }}>{v.used_at ? new Date(v.used_at).toLocaleString() : '—'}</td>
