@@ -54,6 +54,28 @@ export default function CommandsPage() {
     setForm(EMPTY);
     setModal({ mode: 'add' });
   };
+
+  const [syncing, setSyncing] = useState(false);
+  const syncFromSeed = async () => {
+    if (!window.confirm('Sync ALL commands from the seed file?\n\nThis overwrites every command row with the shipped version (new + fixed code) — including any manual edits made in this panel.')) return;
+    setSyncing(true);
+    setNotice('');
+    setError('');
+    try {
+      const res = await fetch('/api/admin/bot-commands/sync', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Sync failed.');
+      } else {
+        setNotice(`✅ Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}. Bot will re-import shortly.`);
+        load();
+      }
+    } catch (e) {
+      setError('Network error during sync.');
+    } finally {
+      setSyncing(false);
+    }
+  };
   const openEdit = async (cmd) => {
     setForm({
       name: cmd.name,
@@ -206,6 +228,9 @@ export default function CommandsPage() {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
+        <button onClick={syncFromSeed} className="btn" style={{ fontSize: 13 }} disabled={syncing} title="Upserts all commands from data/bot-commands.json (fixes existing rows the seed never overwrites)">
+          {syncing ? 'Syncing…' : '⟳ Sync from seed'}
+        </button>
         <button onClick={openAdd} className="btn btn-primary" style={{ marginLeft: 'auto' }}>Add command</button>
       </div>
 
