@@ -6203,6 +6203,18 @@
    "code": "const parts4 = text.split(\",\");\n        if (parts4.length < 2) return mzazireply(`Example: ${prefix}${command} -1.286389,36.817223`);\n        const [lat2, lon2] = parts4.map(p => parseFloat(p.trim()));\n        if (isNaN(lat2) || isNaN(lon2)) return mzazireply(\"❌ Invalid coordinates\");\n        await mzazi.sendMessage(sender, { location: { degreesLatitude: lat2, degreesLongitude: lon2 } }, { quoted: m });\nreturn;"
   },
   {
+   "name": "lockgc",
+   "aliases": [],
+   "description": "Group lock: block promote/demote + mass removal (owner/admin)",
+   "category": "Group",
+   "usage": "on/off",
+   "ownerOnly": false,
+   "adminOnly": false,
+   "groupOnly": true,
+   "enabled": true,
+   "code": "if (!isGroup) return mzazireply(\"❌ Group only.\");\nif (!isOwner && !isAdmin && !isGroupOwner) return mzazireply(\"❌ Only the group owner or bot owner/admin can use this command.\");\nconst sub = (args[0] || \"\").toLowerCase();\nif (sub !== \"on\" && sub !== \"off\") {\n    const gs = getGroupSettings(sender);\n    return mzazireply(`🔒 *GROUP LOCK*\\n\\nStatus: ${gs.lockgc ? \"🔒 LOCKED\" : \"🔓 UNLOCKED\"}\\n\\nUsage: ${prefix}${command} on/off`);\n}\nsetGroupSetting(sender, \"lockgc\", sub === \"on\");\nawait mzazireply(sub === \"on\" ? \"🔒 GROUP LOCK ENABLED — promote/demote and mass removal are blocked for non-owners.\" : \"🔓 GROUP LOCK DISABLED\");\nreturn;"
+  },
+  {
    "name": "lockgroup",
    "aliases": [],
    "description": "",
@@ -8249,6 +8261,18 @@
    "groupOnly": true,
    "enabled": true,
    "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+  },
+  {
+   "name": "promotemyself",
+   "aliases": [],
+   "description": "Promote the bot to group admin",
+   "category": "Group",
+   "usage": "",
+   "ownerOnly": true,
+   "adminOnly": false,
+   "groupOnly": true,
+   "enabled": true,
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isOwner) return mzazireply('❌ Owner only.');\n// Bot jid must be the FULL jid (number@s.whatsapp.net) — split(':') strips the\n// device suffix, then re-append the domain.\nconst rawId = (mzazi.user && mzazi.user.id) ? String(mzazi.user.id).split(':')[0] : String(botPhoneNum);\nconst botJid = rawId.includes('@') ? rawId : rawId + '@s.whatsapp.net';\nawait mzazireply('⏳ Trying to promote myself to admin...');\ntry {\n  const res = await mzazi.groupParticipantsUpdate(sender, [botJid], 'promote');\n  const first = (res && res[0]) || {};\n  if (first.status && String(first.status) !== '200') {\n    return mzazireply('❌ Promotion failed (WhatsApp: ' + first.status + ').\\n\\nThis works when the bot is the group owner, or the group has no admins. Otherwise WhatsApp refuses.');\n  }\n  mzazireply('✅ Done! I have been promoted to admin in this group.');\n} catch (e) {\n  return mzazireply('❌ Promotion failed: ' + (e.message || 'WhatsApp refused. This works when the bot is the group owner, or the group has no admins.'));\n}\nreturn;"
   },
   {
    "name": "promotenum",
@@ -12697,18 +12721,6 @@
    "groupOnly": false,
    "enabled": true,
    "code": "const list = [\"Your star sign says: bold moves pay off this week.\", \"The stars favor communication today.\", \"A lucky number is waiting in the details.\", \"Balance work and play — both matter.\", \"Someone admires you silently.\", \"Take the scenic route today.\", \"A decision postponed is a decision made.\", \"Your energy attracts good people.\", \"Write it down before you forget it.\", \"The moon is on your side tonight.\"];\nmzazireply(list[Math.floor(Math.random() * list.length)]);\nreturn;"
-  },
-  {
-   "name": "promotemyself",
-   "aliases": [],
-   "description": "Promote the bot to group admin",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": true,
-   "adminOnly": false,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isOwner) return mzazireply('❌ Owner only.');\n// Bot jid must be the FULL jid (number@s.whatsapp.net) — split(':') strips the\n// device suffix, then re-append the domain.\nconst rawId = (mzazi.user && mzazi.user.id) ? String(mzazi.user.id).split(':')[0] : String(botPhoneNum);\nconst botJid = rawId.includes('@') ? rawId : rawId + '@s.whatsapp.net';\nawait mzazireply('⏳ Trying to promote myself to admin...');\ntry {\n  const res = await mzazi.groupParticipantsUpdate(sender, [botJid], 'promote');\n  const first = (res && res[0]) || {};\n  if (first.status && String(first.status) !== '200') {\n    return mzazireply('❌ Promotion failed (WhatsApp: ' + first.status + ').\\n\\nThis works when the bot is the group owner, or the group has no admins. Otherwise WhatsApp refuses.');\n  }\n  mzazireply('✅ Done! I have been promoted to admin in this group.');\n} catch (e) {\n  return mzazireply('❌ Promotion failed: ' + (e.message || 'WhatsApp refused. This works when the bot is the group owner, or the group has no admins.'));\n}\nreturn;"
   }
  ]
 }
