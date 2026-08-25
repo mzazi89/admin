@@ -136,9 +136,9 @@ export default function AdminPanel() {
       {notice && (
         <div className="tag mb-6" style={{
           padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em',
-          backgroundColor: notice.includes('❌') || notice.includes('failed') || notice.includes('Failed') ? 'rgba(229,72,77,0.06)' : 'rgba(62,207,142,0.06)',
-          borderColor: notice.includes('❌') || notice.includes('failed') || notice.includes('Failed') ? 'rgba(229,72,77,0.35)' : 'rgba(62,207,142,0.35)',
-          color: notice.includes('❌') || notice.includes('failed') || notice.includes('Failed') ? '#E5484D' : '#3ECF8E',
+          backgroundColor: notice.startsWith('✅') ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
+          borderColor: notice.startsWith('✅') ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
+          color: notice.startsWith('✅') ? '#3ECF8E' : '#E5484D',
         }}>
           {notice}
         </div>

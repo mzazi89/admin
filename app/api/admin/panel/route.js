@@ -92,22 +92,36 @@ export async function GET(request) {
       });
     }
     if (action === 'servers') {
-      const uid = searchParams.get('user_id');
-      if (!uid) return NextResponse.json({ error: 'user_id required' }, { status: 400 });
-      const r = await pteroFetch(`/users/${uid}/servers?per_page=100`);
-      if (r.status !== 200) return NextResponse.json({ error: pteroErr(r.data) }, { status: 502 });
-      return NextResponse.json({
-        servers: (r.data?.data || []).map((s) => {
+      const uid = parseInt(searchParams.get('user_id'), 10);
+      if (!Number.isInteger(uid) || uid <= 0) {
+        return NextResponse.json({ error: 'invalid user_id' }, { status: 400 });
+      }
+      // Fetch ALL servers (paginated) and filter by owner id. The dedicated
+      // /users/{id}/servers endpoint returns empty on some Pterodactyl
+      // versions even when the user has servers, which made "delete user"
+      // wrongly assume there were none.
+      const servers = [];
+      let page = 1;
+      let totalPages = 1;
+      while (page <= totalPages && page <= 50) {
+        const r = await pteroFetch(`/servers?per_page=100&page=${page}`);
+        if (r.status !== 200) return NextResponse.json({ error: pteroErr(r.data) }, { status: 502 });
+        for (const s of r.data?.data || []) {
           const a = s.attributes || {};
-          const node = a.node?.attributes || {};
-          return {
-            id: a.id,
-            name: a.name,
-            node: node.name || null,
-            limits: a.limits || null,
-          };
-        }),
-      });
+          if (parseInt(a.user, 10) === uid) {
+            const node = a.node?.attributes || {};
+            servers.push({
+              id: a.id,
+              name: a.name,
+              node: node.name || null,
+              limits: a.limits || null,
+            });
+          }
+        }
+        totalPages = r.data?.meta?.pagination?.total_pages || 1;
+        page += 1;
+      }
+      return NextResponse.json({ servers });
     }
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (e) {
