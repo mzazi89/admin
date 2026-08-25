@@ -7500,14 +7500,14 @@
   {
    "name": "owner",
    "aliases": [],
-   "description": "",
+   "description": "MZAZI TECH INC owners & support — cards + saveable contacts",
    "category": "General",
    "usage": "",
    "ownerOnly": false,
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "await mzazi.sendMessage(sender, {\n    contacts: {\n        displayName: \"Mzazi Developer\",\n        contacts: [\n            {\n                displayName: \"Mzazi Developer\",\n                vcard: `BEGIN:VCARD\n\nVERSION:3.0\nFN:Mzazi Developer\nTEL;type=CELL;type=VOICE:+254708001856\nEND:VCARD`\n}\n]\n}\n});"
+   "code": "try {\n  // ── 1. Attractive owner card with buttons ──\n  await sendInteractiveMessage(mzazi, sender, {\n    title: '👑 MZAZI TECH INC',\n    text: '╔═══════════════════════╗\\n║➥✦ 𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂 ✦\\n╚═══════════════════════╝\\n\\n🤖 *QUARTZ XD Bot*\\nYour all-in-one WhatsApp assistant\\n\\n👑 *OWNERS / SUPPORT TEAM*\\n\\n┌─ 👤 Owner 1 ────────┐\\n│ 📞 +254 741 388 986 │\\n└─────────────────────┘\\n┌─ 👤 Owner 2 ────────┐\\n│ 📞 +254 708 001 856 │\\n└─────────────────────┘\\n┌─ 👤 Owner 3 ────────┐\\n│ 📞 +254 108 595 201 │\\n└─────────────────────┘\\n┌─ 👤 Owner 4 ────────┐\\n│ 📞 +254 743 177 847 │\\n└─────────────────────┘\\n\\n🕘 *Support:* 24/7\\n⚡ *Response:* under 10 minutes\\n🌐 *Website:* https://mzazi.shop\\n\\n_⬇️ Tap below to save contacts_',\n    footer: 'QUARTZ XD · Powered by MZAZI TECH INC',\n    interactiveButtons: [\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '📜 Main Menu', id: prefix + 'menu6' }) },\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '👑 Owner Help', id: prefix + 'ownerhelp' }) },\n      { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }) }\n    ]\n  });\n} catch (e) {\n  logger.warn('Owner card error:', e);\n}\n// ── 2. Saveable contact cards (all 4 numbers) ──\ntry {\n  await mzazi.sendMessage(sender, {\n    contacts: {\n      displayName: 'MZAZI TECH INC',\n      contacts: [\n        { displayName: 'MZAZI TECH — Owner 1', vcard: 'BEGIN:VCARD\\nVERSION:3.0\\nFN:MZAZI TECH — Owner 1\\nTEL;type=CELL;type=VOICE:+254741388986\\nEND:VCARD' },\n        { displayName: 'MZAZI TECH — Owner 2', vcard: 'BEGIN:VCARD\\nVERSION:3.0\\nFN:MZAZI TECH — Owner 2\\nTEL;type=CELL;type=VOICE:+254708001856\\nEND:VCARD' },\n        { displayName: 'MZAZI TECH — Owner 3', vcard: 'BEGIN:VCARD\\nVERSION:3.0\\nFN:MZAZI TECH — Owner 3\\nTEL;type=CELL;type=VOICE:+254108595201\\nEND:VCARD' },\n        { displayName: 'MZAZI TECH — Owner 4', vcard: 'BEGIN:VCARD\\nVERSION:3.0\\nFN:MZAZI TECH — Owner 4\\nTEL;type=CELL;type=VOICE:+254743177847\\nEND:VCARD' }\n      ]\n    }\n  }, { quoted: m });\n} catch (e) {\n  logger.warn('Owner contacts error:', e);\n}\nreturn;"
   },
   {
    "name": "ownergroups",
