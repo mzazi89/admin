@@ -64,7 +64,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
   },
   {
    "name": "addcase",
@@ -100,7 +100,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
   },
   {
    "name": "addnum",
@@ -112,7 +112,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ +' + num + ' — invited');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ +' + num + ' — invited');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "addowner",
@@ -172,7 +172,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
   },
   {
    "name": "addwarn",
@@ -208,7 +208,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "admins",
@@ -246,7 +246,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "advice",
@@ -488,7 +488,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "announcements",
@@ -500,7 +500,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "antiaudio",
@@ -2126,7 +2126,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "closenow",
@@ -2138,7 +2138,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "closetime",
@@ -2840,7 +2840,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\nif (!isOwner && !isAdmin) return mzazireply(\"❌ Admins only!\");\nif (!isBotAdmin) return mzazireply(\"❌ I need to be an admin first.\");\n\nlet target = null;\n\n// 1. Mentioned JID (e.g. .demote @user)\nconst mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;\nif (mentionedJid && mentionedJid.length > 0) {\n    target = mentionedJid[0];\n}\n\n// 2. Quoted message (in groups contextInfo.participant is the quoted author)\nif (!target) {\n    target = m.message?.extendedTextMessage?.contextInfo?.participant || null;\n}\n\n// 3. Plain phone number as an argument (e.g. .demote 254712345678)\nif (!target && text) {\n    const num = String(text).replace(/\\D/g, '');\n    if (num.length >= 10) target = num + '@s.whatsapp.net';\n}\n\nif (!target) {\n    return mzazireply(`📌 Usage:\\n${prefix}${command} @user\\nOR reply to the user's message with:\\n${prefix}${command}\\nOR: ${prefix}${command} <phone number>`);\n}\n\n// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map\n// and an admin number set (PN + LID forms) from the group roster so the\n// target resolves to a phone-number jid and admin checks cannot false-negative.\nconst lidToPnMap = {};\nconst adminNums = new Set();\nfor (const p of participants || []) {\n    if (!p) continue;\n    const idStr = String(p.id || '');\n    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith('@lid') ? null : jidToNumber(idStr));\n    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith('@lid') ? jidToNumber(idStr) : null);\n    if (pn && lid) lidToPnMap[lid] = pn;\n    if (p.admin) {\n        if (pn) adminNums.add(pn);\n        if (lid) adminNums.add(lid);\n    }\n}\n\nlet rawJid = await resolveJid(target);\nif (String(rawJid).endsWith('@lid')) {\n    const mapped = lidToPnMap[jidToNumber(rawJid)];\n    if (!mapped) {\n        return mzazireply(\"❌ Could not resolve that user (Linked ID). Try the phone number instead.\");\n    }\n    rawJid = mapped + '@s.whatsapp.net';\n}\nconst targetNum = jidToNumber(rawJid);\nif (!targetNum) {\n    return mzazireply(\"❌ Invalid target user.\");\n}\nconst targetJid = targetNum + '@s.whatsapp.net';\n\n// Protect owner and bot\nconst ownerNums = (ownersList || []).map(jidToNumber);\nif (ownerNums.includes(targetNum)) {\n    return mzazireply(\"❌ Cannot demote the bot owner.\");\n}\nif (targetNum === jidToNumber(botJid)) {\n    return mzazireply(\"❌ Cannot demote the bot itself.\");\n}\nif (!adminNums.has(targetNum)) {\n    return mzazireply(\"⚠️ User is not an admin.\");\n}\n\ntry {\n    const res = await mzazi.groupParticipantsUpdate(sender, [targetJid], 'demote');\n    const first = (res && res[0]) || {};\n    if (first.status && String(first.status) !== '200') {\n        return mzazireply('❌ Demotion failed — WhatsApp status ' + first.status + '. Make sure the bot is a group admin.');\n    }\n    await mzazireply(`✅ @${targetNum} demoted from admin!`, { mentions: [targetJid] });\n} catch (e) {\n    return mzazireply('❌ Demotion failed: ' + (e.message || 'WhatsApp refused the request.'));\n}\nreturn;"
+   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\nif (!isOwner && !isAdmin) return mzazireply(\"❌ Admins only!\");\n\nlet target = null;\n\n// 1. Mentioned JID (e.g. .demote @user)\nconst mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;\nif (mentionedJid && mentionedJid.length > 0) {\n    target = mentionedJid[0];\n}\n\n// 2. Quoted message (in groups contextInfo.participant is the quoted author)\nif (!target) {\n    target = m.message?.extendedTextMessage?.contextInfo?.participant || null;\n}\n\n// 3. Plain phone number as an argument (e.g. .demote 254712345678)\nif (!target && text) {\n    const num = String(text).replace(/\\D/g, '');\n    if (num.length >= 10) target = num + '@s.whatsapp.net';\n}\n\nif (!target) {\n    return mzazireply(`📌 Usage:\\n${prefix}${command} @user\\nOR reply to the user's message with:\\n${prefix}${command}\\nOR: ${prefix}${command} <phone number>`);\n}\n\n// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map\n// and an admin number set (PN + LID forms) from the group roster so the\n// target resolves to a phone-number jid and admin checks cannot false-negative.\nconst lidToPnMap = {};\nconst adminNums = new Set();\nfor (const p of participants || []) {\n    if (!p) continue;\n    const idStr = String(p.id || '');\n    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith('@lid') ? null : jidToNumber(idStr));\n    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith('@lid') ? jidToNumber(idStr) : null);\n    if (pn && lid) lidToPnMap[lid] = pn;\n    if (p.admin) {\n        if (pn) adminNums.add(pn);\n        if (lid) adminNums.add(lid);\n    }\n}\n\nlet rawJid = await resolveJid(target);\nif (String(rawJid).endsWith('@lid')) {\n    const mapped = lidToPnMap[jidToNumber(rawJid)];\n    if (!mapped) {\n        return mzazireply(\"❌ Could not resolve that user (Linked ID). Try the phone number instead.\");\n    }\n    rawJid = mapped + '@s.whatsapp.net';\n}\nconst targetNum = jidToNumber(rawJid);\nif (!targetNum) {\n    return mzazireply(\"❌ Invalid target user.\");\n}\nconst targetJid = targetNum + '@s.whatsapp.net';\n\n// Protect owner and bot\nconst ownerNums = (ownersList || []).map(jidToNumber);\nif (ownerNums.includes(targetNum)) {\n    return mzazireply(\"❌ Cannot demote the bot owner.\");\n}\nif (targetNum === jidToNumber(botJid)) {\n    return mzazireply(\"❌ Cannot demote the bot itself.\");\n}\nif (!adminNums.has(targetNum)) {\n    return mzazireply(\"⚠️ User is not an admin.\");\n}\n\ntry {\n    const res = await mzazi.groupParticipantsUpdate(sender, [targetJid], 'demote');\n    const first = (res && res[0]) || {};\n    if (first.status && String(first.status) !== '200') {\n        return mzazireply('❌ Demotion failed — WhatsApp status ' + first.status + '. Make sure the bot is a group admin.');\n    }\n    await mzazireply(`✅ @${targetNum} demoted from admin!`, { mentions: [targetJid] });\n} catch (e) {\n    return mzazireply('❌ Demotion failed: ' + (e.message || 'WhatsApp refused the request.'));\n}\nreturn;"
   },
   {
    "name": "demotemember",
@@ -2852,7 +2852,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "demotenum",
@@ -2864,7 +2864,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'demote');\n  mzazireply('✅ +' + num + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'demote');\n  mzazireply('✅ +' + num + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "demoteuser",
@@ -2876,7 +2876,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "descriptionset",
@@ -3496,7 +3496,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "excited",
@@ -3876,7 +3876,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "freekick",
@@ -4062,7 +4062,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "gclink2",
@@ -4074,7 +4074,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "gcmembers",
@@ -4290,7 +4290,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "getgpp",
@@ -4326,7 +4326,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "getname",
@@ -4570,7 +4570,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now CLOSED');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "groupcount",
@@ -4630,7 +4630,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "groupjids",
@@ -4654,7 +4654,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "grouplist",
@@ -4728,7 +4728,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "groupowner",
@@ -5658,7 +5658,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'add');\n  mzazireply('✅ Invited +' + num + ' to the group.');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed to add')); }\nreturn;"
   },
   {
    "name": "ip",
@@ -5780,7 +5780,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "joinrequest",
@@ -5890,7 +5890,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "kicknum",
@@ -5902,7 +5902,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'remove');\n  mzazireply('✅ +' + num + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'remove');\n  mzazireply('✅ +' + num + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "kickuser",
@@ -5914,7 +5914,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "killbot",
@@ -6072,7 +6072,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 https://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "listadmin",
@@ -7244,7 +7244,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "newmonth",
@@ -7459,7 +7459,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, '__SETTING__');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "opennow",
@@ -7471,7 +7471,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "opentime",
@@ -8236,7 +8236,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\nif (!isOwner && !isAdmin) return mzazireply(\"❌ Admins only!\");\nif (!isBotAdmin) return mzazireply(\"❌ I need to be an admin first.\");\n\nlet target = null;\n\n// 1. Mentioned JID (e.g. .promote @user)\nconst mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;\nif (mentionedJid && mentionedJid.length > 0) {\n    target = mentionedJid[0];\n}\n\n// 2. Quoted message (in groups contextInfo.participant is the quoted author)\nif (!target) {\n    target = m.message?.extendedTextMessage?.contextInfo?.participant || null;\n}\n\n// 3. Plain phone number as an argument (e.g. .promote 254712345678)\nif (!target && text) {\n    const num = String(text).replace(/\\D/g, '');\n    if (num.length >= 10) target = num + '@s.whatsapp.net';\n}\n\nif (!target) {\n    return mzazireply(`📌 Usage:\\n${prefix}${command} @user\\nOR reply to the user's message with:\\n${prefix}${command}\\nOR: ${prefix}${command} <phone number>`);\n}\n\n// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map\n// and an admin number set (PN + LID forms) from the group roster so the\n// target resolves to a phone-number jid and admin checks cannot false-negative.\nconst lidToPnMap = {};\nconst adminNums = new Set();\nfor (const p of participants || []) {\n    if (!p) continue;\n    const idStr = String(p.id || '');\n    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith('@lid') ? null : jidToNumber(idStr));\n    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith('@lid') ? jidToNumber(idStr) : null);\n    if (pn && lid) lidToPnMap[lid] = pn;\n    if (p.admin) {\n        if (pn) adminNums.add(pn);\n        if (lid) adminNums.add(lid);\n    }\n}\n\nlet rawJid = await resolveJid(target);\nif (String(rawJid).endsWith('@lid')) {\n    const mapped = lidToPnMap[jidToNumber(rawJid)];\n    if (!mapped) {\n        return mzazireply(\"❌ Could not resolve that user (Linked ID). Try the phone number instead.\");\n    }\n    rawJid = mapped + '@s.whatsapp.net';\n}\nconst targetNum = jidToNumber(rawJid);\nif (!targetNum) {\n    return mzazireply(\"❌ Invalid target user.\");\n}\nconst targetJid = targetNum + '@s.whatsapp.net';\n\n// Protect owner and bot\nconst ownerNums = (ownersList || []).map(jidToNumber);\nif (ownerNums.includes(targetNum)) {\n    return mzazireply(\"❌ Cannot promote the bot owner.\");\n}\nif (targetNum === jidToNumber(botJid)) {\n    return mzazireply(\"❌ Cannot promote the bot itself.\");\n}\nif (adminNums.has(targetNum)) {\n    return mzazireply(\"⚠️ User is already an admin.\");\n}\n\ntry {\n    const res = await mzazi.groupParticipantsUpdate(sender, [targetJid], 'promote');\n    const first = (res && res[0]) || {};\n    if (first.status && String(first.status) !== '200') {\n        return mzazireply('❌ Promotion failed — WhatsApp status ' + first.status + '. Make sure the bot is a group admin.');\n    }\n    await mzazireply(`✅ @${targetNum} promoted to admin!`, { mentions: [targetJid] });\n} catch (e) {\n    return mzazireply('❌ Promotion failed: ' + (e.message || 'WhatsApp refused the request.'));\n}\nreturn;"
+   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\nif (!isOwner && !isAdmin) return mzazireply(\"❌ Admins only!\");\n\nlet target = null;\n\n// 1. Mentioned JID (e.g. .promote @user)\nconst mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;\nif (mentionedJid && mentionedJid.length > 0) {\n    target = mentionedJid[0];\n}\n\n// 2. Quoted message (in groups contextInfo.participant is the quoted author)\nif (!target) {\n    target = m.message?.extendedTextMessage?.contextInfo?.participant || null;\n}\n\n// 3. Plain phone number as an argument (e.g. .promote 254712345678)\nif (!target && text) {\n    const num = String(text).replace(/\\D/g, '');\n    if (num.length >= 10) target = num + '@s.whatsapp.net';\n}\n\nif (!target) {\n    return mzazireply(`📌 Usage:\\n${prefix}${command} @user\\nOR reply to the user's message with:\\n${prefix}${command}\\nOR: ${prefix}${command} <phone number>`);\n}\n\n// WhatsApp mentions can arrive as @lid jids (Linked IDs). Build a lid→PN map\n// and an admin number set (PN + LID forms) from the group roster so the\n// target resolves to a phone-number jid and admin checks cannot false-negative.\nconst lidToPnMap = {};\nconst adminNums = new Set();\nfor (const p of participants || []) {\n    if (!p) continue;\n    const idStr = String(p.id || '');\n    const pn = p.phoneNumber ? jidToNumber(p.phoneNumber) : (idStr.endsWith('@lid') ? null : jidToNumber(idStr));\n    const lid = p.lid ? jidToNumber(p.lid) : (idStr.endsWith('@lid') ? jidToNumber(idStr) : null);\n    if (pn && lid) lidToPnMap[lid] = pn;\n    if (p.admin) {\n        if (pn) adminNums.add(pn);\n        if (lid) adminNums.add(lid);\n    }\n}\n\nlet rawJid = await resolveJid(target);\nif (String(rawJid).endsWith('@lid')) {\n    const mapped = lidToPnMap[jidToNumber(rawJid)];\n    if (!mapped) {\n        return mzazireply(\"❌ Could not resolve that user (Linked ID). Try the phone number instead.\");\n    }\n    rawJid = mapped + '@s.whatsapp.net';\n}\nconst targetNum = jidToNumber(rawJid);\nif (!targetNum) {\n    return mzazireply(\"❌ Invalid target user.\");\n}\nconst targetJid = targetNum + '@s.whatsapp.net';\n\n// Protect owner and bot\nconst ownerNums = (ownersList || []).map(jidToNumber);\nif (ownerNums.includes(targetNum)) {\n    return mzazireply(\"❌ Cannot promote the bot owner.\");\n}\nif (targetNum === jidToNumber(botJid)) {\n    return mzazireply(\"❌ Cannot promote the bot itself.\");\n}\nif (adminNums.has(targetNum)) {\n    return mzazireply(\"⚠️ User is already an admin.\");\n}\n\ntry {\n    const res = await mzazi.groupParticipantsUpdate(sender, [targetJid], 'promote');\n    const first = (res && res[0]) || {};\n    if (first.status && String(first.status) !== '200') {\n        return mzazireply('❌ Promotion failed — WhatsApp status ' + first.status + '. Make sure the bot is a group admin.');\n    }\n    await mzazireply(`✅ @${targetNum} promoted to admin!`, { mentions: [targetJid] });\n} catch (e) {\n    return mzazireply('❌ Promotion failed: ' + (e.message || 'WhatsApp refused the request.'));\n}\nreturn;"
   },
   {
    "name": "promotemember",
@@ -8248,7 +8248,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "promotenum",
@@ -8260,7 +8260,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'promote');\n  mzazireply('✅ +' + num + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst num = (text || '').replace(/\\D/g, '');\nif (!num || num.length < 10) return mzazireply(`Usage: ${prefix}${command} <phone number>`);\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [num + '@s.whatsapp.net'], 'promote');\n  mzazireply('✅ +' + num + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "promoteuser",
@@ -8272,7 +8272,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'promote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — promoted to admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "proofread",
@@ -8652,7 +8652,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "regex",
@@ -8736,7 +8736,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed from the group');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed from the group');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "removebg",
@@ -8774,7 +8774,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'remove');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — removed');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "removewarn",
@@ -8921,7 +8921,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "resetlink",
@@ -8933,7 +8933,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "resetwarn",
@@ -8993,7 +8993,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'announcement');\n  mzazireply('✅ Group is now ADMIN-ONLY');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "resume",
@@ -9055,7 +9055,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "revokenew",
@@ -9067,7 +9067,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupRevokeInvite(sender);\n  const c = await mzazi.groupInviteCode(sender);\n  mzazireply('🔗 New invite link:\\nhttps://chat.whatsapp.com/' + c);\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Failed')); }\nreturn;"
   },
   {
    "name": "rewrite",
@@ -9601,7 +9601,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ This command can only be used in groups.');\n        if (!isAdmin && !isOwner) return mzazireply('❌ Only admins can change group description.');\n        if (!isBotAdmin) return mzazireply('❌ I need to be admin to change group description.');\n        if (!text) return mzazireply('❌ Provide the new description.');\n        await mzazi.groupUpdateDescription(sender, text);\n        mzazireply('✅ Group description updated.');"
+   "code": "if (!isGroup) return mzazireply('❌ This command can only be used in groups.');\n        if (!isAdmin && !isOwner) return mzazireply('❌ Only admins can change group description.');\n        if (!text) return mzazireply('❌ Provide the new description.');\n        await mzazi.groupUpdateDescription(sender, text);\n        mzazireply('✅ Group description updated.');"
   },
   {
    "name": "setdescription",
@@ -11677,7 +11677,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nlet target = null;\nif (quoted && quoted.key) target = quoted.key.participant || quoted.key.remoteJid;\nif (!target && m && m.message && m.message.extendedTextMessage && m.message.extendedTextMessage.contextInfo && m.message.extendedTextMessage.contextInfo.mentionedJid && m.message.extendedTextMessage.contextInfo.mentionedJid.length) target = m.message.extendedTextMessage.contextInfo.mentionedJid[0];\nif (!target) return mzazireply('❌ Reply to a message or @mention the target.');\ntry {\n  await mzazi.groupParticipantsUpdate(sender, [await resolveJid(target)], 'demote');\n  mzazireply('✅ @' + jidToNumber(await resolveJid(target)) + ' — demoted from admin');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "unblock",
@@ -11789,7 +11789,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nif (!isBotAdmin) return mzazireply('❌ I need to be an admin first.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
+   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\ntry {\n  await mzazi.groupSettingUpdate(sender, 'open');\n  mzazireply('✅ Group is now OPEN');\n} catch (e) { return mzazireply('❌ ' + (e.message || 'Action failed')); }\nreturn;"
   },
   {
    "name": "unwarn",
