@@ -4,12 +4,56 @@ import { useRouter } from 'next/navigation';
 
 // Admin: bot settings stored in the shared Neon `settings` table.
 // The bot reads these (with env fallback) — saves apply within ~60s, no restart.
-const FIELDS = [
-  { key: 'paystack_secret_key', label: 'Paystack secret key', placeholder: 'sk_live_…', type: 'password' },
-  { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },
-  { key: 'pterodactyl_api_key', label: 'Pterodactyl API key', placeholder: 'ptla_…', type: 'password' },
-  { key: 'mzazi_api_key', label: 'MZAZI API key', placeholder: 'key used by the bot API commands', type: 'password' },
-  { key: 'deepseek_api_key', label: 'DeepSeek AI key (optional)', placeholder: 'sk-… — powers the AI assistant on the site', type: 'password' },
+// DATABASE_URL is deliberately absent — it stays in the server env.
+const SECTIONS = [
+  {
+    title: 'Bot identity',
+    fields: [
+      { key: 'bot_name', label: 'Bot name', placeholder: 'MZAZI TECH QUARTZ BOT', type: 'text' },
+      { key: 'owner', label: 'Owner display name', placeholder: 'Mrs Mzazi', type: 'text' },
+      { key: 'whatsapp_owner', label: 'WhatsApp owner number', placeholder: '254741388986@s.whatsapp.net', type: 'text' },
+      { key: 'connection_image', label: 'Connection image URL', placeholder: 'https://files.catbox.moe/…', type: 'text' },
+    ],
+  },
+  {
+    title: 'Telegram',
+    fields: [
+      { key: 'telegram_bot_token', label: 'Telegram bot token', placeholder: '123456:ABC-…', type: 'password' },
+      { key: 'telegram_owner', label: 'Telegram owner ID', placeholder: '6454759976', type: 'text' },
+    ],
+  },
+  {
+    title: 'Paystack',
+    fields: [
+      { key: 'paystack_secret_key', label: 'Paystack secret key', placeholder: 'sk_live_…', type: 'password' },
+      { key: 'paystack_public_key', label: 'Paystack public key', placeholder: 'pk_live_…', type: 'password' },
+    ],
+  },
+  {
+    title: 'Pterodactyl',
+    fields: [
+      { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },
+      { key: 'pterodactyl_api_key', label: 'Pterodactyl API key', placeholder: 'ptla_…', type: 'password' },
+    ],
+  },
+  {
+    title: 'Webhooks & URLs',
+    fields: [
+      { key: 'webhook_port', label: 'Webhook port', placeholder: '3000', type: 'text' },
+      { key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://bot.example.com/webhook', type: 'text' },
+      { key: 'remote_api_url', label: 'Remote command API URL', placeholder: 'https://mzazi.shop/api/bot-command', type: 'text' },
+      { key: 'bot_api_key', label: 'Bot API key (matches site BOT_API_KEY)', placeholder: '…', type: 'password' },
+      { key: 'mzazi_site_url', label: 'MZAZI site URL', placeholder: 'https://mzazi.shop', type: 'text' },
+      { key: 'mzazi_api_key', label: 'MZAZI API key', placeholder: 'key used by the bot API commands', type: 'password' },
+      { key: 'bot_ip', label: 'Reported bot IP (leave empty = auto-detect)', placeholder: 'auto-detect', type: 'text' },
+    ],
+  },
+  {
+    title: 'AI',
+    fields: [
+      { key: 'deepseek_api_key', label: 'DeepSeek AI key (optional)', placeholder: 'sk-… — powers the AI assistant on the site', type: 'password' },
+    ],
+  },
 ];
 
 export default function AdminSettings() {
@@ -78,22 +122,29 @@ export default function AdminSettings() {
         <div className="flex justify-center py-16"><div className="spinner" /></div>
       ) : (
         <div className="card card-pad" style={{ padding: '26px' }}>
-          <div className="space-y-5">
-            {FIELDS.map((f) => (
-              <div key={f.key}>
-                <label className="label" htmlFor={`set-${f.key}`}>{f.label}</label>
-                <input
-                  id={`set-${f.key}`}
-                  type={f.type}
-                  placeholder={f.placeholder}
-                  value={values[f.key] || ''}
-                  onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-                  className="input mono"
-                  style={{ fontSize: 13 }}
-                />
+          {SECTIONS.map((section) => (
+            <div key={section.title} className="mb-7" style={{ borderBottom: '1px solid #1B2026', paddingBottom: 22 }}>
+              <h2 className="mono mb-4" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7A828A', marginTop: 0 }}>
+                {section.title}
+              </h2>
+              <div className="space-y-5">
+                {section.fields.map((f) => (
+                  <div key={f.key}>
+                    <label className="label" htmlFor={`set-${f.key}`}>{f.label}</label>
+                    <input
+                      id={`set-${f.key}`}
+                      type={f.type}
+                      placeholder={f.placeholder}
+                      value={values[f.key] || ''}
+                      onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
+                      className="input mono"
+                      style={{ fontSize: 13 }}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
 
           <div className="mt-6 pt-5" style={{ borderTop: '1px solid #1B2026' }}>
             <button onClick={save} disabled={saving} className="btn btn-primary" style={{ opacity: saving ? 0.6 : 1 }}>

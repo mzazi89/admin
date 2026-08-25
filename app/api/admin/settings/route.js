@@ -1,7 +1,8 @@
 // MZAZI API — /api/admin/settings
-// GET  → the bot's shared settings (Paystack + Pterodactyl)
+// GET  → the bot's shared settings (every config the bot reads)
 // POST → upsert them into the Neon `settings` table — the bot picks them up
 //        within ~60s (no env vars, no restart needed).
+// NOTE: DATABASE_URL is intentionally NOT here — it stays in the server env.
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -12,7 +13,26 @@ export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
-const ALLOWED_KEYS = ['paystack_secret_key', 'pterodactyl_url', 'pterodactyl_api_key', 'mzazi_api_key', 'deepseek_api_key'];
+// Every bot config value editable from the admin Settings page. The bot
+// (quartz/settings.js) maps these onto its config with env/static fallbacks.
+const ALLOWED_KEYS = [
+  // Bot identity
+  'bot_name', 'owner', 'whatsapp_owner', 'connection_image',
+  // Telegram
+  'telegram_bot_token', 'telegram_owner',
+  // Paystack
+  'paystack_secret_key', 'paystack_public_key',
+  // Pterodactyl
+  'pterodactyl_url', 'pterodactyl_api_key',
+  // Webhooks & URLs
+  'webhook_port', 'webhook_url', 'remote_api_url', 'bot_api_key',
+  // MZAZI site API
+  'mzazi_site_url', 'mzazi_api_key',
+  // Telemetry
+  'bot_ip',
+  // AI
+  'deepseek_api_key',
+];
 
 async function verifyAdmin() {
   const cookieStore = await cookies();
