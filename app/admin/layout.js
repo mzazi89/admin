@@ -16,6 +16,7 @@ const LINKS = [
   { href: '/admin/bot', label: 'Bot Control' },
   { href: '/admin/sessions', label: 'Sessions' },
   { href: '/admin/panel', label: 'Manage Panel' },
+  { href: '/admin/panel-host', label: 'Panel Hosting' },
   { href: '/admin/settings', label: 'Settings' },
   { href: '/api/admin', label: 'API Admin' },
 ];
