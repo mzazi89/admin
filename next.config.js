@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // ssh2 ships a native .node binary that webpack cannot bundle — keep it as
+  // an external require so the Panel Hosting route can use it at runtime.
+  serverComponentsExternalPackages: ['ssh2'],
+  experimental: {
+    serverComponentsExternalPackages: ['ssh2'],
+  },
   async headers() {
     return [
       {
