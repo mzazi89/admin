@@ -14,38 +14,61 @@ d = json.load(open(SRC))
 cmds = d['commands']
 
 CATS = [
-    ('subgeneral',  'General',    '🤖 General'),
-    ('subai',       'AI',         '🧠 AI'),
-    ('subdl',       'Downloads',  '📥 Downloads'),
-    ('subgroup',    'Group',      '👥 Group'),
-    ('subprotect',  'Protection', '🛡 Protection'),
-    ('subowner',    'Owner',      '👑 Owner'),
-    ('subgames',    'Games',      '🎮 Games'),
-    ('subfun',      'Fun',        '😂 Fun'),
-    ('subutil',     'Utility',    '🛠 Utility'),
+    ('subgeneral',  'General',    '🤖 General',    '🤖 GENERAL'),
+    ('subai',       'AI',         '🧠 AI',         '🧠 AI'),
+    ('subdl',       'Downloads',  '📥 Downloads',  '📥 DOWNLOADS'),
+    ('subgroup',    'Group',      '👥 Group',      '👥 GROUP'),
+    ('subprotect',  'Protection', '🛡 Protection', '🛡 PROTECTION'),
+    ('subowner',    'Owner',      '👑 Owner',      '👑 OWNER'),
+    ('subgames',    'Games',      '🎮 Games',      '🎮 GAMES'),
+    ('subfun',      'Fun',        '😂 Fun',        '😂 FUN'),
+    ('subutil',     'Utility',    '🛠 Utility',    '🛠 UTILITY'),
 ]
 
 ROW_LIMIT = 20
 SECTION_LIMIT = 10
 
-def build_code(cat_label, total, sections_json):
+# The exact main-menu (menu6) look: box banner + picture + title/footer.
+BANNER = """╔═════════════╗
+║➥✦ 𝐐𝐔𝐀𝐑𝐓𝐙 𝐗𝐃 ✦
+╠═════════════╣
+║➥┌──────────┐
+║➥│ 👤 USER    : ${bPushName}
+║➥│ 📱 NUMBER  : ${botPhoneNum}
+║➥│ ⏱ UPTIME  : ${bUpStr}
+║➥│ 🕐 TIME    : ${bTimeStr}
+║➥│ 📅 DATE    : ${bDateStr}
+║➥│ 📌 VERSION : 3.2.1
+║➥│ ⚙️ MODE    : ${bMode}
+║➥│ 🔱 PREFIX  : ${prefix}
+║➥│ OWNER : ᴍᴢᴀᴢɪ ᴛᴇᴄʜ
+║➥└──────────┘
+╚═════════════╝"""
+
+def build_code(header, total, sections_json):
     return f"""try {{
-  const _upSec = Math.floor((Date.now() - startTime) / 1000);
-  const _upStr = Math.floor(_upSec/86400)+'d '+Math.floor((_upSec%86400)/3600)+'h '+Math.floor((_upSec%3600)/60)+'m '+(_upSec%60)+'s';
-  const _now = new Date();
-  const _timeStr = _now.toLocaleTimeString('en-US', {{ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }});
-  const _dateStr = _now.toLocaleDateString('en-US', {{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }});
-  const _pushName = (m && m.pushName) || 'User';
-  let _mode = '🌐 PUBLIC';
-  try {{ const _s = loadJSON(settingsPath, {{ selfMode: false }}); if (_s.selfMode) _mode = '🔒 SELF'; }} catch (e) {{}}
-  const _text = `👋 Hello ${{_pushName}}!\\n\\n📂 *{cat_label} Commands* ({total})\\n🕐 ${{_timeStr}} | 📅 ${{_dateStr}}\\n⏱ Uptime: ${{_upStr}} | ⚙️ ${{_mode}}\\n\\nTap a command below to use it:`;
+  // ── Menu banner + picture (matches the main menu look) ──
+  const bCustomPic = `./database/sessions/${{botPhoneNum}}/menu.jpg`;
+  const bDefaultPic = "./media/menu.jpg";
+  const bPicPath = fs.existsSync(bCustomPic) ? bCustomPic : bDefaultPic;
+  const bUpSec = Math.floor((Date.now() - startTime) / 1000);
+  const bUpStr = Math.floor(bUpSec / 86400) + 'd ' + Math.floor((bUpSec % 86400) / 3600) + 'h ' + Math.floor((bUpSec % 3600) / 60) + 'm ' + (bUpSec % 60) + 's';
+  const bNow = new Date();
+  const bTimeStr = bNow.toLocaleTimeString('en-US', {{ hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }});
+  const bDateStr = bNow.toLocaleDateString('en-US', {{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }});
+  const bPushName = (m && m.pushName) || 'User';
+  let bMode = '🌐 PUBLIC';
+  try {{ const _s = loadJSON(settingsPath, {{ selfMode: false }}); if (_s.selfMode) bMode = '🔒 SELF'; }} catch (e) {{}}
+  const bannerTxt = `{BANNER}`;
   await sendInteractiveMessage(mzazi, sender, {{
-    title: '𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂',
-    text: _text,
-    footer: 'Powered by MZAZI TECH INC',
+    title: "𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂",
+    text: bannerTxt + '\\n\\n' + '⚡ {header} COMMANDS ({total})\\n\\nTap a command to run it:',
+    footer: "Powered by MZAZI TECH INC",
+    ...(fs.existsSync(bPicPath) ? {{ image: {{ buffer: fs.readFileSync(bPicPath) }} }} : {{}}),
     interactiveButtons: [
-      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '📂 {cat_label} COMMANDS', sections: {sections_json} }}) }},
-      {{ name: 'quick_reply', buttonParamsJson: JSON.stringify({{ display_text: '🏠 Main Menu', id: prefix + 'menu6' }}) }}
+      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS', sections: {sections_json} }}) }},
+      {{ name: 'quick_reply', buttonParamsJson: JSON.stringify({{ display_text: '🏠 Main Menu', id: prefix + 'menu6' }}) }},
+      {{ name: 'cta_url', buttonParamsJson: JSON.stringify({{ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }}) }}
     ]
   }});
 }} catch (e) {{
@@ -66,13 +89,13 @@ for c in cmds:
 
 total_all = len(cmds)
 updates = {}
-for cmd_name, cat, cat_label in CATS:
+for cmd_name, cat, cat_label, header in CATS:
     items = sorted(by_cat.get(cat, []), key=lambda c: c['name'])
     # exclude menu/sub commands from their own lists (avoid self-links)
     rows = []
     for c in items:
         n = c['name']
-        if n.startswith('sub') or n.startswith('menu'):
+        if n.startswith('sub') or n.endswith('menu'):
             continue
         desc = (c.get('description') or '').strip()
         if len(desc) > 34: desc = desc[:33] + '…'
@@ -95,7 +118,7 @@ for cmd_name, cat, cat_label in CATS:
     updates[cmd_name] = {
         'category': cat,
         'description': f'{cat_label} commands menu — all {total} commands',
-        'code': build_code(cat_label, total, sections_json),
+        'code': build_code(header, total, sections_json),
     }
 
 # Apply to the seed
