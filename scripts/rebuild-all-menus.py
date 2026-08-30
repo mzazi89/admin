@@ -63,12 +63,15 @@ def sections_from(rows):
         chunk = rows[i:i + ROW_LIMIT]
         page = i // ROW_LIMIT + 1
         sections.append('{"title": "' + esc(f'Commands • Part {page}') + '", "rows": [' + ', '.join(chunk) + ']}')
+    sections.append("{\"title\": \"🗂 MENU\", \"rows\": [{\"id\": prefix + 'menu6', \"title\": \"🏠 Main Menu\", \"description\": prefix + 'menu6'}]}")
     return sections
 
 def build_code(header, total, sections, multi=False):
+    # `sections` already ends with the 🗂 MENU section (navigation lives in the list)
     sections_json = '[' + ', '.join(sections) + ']'
-    page_count = (len(sections) + MAX_SECTIONS_MSG - 1) // MAX_SECTIONS_MSG
-    if page_count <= 1:
+    cmd_sections = sections[:-1]
+    menu_section = sections[-1]
+    if len(sections) <= MAX_SECTIONS_MSG:
         msg = f"""
   const bannerTxt = `{BANNER}`;
   await sendInteractiveMessage(mzazi, sender, {{
@@ -77,20 +80,19 @@ def build_code(header, total, sections, multi=False):
     footer: "Powered by MZAZI TECH INC",
     ...(fs.existsSync(bPicPath) ? {{ image: {{ buffer: fs.readFileSync(bPicPath) }} }} : {{}}),
     interactiveButtons: [
-      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS', sections: {sections_json} }}) }},
-      {{ name: 'quick_reply', buttonParamsJson: JSON.stringify({{ display_text: '🏠 Main Menu', id: prefix + 'menu6' }}) }},
-      {{ name: 'cta_url', buttonParamsJson: JSON.stringify({{ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }}) }}
+      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS', sections: {sections_json} }}) }}
     ]
   }});"""
     else:
+        page_count = (len(cmd_sections) + MAX_SECTIONS_MSG - 2) // (MAX_SECTIONS_MSG - 1)
         parts = []
         for p in range(page_count):
-            chunk = sections[p * MAX_SECTIONS_MSG:(p + 1) * MAX_SECTIONS_MSG]
+            chunk = cmd_sections[p * (MAX_SECTIONS_MSG - 1):(p + 1) * (MAX_SECTIONS_MSG - 1)]
+            chunk = chunk + [menu_section]
             chunk_json = '[' + ', '.join(chunk) + ']'
             last = p == page_count - 1
             buttons = f"""[
-      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS • Part {p + 1}/{page_count}', sections: {chunk_json} }}) }},
-      {{ name: 'quick_reply', buttonParamsJson: JSON.stringify({{ display_text: '🏠 Main Menu', id: prefix + 'menu6' }}) }}{'' if last else ''}
+      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS • Part {p + 1}/{page_count}', sections: {chunk_json} }}) }}
     ]"""
             if p == 0:
                 parts.append(f"""

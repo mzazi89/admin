@@ -66,9 +66,7 @@ def build_code(header, total, sections_json):
     footer: "Powered by MZAZI TECH INC",
     ...(fs.existsSync(bPicPath) ? {{ image: {{ buffer: fs.readFileSync(bPicPath) }} }} : {{}}),
     interactiveButtons: [
-      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS', sections: {sections_json} }}) }},
-      {{ name: 'quick_reply', buttonParamsJson: JSON.stringify({{ display_text: '🏠 Main Menu', id: prefix + 'menu6' }}) }},
-      {{ name: 'cta_url', buttonParamsJson: JSON.stringify({{ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }}) }}
+      {{ name: 'single_select', buttonParamsJson: JSON.stringify({{ title: '{header} COMMANDS', sections: {sections_json} }}) }}
     ]
   }});
 }} catch (e) {{
@@ -110,6 +108,8 @@ for cmd_name, cat, cat_label, header in CATS:
         chunk = rows[i:i + ROW_LIMIT]
         page = i // ROW_LIMIT + 1
         sections.append('{"title": "' + esc(f'{cat_label} • Part {page}') + '", "rows": [' + ', '.join(chunk) + ']}')
+    # navigation row lives INSIDE the list (no extra buttons)
+    sections.append("{\"title\": \"🗂 MENU\", \"rows\": [{\"id\": prefix + 'menu6', \"title\": \"🏠 Main Menu\", \"description\": prefix + 'menu6'}]}")
 
     sections_json = '[' + ', '.join(sections) + ']'
     if len(sections) > SECTION_LIMIT:
