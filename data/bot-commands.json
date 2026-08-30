@@ -1602,7 +1602,7 @@
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "mzazireply(`🛒 *BUY PREMIUM*\\n\\n💎 Premium Features:\\n• All bot commands\\n• No restrictions\\n• Priority support\\n\\n💰 Pricing:\\n• Monthly: KES 500\\n• Yearly: KES 4000\\n\\nContact: @mzazidev to purchase`);\nreturn;"
+   "code": "try {\n  const _text = `🛒 *BUY PREMIUM*\\n\\n💎 Premium Features:\\n• All bot commands\\n• No restrictions\\n• Priority support\\n\\n💰 Pricing:\\n• Monthly: KES 500\\n• Yearly: KES 4000\\n\\nTap *💰 Prices* to see the full packages, or contact the admin:`;\n  await sendInteractiveMessage(mzazi, sender, {\n    title: \"𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂\",\n    text: _text,\n    footer: \"Powered by MZAZI TECH INC\",\n    interactiveButtons: [\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '💰 Prices', id: prefix + 'prices' }) },\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '📋 Main Menu', id: prefix + 'menu6' }) },\n      { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }) }\n    ]\n  });\n} catch (e) {\n  return mzazireply('❌ Could not open the menu. ' + (e.message || e));\n}\nreturn;"
   },
   {
    "name": "bye2",
@@ -8007,7 +8007,7 @@
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "mzazireply(`💎 *BOT PLANS*\\n\\n🆓 FREE\\n• Basic commands\\n• Group tools\\n\\n💎 PREMIUM\\n• All commands\\n• Priority support\\n• Custom features\\n\\n👑 VIP\\n• All Premium features\\n• Exclusive commands\\n• 24/7 support\\n\\nContact: @mzazidev`);\nreturn;"
+   "code": "try {\n  const _text = `💎 *BOT PLANS*\\n\\n🆓 FREE\\n• Basic commands\\n• Group tools\\n\\n💎 PREMIUM\\n• All commands\\n• Priority support\\n• Custom features\\n\\n👑 VIP\\n• All Premium features\\n• Exclusive commands\\n• 24/7 support\\n\\nTap *💰 Prices* to see the full packages, or contact the admin:`;\n  await sendInteractiveMessage(mzazi, sender, {\n    title: \"𝐌𝐙𝐀𝐙𝐈 𝐓𝐄𝐂𝐇 𝐈𝐍𝐂\",\n    text: _text,\n    footer: \"Powered by MZAZI TECH INC\",\n    interactiveButtons: [\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '💰 Prices', id: prefix + 'prices' }) },\n      { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '📋 Main Menu', id: prefix + 'menu6' }) },\n      { name: 'cta_url', buttonParamsJson: JSON.stringify({ display_text: '🌐 mzazi.shop', url: 'https://mzazi.shop' }) }\n    ]\n  });\n} catch (e) {\n  return mzazireply('❌ Could not open the menu. ' + (e.message || e));\n}\nreturn;"
   },
   {
    "name": "play",
