@@ -14,6 +14,17 @@ const EMPTY = {
   code: '',
 };
 
+// Commands the bot handles in its own code (quartz/case.js) BEFORE the remote
+// registry — the bot intercepts these keywords, so edits here never affect it.
+// They are edited directly in bot code and deployed with the bot.
+const ENGINE_LOCKED = new Set([
+  'buy', 'pay', 'payment',
+  'plan', 'plans', 'subscription',
+  'pair', 'connect', 'mzazibot',
+  'verify',
+]);
+const ENGINE_TIP = 'Engine command — handled in bot code (quartz/case.js). Edits here are saved to the DB but do NOT change the bot. Edit the bot source instead.';
+
 export default function CommandsPage() {
   const [commands, setCommands] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -230,6 +241,9 @@ export default function CommandsPage() {
         <p className="lede mt-3" style={{ maxWidth: 600, fontSize: '0.92rem' }}>
           {commands.length} commands hosted on mzazi.shop — saves go live on the bot within ~15 seconds.
         </p>
+        <p className="lede mt-2" style={{ maxWidth: 620, fontSize: '0.82rem', color: '#6EA8FE' }}>
+          🔒 Engine commands (buy, pay, plan, pair, connect, verify…) are handled in the bot's own code and cannot be changed here — edit them in the bot source instead.
+        </p>
       </div>
 
       {notice && (
@@ -295,13 +309,22 @@ export default function CommandsPage() {
                   <td data-label="Description" style={{ color: '#AEB5BD', maxWidth: 300, fontSize: 13 }}>{cmd.description}</td>
                   <td data-label="Flags">
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {ENGINE_LOCKED.has(cmd.name) && (
+                        <span className="tag" title={ENGINE_TIP} style={{ color: '#6EA8FE', borderColor: 'rgba(110,168,254,0.35)', background: 'rgba(110,168,254,0.06)' }}>🔒 Engine</span>
+                      )}
                       {cmd.ownerOnly && <span className="tag tag-red">Owner</span>}
                       {cmd.adminOnly && <span className="tag tag-amber">Admin</span>}
                       {cmd.groupOnly && <span className="tag">Group</span>}
                     </div>
                   </td>
                   <td data-label="Status">
-                    <button onClick={() => toggle(cmd)} className="btn" style={{ fontSize: 10, padding: '5px 10px', borderColor: 'transparent', background: 'transparent', cursor: 'pointer' }}>
+                    <button
+                      onClick={() => toggle(cmd)}
+                      disabled={ENGINE_LOCKED.has(cmd.name)}
+                      title={ENGINE_LOCKED.has(cmd.name) ? ENGINE_TIP : undefined}
+                      className="btn"
+                      style={{ fontSize: 10, padding: '5px 10px', borderColor: 'transparent', background: 'transparent', cursor: ENGINE_LOCKED.has(cmd.name) ? 'not-allowed' : 'pointer', opacity: ENGINE_LOCKED.has(cmd.name) ? 0.45 : 1 }}
+                    >
                       <span className={`tag ${cmd.enabled ? 'tag-green' : ''}`}>
                         <span className="dot" style={{ color: cmd.enabled ? '#3ECF8E' : '#4C535B', marginRight: 2 }} />
                         {cmd.enabled ? 'Enabled' : 'Disabled'}
@@ -309,8 +332,24 @@ export default function CommandsPage() {
                     </button>
                   </td>
                   <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <button onClick={() => openEdit(cmd)} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>Edit</button>
-                    <button onClick={() => del(cmd.name)} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 12px' }}>Delete</button>
+                    <button
+                      onClick={() => openEdit(cmd)}
+                      disabled={ENGINE_LOCKED.has(cmd.name)}
+                      title={ENGINE_LOCKED.has(cmd.name) ? ENGINE_TIP : undefined}
+                      className="btn btn-dark"
+                      style={{ fontSize: 10, padding: '6px 12px', marginRight: 6, opacity: ENGINE_LOCKED.has(cmd.name) ? 0.45 : 1, cursor: ENGINE_LOCKED.has(cmd.name) ? 'not-allowed' : 'pointer' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => del(cmd.name)}
+                      disabled={ENGINE_LOCKED.has(cmd.name)}
+                      title={ENGINE_LOCKED.has(cmd.name) ? ENGINE_TIP : undefined}
+                      className="btn btn-danger"
+                      style={{ fontSize: 10, padding: '6px 12px', opacity: ENGINE_LOCKED.has(cmd.name) ? 0.45 : 1, cursor: ENGINE_LOCKED.has(cmd.name) ? 'not-allowed' : 'pointer' }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
