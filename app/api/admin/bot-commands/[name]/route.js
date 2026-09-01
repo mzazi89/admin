@@ -63,14 +63,16 @@ export async function PUT(request, { params }) {
     const name = params.name;
     const body = await request.json();
 
-    if (typeof body.code !== 'string' || !body.code.trim()) return NextResponse.json({ error: 'code is required' }, { status: 400 });
-    if (body.code.length > 60000) return NextResponse.json({ error: 'code is too long (max 60000 chars)' }, { status: 400 });
+    // `code` is optional on update (e.g. the table's enable/disable toggle only
+    // sends metadata) — when absent, the existing code is kept untouched.
+    const hasCode = typeof body.code === 'string' && body.code.trim().length > 0;
+    if (body.code !== undefined && typeof body.code !== 'string') return NextResponse.json({ error: 'Invalid code' }, { status: 400 });
+    if (typeof body.code === 'string' && body.code.length > 60000) return NextResponse.json({ error: 'code is too long (max 60000 chars)' }, { status: 400 });
     if (body.aliases !== undefined && (!Array.isArray(body.aliases) || body.aliases.some((a) => typeof a !== 'string' || !NAME_RE.test(a)))) {
       return NextResponse.json({ error: 'Invalid aliases' }, { status: 400 });
     }
 
-    const upd = body.code && String(body.code).trim()
-      ? await sql`
+    const upd = await sql`
           UPDATE bot_commands SET
             aliases = ${JSON.stringify(Array.isArray(body.aliases) ? body.aliases : [])}::jsonb,
             description = ${typeof body.description === 'string' ? body.description : ''},
@@ -80,21 +82,7 @@ export async function PUT(request, { params }) {
             admin_only = ${!!body.adminOnly},
             group_only = ${!!body.groupOnly},
             enabled = ${body.enabled !== false},
-            code = ${body.code},
-            updated_at = CURRENT_TIMESTAMP
-          WHERE name = ${name}
-          RETURNING id, name, enabled
-        `
-      : await sql`
-          UPDATE bot_commands SET
-            aliases = ${JSON.stringify(Array.isArray(body.aliases) ? body.aliases : [])}::jsonb,
-            description = ${typeof body.description === 'string' ? body.description : ''},
-            category = ${typeof body.category === 'string' && body.category ? body.category : 'General'},
-            usage = ${typeof body.usage === 'string' ? body.usage : ''},
-            owner_only = ${!!body.ownerOnly},
-            admin_only = ${!!body.adminOnly},
-            group_only = ${!!body.groupOnly},
-            enabled = ${body.enabled !== false},
+            code = COALESCE(NULLIF(${hasCode ? body.code : ''}, ''), code),
             updated_at = CURRENT_TIMESTAMP
           WHERE name = ${name}
           RETURNING id, name, enabled
