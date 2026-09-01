@@ -76,6 +76,27 @@ export default function CommandsPage() {
       setSyncing(false);
     }
   };
+  const [syncingTo, setSyncingTo] = useState(false);
+  const syncToSeed = async () => {
+    if (!window.confirm('Sync ALL commands TO the seed file (data/bot-commands.json)?\n\nThis overwrites the shipped seed with the current live database state — including manual edits, plus any commands added or deleted here. Commit the updated file to git to make it the new seed.')) return;
+    setSyncingTo(true);
+    setNotice('');
+    setError('');
+    try {
+      const res = await fetch('/api/admin/bot-commands/sync-to-seed', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Sync to seed failed.');
+      } else {
+        setNotice(`✅ Exported ${data.written} commands to the seed file. Commit data/bot-commands.json to git to make it the new shipped seed.`);
+        setTimeout(() => setNotice(''), 6000);
+      }
+    } catch (e) {
+      setError('Network error during sync to seed.');
+    } finally {
+      setSyncingTo(false);
+    }
+  };
   const openEdit = async (cmd) => {
     setForm({
       name: cmd.name,
@@ -230,6 +251,9 @@ export default function CommandsPage() {
         </select>
         <button onClick={syncFromSeed} className="btn" style={{ fontSize: 13 }} disabled={syncing} title="Upserts all commands from data/bot-commands.json (fixes existing rows the seed never overwrites)">
           {syncing ? 'Syncing…' : '⟳ Sync from seed'}
+        </button>
+        <button onClick={syncToSeed} className="btn btn-dark" style={{ fontSize: 13 }} disabled={syncingTo} title="Exports ALL commands from the database back into data/bot-commands.json (vice versa — makes the live state the new seed)">
+          {syncingTo ? 'Syncing…' : '⟳ Sync to seed'}
         </button>
         <button onClick={openAdd} className="btn btn-primary" style={{ marginLeft: 'auto' }}>Add command</button>
       </div>
