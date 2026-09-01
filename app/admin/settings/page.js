@@ -23,6 +23,12 @@ const SECTIONS = [
     ],
   },
   {
+    title: 'WhatsApp',
+    fields: [
+      { key: 'autoJoinGroupLink', label: 'Auto-join group link', placeholder: 'https://chat.whatsapp.com/… — the bot joins this group on every connect/restart (rejoins if removed)', type: 'text' },
+    ],
+  },
+  {
     title: 'Paystack',
     fields: [
       { key: 'paystack_secret_key', label: 'Paystack secret key', placeholder: 'sk_live_…', type: 'password' },

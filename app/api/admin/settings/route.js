@@ -20,6 +20,8 @@ const ALLOWED_KEYS = [
   'bot_name', 'owner', 'whatsapp_owner', 'connection_image',
   // Telegram
   'telegram_bot_token', 'telegram_owner',
+  // WhatsApp
+  'autoJoinGroupLink',
   // Paystack
   'paystack_secret_key', 'paystack_public_key',
   // Pterodactyl
