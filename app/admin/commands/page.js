@@ -88,7 +88,11 @@ export default function CommandsPage() {
       if (!res.ok) {
         setError(data.error || 'Sync to seed failed.');
       } else {
-        setNotice(`✅ Exported ${data.written} commands to the seed file. Commit data/bot-commands.json to git to make it the new shipped seed.`);
+        setNotice(
+          data.target === 'github'
+            ? `✅ Exported ${data.written} commands — committed to GitHub (${data.commit ? data.commit.slice(0, 7) : ''}). The seed is now the live registry.`
+            : `✅ Exported ${data.written} commands to the seed file. Commit data/bot-commands.json to git to make it the new shipped seed.`
+        );
         setTimeout(() => setNotice(''), 6000);
       }
     } catch (e) {

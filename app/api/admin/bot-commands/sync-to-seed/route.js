@@ -3,11 +3,15 @@
 // the vice versa of /api/admin/bot-commands/sync (which imports seed → DB).
 //
 // Writes every row from the Neon `bot_commands` table into the shipped seed
-// file, preserving the seed's `meta` block (flags + fresh updatedAt). Use it
-// after bulk edits in this panel to make the current live state the new seed.
+// file, preserving the seed's `meta` block (flags + fresh updatedAt).
 //
-// NOTE: Vercel's serverless filesystem is read-only — the write only works in
-// local dev / self-hosted deploys, where you then commit the seed to git.
+// Two targets, picked automatically:
+//   1. GITHUB_TOKEN set  → commit the seed straight to the GitHub repo via the
+//      contents API (works on Vercel, whose serverless filesystem is read-only).
+//      Configure: GITHUB_TOKEN, optional GITHUB_REPO (default mzazi89/admin),
+//      optional GITHUB_BRANCH (default main).
+//   2. no GITHUB_TOKEN   → atomic local write (tmp + rename) for local dev /
+//      self-hosted deploys — then commit the seed to git yourself.
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -19,6 +23,11 @@ export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'mzazi89/admin';
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const SEED_PATH = 'data/bot-commands.json';
 
 async function verifyAdmin() {
   const cookieStore = await cookies();
@@ -46,12 +55,65 @@ const toSeed = (r) => ({
   code: r.code || '',
 });
 
+// Commit the seed to GitHub via the contents API (create/update file).
+async function pushSeedToGithub(content) {
+  const headers = {
+    Authorization: `Bearer ${GITHUB_TOKEN}`,
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'User-Agent': 'mzazi-tech-admin',
+  };
+  const api = `https://api.github.com/repos/${GITHUB_REPO}/contents/${SEED_PATH}`;
+
+  // Existing file → the API requires its current sha to update it.
+  let sha = null;
+  const getRes = await fetch(`${api}?ref=${GITHUB_BRANCH}`, { headers });
+  if (getRes.ok) {
+    const meta = await getRes.json();
+    sha = meta.sha || null;
+  } else if (getRes.status !== 404) {
+    const err = await getRes.json().catch(() => ({}));
+    throw new Error(`GitHub lookup failed: ${err.message || getRes.status}`);
+  }
+
+  const putRes = await fetch(api, {
+    method: 'PUT',
+    headers: { ...headers, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `Seed: sync to seed from admin — ${new Date().toISOString()}`,
+      content: Buffer.from(content, 'utf8').toString('base64'),
+      branch: GITHUB_BRANCH,
+      ...(sha ? { sha } : {}),
+    }),
+  });
+
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(`GitHub commit failed (${putRes.status}): ${err.message || putRes.statusText}${err.documentation_url ? '' : ''}`);
+  }
+  const out = await putRes.json();
+  return {
+    target: 'github',
+    commit: out.commit?.sha || null,
+    url: out.content?.html_url || `https://github.com/${GITHUB_REPO}/blob/${GITHUB_BRANCH}/${SEED_PATH}`,
+  };
+}
+
+// Local-dev fallback: atomic write into the repo's data/ folder.
+function writeSeedLocally(content) {
+  const seedPath = path.join(process.cwd(), SEED_PATH);
+  const tmp = `${seedPath}.tmp`;
+  fs.writeFileSync(tmp, content);
+  fs.renameSync(tmp, seedPath);
+  return { target: 'local', path: SEED_PATH };
+}
+
 export async function POST() {
   if (!(await verifyAdmin())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const seedPath = path.join(process.cwd(), 'data', 'bot-commands.json');
+  const seedPath = path.join(process.cwd(), SEED_PATH);
 
   // Keep the shipped meta flags; only refresh updatedAt.
   let meta = { schemaVersion: 1 };
@@ -75,17 +137,17 @@ export async function POST() {
       meta: { ...meta, updatedAt: new Date().toISOString() },
       commands: rows.map(toSeed),
     };
+    const content = JSON.stringify(seed, null, 1);
 
-    // Atomic write: temp file + rename so a partial write can never corrupt the seed.
-    const tmp = `${seedPath}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(seed, null, 1));
-    fs.renameSync(tmp, seedPath);
+    const result = GITHUB_TOKEN
+      ? await pushSeedToGithub(content)
+      : writeSeedLocally(content);
 
-    return NextResponse.json({ written: seed.commands.length, path: 'data/bot-commands.json' });
+    return NextResponse.json({ written: seed.commands.length, ...result });
   } catch (e) {
     console.error('Sync-to-seed error:', e.message);
     const hint = /read-only|EROFS|EACCES|ENOENT/.test(e.message)
-      ? ' The server filesystem is read-only (e.g. Vercel serverless) — run this in local dev or a self-hosted deploy, then commit the seed to git.'
+      ? ' Local writes are unavailable here — set GITHUB_TOKEN (Vercel → project → Settings → Environment Variables) to commit the seed to GitHub instead.'
       : '';
     return NextResponse.json({ error: 'Sync to seed failed: ' + e.message + hint }, { status: 500 });
   }
