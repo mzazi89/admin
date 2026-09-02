@@ -36,6 +36,14 @@ const SECTIONS = [
     ],
   },
   {
+    title: 'Deposit offer',
+    fields: [
+      { key: 'depositOfferEnabled', label: 'Offer active', placeholder: '1 = active, 0 = paused', type: 'text' },
+      { key: 'depositOfferMultiplier', label: 'Multiplier (2 = double deposit)', placeholder: '2', type: 'text' },
+      { key: 'depositOfferAdText', label: 'Ad banner text (shown on wallet page)', placeholder: '🎁 DOUBLE DEPOSIT — get 2× your money!', type: 'text' },
+    ],
+  },
+  {
     title: 'Pterodactyl',
     fields: [
       { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },

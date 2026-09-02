@@ -24,6 +24,8 @@ const ALLOWED_KEYS = [
   'autoJoinGroupLink',
   // Paystack
   'paystack_secret_key', 'paystack_public_key',
+  // Deposit offer (site wallet 2x promo)
+  'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl
   'pterodactyl_url', 'pterodactyl_api_key',
   // Webhooks & URLs
