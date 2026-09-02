@@ -22,8 +22,18 @@ export default function VpsPage() {
   const [error, setError] = useState('');
   const [reveal, setReveal] = useState({});
 
-  // new-instance form
-  const [inst, setInst] = useState({ host: '', username: '', password: '', port: '22' });
+  // new-instance form — droplet fields (the only requirements)
+  const [inst, setInst] = useState({ host: '', username: '', password: '', droplet_id: '', hostname: '', region: '', os: '', cpu: '' });
+  const INST_FIELDS = [
+    { key: 'host', label: '🌐 IP address', ph: '174.138.21.94', req: true },
+    { key: 'username', label: '🆔 Username', ph: 'root', req: true },
+    { key: 'password', label: '🔐 Password', ph: 'strong password', req: true },
+    { key: 'droplet_id', label: '🔢 ID droplet', ph: '595490433' },
+    { key: 'hostname', label: '🧩 Hostname', ph: 'SanzShop' },
+    { key: 'region', label: '🌍 Region', ph: 'SGP1' },
+    { key: 'os', label: '💿 OS', ph: 'UBUNTU-24-04-X64' },
+    { key: 'cpu', label: '🖥️ CPU type', ph: 'Regular' },
+  ];
 
   const load = useCallback(async () => {
     try {
@@ -82,7 +92,7 @@ export default function VpsPage() {
 
   const addInstance = async () => {
     setError('');
-    if (!inst.host.trim() || !inst.username.trim() || !inst.password.trim()) { setError('Host, username and password are required.'); return; }
+    if (!inst.host.trim() || !inst.username.trim() || !inst.password.trim()) { setError('IP address, username and password are required.'); return; }
     const res = await fetch('/api/admin/vps/instances', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -90,7 +100,7 @@ export default function VpsPage() {
     });
     const data = await res.json();
     if (!res.ok) { setError(data.error || 'Add failed'); return; }
-    setInst({ host: '', username: '', password: '', port: '22' });
+    setInst({ host: '', username: '', password: '', droplet_id: '', hostname: '', region: '', os: '', cpu: '' });
     flash(`✅ ${data.added} instance added to the pool.`);
     loadInstances(selected.id);
   };
@@ -211,38 +221,45 @@ export default function VpsPage() {
             <button onClick={() => setSelected(null)} className="btn" style={{ fontSize: 11 }}>✕ Close</button>
           </div>
 
-          {/* add form */}
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 mb-4">
-            <input className="input" placeholder="Host / IP *" value={inst.host} onChange={e => setInst({ ...inst, host: e.target.value })} />
-            <input className="input" placeholder="Username *" value={inst.username} onChange={e => setInst({ ...inst, username: e.target.value })} />
-            <input className="input" placeholder="Password *" value={inst.password} onChange={e => setInst({ ...inst, password: e.target.value })} />
-            <input className="input" placeholder="Port" value={inst.port} onChange={e => setInst({ ...inst, port: e.target.value })} />
-            <button onClick={addInstance} className="btn btn-primary" style={{ fontSize: 12, padding: '8px 12px' }}>＋ Add instance</button>
+          {/* add form — droplet requirements */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-4">
+            {INST_FIELDS.map(f => (
+              <input key={f.key} className="input" style={{ fontSize: 12 }} placeholder={`${f.label}${f.req ? ' *' : ''}`}
+                value={inst[f.key]} onChange={e => setInst({ ...inst, [f.key]: e.target.value })} />
+            ))}
+          </div>
+          <div className="flex items-center gap-3 mb-4">
+            <button onClick={addInstance} className="btn btn-primary" style={{ fontSize: 12, padding: '9px 16px' }}>＋ Add instance</button>
+            <span className="text-[11px]" style={{ color: '#4C535B' }}>Only these fields are required · SSH port defaults to 22</span>
           </div>
           {error && <p className="text-xs mb-3" style={{ color: '#E5484D' }}>{error}</p>}
 
           <div className="table-wrap">
             <table>
               <thead>
-                <tr><th>#</th><th>Host</th><th>Username</th><th>Password</th><th>Port</th><th>Status</th><th>Buyer</th><th style={{ textAlign: 'right' }}>Actions</th></tr>
+                <tr><th>#</th><th>Instance</th><th>Password</th><th>Status</th><th>Buyer</th><th style={{ textAlign: 'right' }}>Actions</th></tr>
               </thead>
               <tbody>
                 {instances.length === 0 && (
-                  <tr><td colSpan={8} className="py-8 text-center" style={{ color: '#79818A' }}>No instances yet — add credentials above. Buyers can't order until stock &gt; 0.</td></tr>
+                  <tr><td colSpan={6} className="py-8 text-center" style={{ color: '#79818A' }}>No instances yet — add a droplet above. Buyers can't order until stock &gt; 0.</td></tr>
                 )}
                 {instances.map(i => {
                   const isSold = i.status === 'sold';
+                  const meta = [i.hostname, i.region, i.os, i.cpu, i.droplet_id ? `ID ${i.droplet_id}` : ''].filter(Boolean).join(' · ');
                   return (
                     <tr key={i.id} style={{ opacity: isSold ? 0.8 : 1 }}>
                       <td className="mono" style={{ color: '#4C535B' }}>#{i.id}</td>
-                      <td className="mono" style={{ color: '#AEB5BD' }}>{i.host}</td>
-                      <td className="mono" style={{ color: '#AEB5BD' }}>{i.username}</td>
+                      <td>
+                        <p className="mono font-semibold text-[12px]" style={{ color: '#E9E7E2' }}>
+                          🌐 {i.host} <span style={{ color: '#4C535B', fontWeight: 400 }}>· 🆔 {i.username}</span>
+                        </p>
+                        {meta && <p className="mono text-[10px] mt-1" style={{ color: '#79818A' }}>{meta}</p>}
+                      </td>
                       <td className="mono" style={{ color: '#AEB5BD' }}>
                         <button onClick={() => setReveal(r => ({ ...r, [i.id]: !r[i.id] }))} className="btn" style={{ fontSize: 10, padding: '2px 8px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                           {reveal[i.id] ? i.password : '••••••••••'}
                         </button>
                       </td>
-                      <td className="mono" style={{ color: '#4C535B' }}>{i.port}</td>
                       <td>
                         <span className={isSold ? 'tag tag-amber' : 'tag tag-green'}>
                           <span className="dot" style={{ color: isSold ? '#F2A93B' : '#3ECF8E' }} />

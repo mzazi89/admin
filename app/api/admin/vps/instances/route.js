@@ -54,12 +54,16 @@ export async function POST(request) {
       const username = String(raw.username || '').trim();
       const password = String(raw.password || '').trim();
       if (!host || !username || !password) {
-        return NextResponse.json({ error: 'Every instance needs host, username and password' }, { status: 400 });
+        return NextResponse.json({ error: 'Every instance needs an IP address, username and password' }, { status: 400 });
       }
-      const port = String(raw.port || '22').trim() || '22';
       const created = await sql`
-        INSERT INTO vps_instances (package_id, host, username, password, port, status)
-        VALUES (${packageId}, ${host}, ${username}, ${password}, ${port}, 'available')
+        INSERT INTO vps_instances
+          (package_id, host, username, password, port,
+           droplet_id, hostname, region, os, cpu, status)
+        VALUES
+          (${packageId}, ${host}, ${username}, ${password}, ${String(raw.port || '22').trim() || '22'},
+           ${String(raw.droplet_id || '').trim()}, ${String(raw.hostname || '').trim()},
+           ${String(raw.region || '').trim()}, ${String(raw.os || '').trim()}, ${String(raw.cpu || '').trim()}, 'available')
         RETURNING id, host, username, port
       `;
       rows.push(created[0]);
