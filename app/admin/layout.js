@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/admin/users', label: 'Users' },
   { href: '/admin/packages', label: 'Packages' },
   { href: '/admin/vps', label: 'VPS Store' },
+  { href: '/admin/resellers', label: 'Resellers' },
   { href: '/admin/vouchers', label: 'Vouchers' },
   { href: '/admin/testimonials', label: 'Testimonials' },
   { href: '/admin/inquiries', label: 'Inquiries' },
