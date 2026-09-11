@@ -16,6 +16,21 @@ const SECTIONS = [
     ],
   },
   {
+    title: 'Bots',
+    fields: [
+      {
+        key: 'bot_profiles',
+        label: 'Bot profiles',
+        placeholder: '[{"id":"quartz","name":"QUARTZ XD"},{"id":"xmd","name":"MZAZI XMD"}]',
+        type: 'textarea',
+        // The one field here a mistake in is invisible: both the bot and the
+        // public link page read it, and both treat unparseable JSON as "unset",
+        // so a stray quote quietly drops you back to a single bot.
+        hint: 'A JSON list of {"id","name"}. Empty = one bot. With two or more, the public link page shows a bot selector, and each bot answers only the commands synced under its id.',
+      },
+    ],
+  },
+  {
     title: 'Telegram',
     fields: [
       { key: 'telegram_bot_token', label: 'Telegram bot token', placeholder: '123456:ABC-…', type: 'password' },
@@ -70,6 +85,30 @@ const SECTIONS = [
   },
 ];
 
+// Only `bot_profiles` is JSON, so it is the only field worth validating in the
+// browser. The server validates it again — this is here so a half-typed list is
+// visibly wrong while you type it, rather than being saved as "one bot".
+// Mirrors normaliseBotProfiles in app/api/admin/settings/route.js.
+function jsonOk(text) {
+  const t = String(text ?? '').trim()
+  if (t === '') return true
+  try {
+    const parsed = JSON.parse(t)
+    return (
+      Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      parsed.every(
+        (p) => p && typeof p === 'object' && !Array.isArray(p) &&
+          String(p.id || '').trim() && String(p.name || '').trim()
+      )
+    )
+  } catch {
+    return false
+  }
+}
+
+const fieldsWithJson = SECTIONS.flatMap((s) => s.fields).filter((f) => f.type === 'textarea')
+
 export default function AdminSettings() {
   const [values, setValues] = useState({});
   const [loading, setLoading] = useState(true);
@@ -92,6 +131,15 @@ export default function AdminSettings() {
   }, []);
 
   const save = async () => {
+    // Refuse before the round trip. Saving a malformed bot list would drop the
+    // second bot without any error, which is the one way this page can fail
+    // silently — so it is the one thing it will not send.
+    const bad = fieldsWithJson.find((f) => !jsonOk(values[f.key]));
+    if (bad) {
+      setNotice(`Error — ${bad.label} is not a valid list. Fix it, or empty the field to go back to one bot.`);
+      return;
+    }
+
     setSaving(true);
     setNotice('');
     try {
@@ -142,20 +190,33 @@ export default function AdminSettings() {
                 {section.title}
               </h2>
               <div className="space-y-5">
-                {section.fields.map((f) => (
-                  <div key={f.key}>
-                    <label className="label" htmlFor={`set-${f.key}`}>{f.label}</label>
-                    <input
-                      id={`set-${f.key}`}
-                      type={f.type}
-                      placeholder={f.placeholder}
-                      value={values[f.key] || ''}
-                      onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
-                      className="input mono"
-                      style={{ fontSize: 13 }}
-                    />
-                  </div>
-                ))}
+                {section.fields.map((f) => {
+                  const invalid = f.type === 'textarea' && !jsonOk(values[f.key]);
+                  const shared = {
+                    id: `set-${f.key}`,
+                    placeholder: f.placeholder,
+                    value: values[f.key] || '',
+                    onChange: (e) => setValues({ ...values, [f.key]: e.target.value }),
+                    className: 'input mono',
+                  };
+                  return (
+                    <div key={f.key}>
+                      <label className="label" htmlFor={`set-${f.key}`}>{f.label}</label>
+                      {f.type === 'textarea' ? (
+                        <textarea {...shared} rows={4} style={{ fontSize: 12.5, lineHeight: 1.6, resize: 'vertical' }} />
+                      ) : (
+                        <input {...shared} type={f.type} style={{ fontSize: 13 }} />
+                      )}
+                      {invalid ? (
+                        <p className="mono mt-2" style={{ fontSize: 10.5, color: '#E5484D', margin: 0 }}>
+                          Not a valid list — saved as-is this reads as one bot. Expected {f.placeholder}
+                        </p>
+                      ) : f.hint ? (
+                        <p className="mono mt-2" style={{ fontSize: 10.5, color: '#4C535B', margin: 0 }}>{f.hint}</p>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}

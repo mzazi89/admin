@@ -18,6 +18,11 @@ const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-202
 const ALLOWED_KEYS = [
   // Bot identity
   'bot_name', 'owner', 'whatsapp_owner', 'connection_image',
+  // Bot profiles — the list quartz reads to serve more than one WhatsApp
+  // identity from one process, and that the public link site reads to decide
+  // whether to offer a bot selector. Absent/empty means exactly one bot, which
+  // is the behaviour every deployment had before this key existed.
+  'bot_profiles',
   // Telegram
   'telegram_bot_token', 'telegram_owner',
   // WhatsApp
@@ -37,6 +42,67 @@ const ALLOWED_KEYS = [
   // AI
   'deepseek_api_key',
 ];
+
+/**
+ * `bot_profiles` is the only setting here whose value is JSON rather than a
+ * plain string, and so the only one that can be syntactically wrong.
+ *
+ * A wrong value is not cosmetic. quartz parses this to decide which WhatsApp
+ * identities to serve, and the link site parses it to decide whether to show a
+ * bot selector at all. A typo therefore does not fail loudly — it quietly
+ * becomes "one bot", and the second bot you just added appears to have vanished.
+ * Both sides already treat unparseable JSON as unset, so the failure mode is
+ * silence; the only place it can be caught is here, before it is written.
+ *
+ * Accepted: '' (back to a single bot), or a JSON array of { id, name }.
+ */
+function normaliseBotProfiles(raw) {
+  const text = String(raw ?? '').trim()
+  if (text === '') return { ok: true, value: '' }
+
+  let parsed
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    return { ok: false, error: 'Bot profiles must be valid JSON. Leave it empty for a single bot.' }
+  }
+
+  if (!Array.isArray(parsed)) {
+    return { ok: false, error: 'Bot profiles must be a JSON array, for example [{"id":"quartz","name":"QUARTZ XD"}].' }
+  }
+
+  const cleaned = []
+  const seen = new Set()
+  for (const entry of parsed) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      return { ok: false, error: 'Every bot must be an object with an id and a name.' }
+    }
+    const id = String(entry.id ?? '').trim()
+    const name = String(entry.name ?? '').trim()
+    if (!id || !name) {
+      return { ok: false, error: 'Every bot needs both an id and a name.' }
+    }
+    // The id is written into bot_control.bot_id and bot_status.bot_id, and is
+    // compared against the profile filter on every command lookup. Anything
+    // outside this set would either not round-trip through those columns
+    // cleanly or be invisible to the bot's own filter.
+    if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+      return { ok: false, error: `Bot id "${id}" must be letters, digits, dash or underscore, max 64 characters.` }
+    }
+    // Duplicate ids would make two bots indistinguishable, and a pairing could
+    // land somewhere the user did not choose. Keep the first of each.
+    if (seen.has(id)) continue
+    seen.add(id)
+    cleaned.push({ id, name })
+  }
+
+  if (!cleaned.length) {
+    return { ok: false, error: 'An empty array is not a bot list. Clear the field to go back to a single bot.' }
+  }
+
+  // Stored as canonical JSON so the two readers cannot disagree about spacing.
+  return { ok: true, value: JSON.stringify(cleaned) }
+}
 
 async function verifyAdmin() {
   const cookieStore = await cookies();
@@ -69,6 +135,20 @@ export async function POST(request) {
   await ensureDatabase();
   try {
     const body = await request.json();
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return NextResponse.json({ error: 'Expected a settings object.' }, { status: 400 });
+    }
+
+    // JSON-valued, so it is checked before the write rather than trusted to the
+    // database. Every other key here is an opaque string the bot falls back on.
+    if ('bot_profiles' in body) {
+      const checked = normaliseBotProfiles(body.bot_profiles);
+      if (!checked.ok) {
+        return NextResponse.json({ error: checked.error }, { status: 400 });
+      }
+      body.bot_profiles = checked.value;
+    }
+
     const updates = [];
     for (const key of ALLOWED_KEYS) {
       if (key in body) {
