@@ -5,16 +5,26 @@ import { useRouter } from 'next/navigation';
 // Admin: all paired WhatsApp sessions (all users) with pause/resume/unlink/delete.
 export default function AdminSessions() {
   const [sessions, setSessions] = useState([]);
+  const [bots, setBots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [notice, setNotice] = useState('');
   const router = useRouter();
+
+  // With one bot there is nothing to disambiguate and the Bot column is hidden,
+  // so a single-bot deployment looks exactly as it did before.
+  const multipleBots = bots.length > 1;
+  const botName = (id) => {
+    const found = bots.find((b) => b.id === id);
+    return found ? found.name : id;
+  };
 
   const load = () => {
     fetch('/api/admin/sessions').then(async (r) => {
       if (!r.ok) { setLoading(false); return; }
       const d = await r.json();
       setSessions(d.sessions || []);
+      setBots(d.bots || []);
       setLoading(false);
     });
   };
@@ -27,16 +37,23 @@ export default function AdminSessions() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const run = async (number, action) => {
-    if (action === 'unlink' && !window.confirm(`Unlink ${number}? The bot will log it out of WhatsApp (can be paired again).`)) return;
-    if (action === 'delete' && !window.confirm(`Delete ${number}? This removes the session folder on the bot and the database row.`)) return;
+  const run = async (session, action) => {
+    const number = session.phoneNumber;
+    // Naming the bot in the confirmation matters: with two bots the operator is
+    // about to log a device out of one of them, and the rows look otherwise
+    // identical. The server also resolves the owner from telemetry, so a wrong
+    // guess here cannot misroute the action — this is so the operator knows
+    // which bot they are acting on.
+    const onBot = multipleBots && session.bot ? ` from ${botName(session.bot)}` : '';
+    if (action === 'unlink' && !window.confirm(`Unlink ${number}${onBot}? The bot will log it out of WhatsApp (can be paired again).`)) return;
+    if (action === 'delete' && !window.confirm(`Delete ${number}${onBot}? This removes the session folder on the bot and the database row.`)) return;
     setBusy(`${number}:${action}`);
     setNotice('');
     try {
       const res = await fetch('/api/admin/session-action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ number, action }),
+        body: JSON.stringify({ number, action, bot: session.bot || undefined }),
       });
       const d = await res.json();
       if (!res.ok) { setNotice(d.error || 'Failed'); setBusy(''); return; }
@@ -89,6 +106,7 @@ export default function AdminSessions() {
                     <th>#</th>
                     <th>Number</th>
                     <th>Status</th>
+                    {multipleBots && <th>Bot</th>}
                     <th>Owner</th>
                     <th>Linked</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
@@ -105,6 +123,11 @@ export default function AdminSessions() {
                           {s.active ? 'Active' : 'Offline'}
                         </span>
                       </td>
+                      {multipleBots && (
+                        <td className="mono" style={{ fontSize: 11, color: s.bot ? '#F2A93B' : '#4C535B' }}>
+                          {s.bot ? botName(s.bot) : '—'}
+                        </td>
+                      )}
                       <td style={{ color: '#AEB5BD' }}>
                         {s.email || `#${s.userId ?? '?'}`}
                         {s.firstname && <div className="mono" style={{ fontSize: 11, color: '#4C535B' }}>{s.firstname} {s.lastname || ''}</div>}
@@ -113,10 +136,10 @@ export default function AdminSessions() {
                         {s.connectedAt ? new Date(s.connectedAt).toLocaleString() : '—'}
                       </td>
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        <button onClick={() => run(s.phoneNumber, 'unlink')} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>
+                        <button onClick={() => run(s, 'unlink')} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>
                           Unlink
                         </button>
-                        <button onClick={() => run(s.phoneNumber, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 12px' }}>
+                        <button onClick={() => run(s, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 12px' }}>
                           Delete
                         </button>
                       </td>
@@ -138,6 +161,12 @@ export default function AdminSessions() {
                   </span>
                 </div>
 
+                {multipleBots && (
+                  <div className="mono mb-2" style={{ fontSize: 10.5, color: s.bot ? '#F2A93B' : '#4C535B' }}>
+                    {s.bot ? botName(s.bot) : 'bot unknown'}
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <p className="mono" style={{ fontWeight: 700, fontSize: 15, color: '#E9E7E2', margin: 0, overflowWrap: 'anywhere' }}>{s.phoneNumber}</p>
                   <button
@@ -157,8 +186,8 @@ export default function AdminSessions() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => run(s.phoneNumber, 'unlink')} className="btn btn-ghost" style={{ fontSize: 10, padding: '9px' }}>Unlink</button>
-                  <button onClick={() => run(s.phoneNumber, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '9px' }}>Delete</button>
+                  <button onClick={() => run(s, 'unlink')} className="btn btn-ghost" style={{ fontSize: 10, padding: '9px' }}>Unlink</button>
+                  <button onClick={() => run(s, 'delete')} className="btn btn-danger" style={{ fontSize: 10, padding: '9px' }}>Delete</button>
                 </div>
               </div>
             ))}

@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { resolveBotForNumber } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
+    // Which bot holds this number. An unlink has to reach the bot whose session
+    // folder it is: the other one would claim the row, find no such session, and
+    // the device would stay linked while the panel reported success.
+    const resolved = await resolveBotForNumber(number, body.bot);
+    if (!resolved.ok) {
+      return NextResponse.json({ error: resolved.error }, { status: 400 });
+    }
+    const bot = resolved.bot;
+
     let controlAction, payload;
     if (action === 'delete') {
       controlAction = 'unpair';
@@ -61,12 +71,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'A request for this number is already in progress.' }, { status: 409 });
     }
 
+    // bot_id only when the target is known. Untargeted rows stay claimable by
+    // any bot, which is how this endpoint behaved before bots were selectable.
     const rows = await sql`
-      INSERT INTO bot_control (action, payload, status)
-      VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending')
+      INSERT INTO bot_control (action, payload, status, bot_id)
+      VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending', ${resolved.named ? bot.id : ''})
       RETURNING id
     `;
-    return NextResponse.json({ requestId: rows[0].id, number, action });
+    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id });
   } catch (e) {
     console.error('Session action error:', e.message);
     return NextResponse.json({ error: 'Failed to run the action. Try again.' }, { status: 500 });

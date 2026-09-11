@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { deviceBotMap, listBotsWithStatus } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,24 +38,25 @@ export async function GET() {
     `;
 
     // The bot reports which numbers it currently holds in ./database/sessions/
-    // (heartbeat → bot_status.session_numbers). Only those are truly ACTIVE;
-    // DB rows without a live bot session are shown as offline.
-    let botSessions = [];
-    let botOnline = false;
-    try {
-      const st = await sql`SELECT online, session_numbers FROM bot_status WHERE bot_id = 'main' LIMIT 1`;
-      if (st.length) {
-        botOnline = !!st[0].online;
-        try { botSessions = JSON.parse(st[0].session_numbers || '[]'); } catch { botSessions = []; }
-      }
-    } catch {}
+    // (heartbeat → bot_status.session_numbers). Only those are truly ACTIVE; DB
+    // rows without a live bot session are shown as offline.
+    //
+    // Read across EVERY bot id, not just 'main'. That literal is the single-bot
+    // fallback, so reading only it would mark every session offline the moment
+    // bot_profiles is configured and the bots start heartbeating under their own
+    // ids. `bot` on each row is also what tells the operator which bot to issue
+    // an action to.
+    const botMap = await deviceBotMap();
+    const { bots, multiple } = await listBotsWithStatus();
+    const botOnline = bots.some((b) => b.online);
 
     const sessions = rows.map((r) => ({
       ...r,
-      active: botSessions.includes(r.phoneNumber),
+      bot: botMap[String(r.phoneNumber)] || null,
+      active: Boolean(botMap[String(r.phoneNumber)]),
     }));
 
-    return NextResponse.json({ sessions, botOnline });
+    return NextResponse.json({ sessions, botOnline, bots, multipleBots: multiple });
   } catch (e) {
     console.error('Sessions error:', e.message);
     return NextResponse.json({ error: 'Failed to load sessions' }, { status: 500 });
