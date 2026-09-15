@@ -180,7 +180,7 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* ── Mobile top bar ── */}
-      <div className="md:hidden">
+      <div className="md:hidden app-content">
         <div className="app-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '10px 14px' }}>
           <Link href="/admin/dashboard" style={{ textDecoration: 'none' }}>
             <Logo size={24} withText />
@@ -237,7 +237,7 @@ export default function AdminLayout({ children }) {
       )}
 
       {/* ── Desktop content ── */}
-      <main className="hidden md:block md:ml-[var(--sidebar-w)]" style={{ minWidth: 0 }}>
+      <main className="hidden md:block md:ml-[var(--sidebar-w)] app-content" style={{ minWidth: 0 }}>
         <div className="page-pad">{children}</div>
       </main>
     </div>

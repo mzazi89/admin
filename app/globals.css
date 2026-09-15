@@ -129,16 +129,16 @@
 [data-theme='dark'] {
   --bg: #0A0A0F;
   --bg-2: #101018;
-  --surface: #15151F;
-  --surface-2: #1D1D2A;
+  --surface: #1A1A28;
+  --surface-2: #232333;
   --surface-3: #252533;
-  --line: #2E2E3E;
-  --line-soft: #232330;
+  --line: #34344A;
+  --line-soft: #272738;
 
   --ink: #FFFFFF;
   --ink-2: #C6C6D6;
   --muted: #A8AAC2;   /* AA on dark surfaces */
-  --dim: #8E90A8;     /* AA (was #5E5E75 = 2.9:1) */
+  --dim: #9A9CB6;     /* AA (was #5E5E75 = 2.9:1) */
 
   --brand: #A78BFA;
   --brand-bright: #C4B5FD;
@@ -177,7 +177,7 @@
   --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
   --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
 
-  --header-bg: rgba(10, 10, 15, 0.85);
+  --header-bg: rgba(12, 12, 18, 0.94);
   --backdrop-image: 0.42;
   --backdrop-scrim: 0.74;
 }
@@ -187,15 +187,15 @@
   :root:not([data-theme='light']) {
     --bg: #0A0A0F;
     --bg-2: #101018;
-    --surface: #15151F;
-    --surface-2: #1D1D2A;
+    --surface: #1A1A28;
+    --surface-2: #232333;
     --surface-3: #252533;
-    --line: #2E2E3E;
-    --line-soft: #232330;
+    --line: #34344A;
+    --line-soft: #272738;
     --ink: #FFFFFF;
     --ink-2: #C6C6D6;
     --muted: #A8AAC2;
-    --dim: #8E90A8;
+    --dim: #9A9CB6;
     --brand: #A78BFA;
     --brand-bright: #C4B5FD;
     --brand-deep: #8B5CF6;
@@ -227,7 +227,7 @@
     --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
     --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
     --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
-    --header-bg: rgba(10, 10, 15, 0.85);  
+    --header-bg: rgba(12, 12, 18, 0.94);  
     --backdrop-image: 0.42;
     --backdrop-scrim: 0.74;
   }
@@ -659,6 +659,27 @@ h3 { font-size: var(--text-xl); }
   position: absolute; inset: 0;
   background: var(--bg);
   opacity: var(--backdrop-scrim, 0.88);
+}
+
+/* ── Page content layer ───────────────────────────────────────────────
+   RouteBackdrop paints `position: fixed` layers at z-index 0. ANY static
+   (unpositioned) content paints BELOW those, so any page whose content wrapper
+   lacks a stacking context gets its entire body dimmed by the backdrop scrim —
+   and, because the backdrop artwork is brighter at the top, it fades from
+   "slightly dull" at the top to "barely visible" at the bottom. That is exactly
+   the washed-out look reported on the admin dashboard.
+   Declaring the stacking context here makes that impossible to reintroduce:
+   every content wrapper just needs this class. */
+.app-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* And a belt-and-braces guard: the backdrop can never rise above the content
+   layer even if a future page forgets the class, because it is pinned below
+   the first content layer. */
+.backdrop-root {
+  z-index: 0;
 }
 
 /* ────────────────────────────── 8. FORMS ─────────────────────────────────── */

@@ -52,7 +52,9 @@ export default function AdminLogin() {
             <ThemeToggle />
           </div>
 
-          <div style={{ width: '100%', maxWidth: 430 }}>
+          {/* app-content: without a stacking context the fixed backdrop paints
+              OVER this card, which is what made the admin look washed out. */}
+          <div className="app-content" style={{ width: '100%', maxWidth: 430 }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 26 }}>
               <Logo size={38} withText />
             </div>

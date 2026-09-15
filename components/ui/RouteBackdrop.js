@@ -105,6 +105,7 @@ export default function RouteBackdrop({ scrim }) {
   return (
     <div
       aria-hidden="true"
+      className="backdrop-root"
       style={{
         position: 'fixed',
         inset: 0,
