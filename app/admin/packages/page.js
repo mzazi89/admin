@@ -1,240 +1,277 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fmtKes } from '@/lib/currency';
+import {
+  Badge, Button, Card, ConfirmDialog, EmptyState, ErrorState, Field, Input, Modal, PageHeader,
+  SkeletonCards, Textarea, Toggle, humaniseError, useToast,
+  Icons,
+} from '@/components/ui';
 
-const EMPTY = { name: '', price: '', cpu: '', ram: '', disk: '', description: '', popular: false, accent: '#2563eb', active: true, sort_order: '', expires_after_hours: '' };
+const EMPTY = {
+  name: '', price: '', cpu: '', ram: '', disk: '', description: '',
+  popular: false, accent: '', active: true, sort_order: '', expires_after_hours: '',
+};
 
 function fmtCpu(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited CPU'  : `${n}% CPU`; }
 function fmtRam(v)  { const n = parseInt(v); return n === 0 ? 'Unlimited RAM'  : n >= 1024 ? `${n / 1024} GB RAM`  : `${n} MB RAM`; }
 function fmtDisk(v) { const n = parseInt(v); return n === 0 ? 'Unlimited Disk' : n >= 1024 ? `${n / 1024} GB Disk` : `${n} MB Disk`; }
+function fmtDuration(v) {
+  if (v === null || v === undefined || v === '') return 'No expiry';
+  const n = parseInt(v);
+  return n > 0 ? `Runs for ${n}h` : 'No expiry';
+}
 
 export default function AdminPackages() {
-  const [packages, setPackages] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [modal, setModal]       = useState(null); // null | 'add' | 'edit'
-  const [form, setForm]         = useState(EMPTY);
-  const [saving, setSaving]     = useState(false);
-  const [restoring, setRestoring] = useState(false);
-  const [error, setError]       = useState('');
-  const [deleteId, setDeleteId] = useState(null);
   const router = useRouter();
+  const toast = useToast();
+
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [modal, setModal] = useState(null); // null | 'add' | 'edit'
+  const [form, setForm] = useState(EMPTY);
+  const [formError, setFormError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [restoreOpen, setRestoreOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/packages');
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Failed to load packages');
+      setPackages(d.packages || []);
+    } catch (e) {
+      setError(humaniseError(e, 'We could not load packages right now. Please try again.'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/admin/me').then(r => {
+    fetch('/api/admin/me').then((r) => {
       if (!r.ok) { router.replace('/admin/login'); return; }
       load();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const load = () => {
-    setLoading(true);
-    fetch('/api/admin/packages').then(r => r.json()).then(d => {
-      setPackages(d.packages || []);
-      setLoading(false);
+  const openAdd = () => { setForm(EMPTY); setFormError(''); setModal('add'); };
+  const openEdit = (pkg) => {
+    setForm({
+      ...pkg,
+      price: String(pkg.price ?? ''),
+      cpu: String(pkg.cpu ?? ''),
+      ram: String(pkg.ram ?? ''),
+      disk: String(pkg.disk ?? ''),
+      sort_order: String(pkg.sort_order ?? ''),
+      accent: pkg.accent || '',
+      expires_after_hours: pkg.expires_after_hours != null ? String(pkg.expires_after_hours) : '',
     });
+    setFormError('');
+    setModal('edit');
   };
-
-  const handleRestoreDefaults = async () => {
-    setRestoring(true);
-    try {
-      await fetch('/api/admin/packages/restore-defaults', { method: 'POST' });
-      load();
-    } catch {}
-    setRestoring(false);
-  };
-
-  const openAdd  = () => { setForm(EMPTY); setError(''); setModal('add'); };
-  const openEdit = (pkg) => { setForm({ ...pkg, price: String(pkg.price), cpu: String(pkg.cpu), ram: String(pkg.ram), disk: String(pkg.disk), sort_order: String(pkg.sort_order), expires_after_hours: pkg.expires_after_hours != null ? String(pkg.expires_after_hours) : '' }); setError(''); setModal('edit'); };
-  const closeModal = () => { setModal(null); setError(''); };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setSaving(true); setError('');
+    setSaving(true);
+    setFormError('');
     const isEdit = modal === 'edit';
-    const url  = isEdit ? `/api/admin/packages/${form.id}` : '/api/admin/packages';
+    const url = isEdit ? `/api/admin/packages/${form.id}` : '/api/admin/packages';
     const method = isEdit ? 'PUT' : 'POST';
     try {
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Failed to save'); setSaving(false); return; }
-      closeModal(); load();
-    } catch { setError('Network error'); }
-    setSaving(false);
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Failed to save package');
+      toast.success(isEdit ? 'Package updated.' : 'Package created.');
+      setModal(null);
+      load();
+    } catch (err) {
+      setFormError(humaniseError(err, 'We could not save this package. Please try again.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setBusy(true);
+    try {
+      await fetch('/api/admin/packages/restore-defaults', { method: 'POST' });
+      toast.success('Default packages restored.');
+      setRestoreOpen(false);
+      load();
+    } catch (e) {
+      toast.error(humaniseError(e, 'We could not restore defaults. Please try again.'));
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handleDelete = async (id) => {
+    setBusy(true);
     try {
-      await fetch(`/api/admin/packages/${id}`, { method: 'DELETE' });
-      setDeleteId(null); load();
-    } catch {}
+      const res = await fetch(`/api/admin/packages/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || 'Failed to delete package');
+      }
+      toast.success('Package deleted.');
+      setDeleteTarget(null);
+      load();
+    } catch (e) {
+      toast.error(humaniseError(e, 'We could not delete this package. Please try again.'));
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
     <div style={{ maxWidth: 1180, margin: '0 auto' }}>
-      {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <div>
-          <div className="eyebrow mb-4">Catalogue</div>
-          <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>Packages</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleRestoreDefaults} disabled={restoring} className="btn btn-ghost"
-            style={{ fontSize: 11, padding: '10px 16px', opacity: restoring ? 0.6 : 1 }}>
-            {restoring ? 'Adding…' : 'Restore defaults'}
-          </button>
-          <button onClick={openAdd} className="btn btn-primary" style={{ fontSize: 11, padding: '10px 16px' }}>
-            Add package
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Packages"
+        description="Hosting plans offered on the site. Edit a plan or reset the catalogue to the shipped defaults."
+        icon={<Icons.Sparkles size={20} />}
+        actions={
+          <>
+            <Button variant="ghost" size="sm" icon={<Icons.Refresh size={15} />} onClick={() => setRestoreOpen(true)}>Restore defaults</Button>
+            <Button variant="primary" size="sm" icon={<Icons.Plus size={15} />} onClick={openAdd}>Add package</Button>
+          </>
+        }
+      />
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20"><div className="spinner" /></div>
+      {error ? (
+        <Card><ErrorState title="Could not load packages" message={error} onRetry={load} /></Card>
+      ) : loading ? (
+        <SkeletonCards count={4} height={200} />
+      ) : packages.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Icons.Sparkles size={26} />}
+            title="No packages yet"
+            description="Add a package to start selling hosting plans."
+            action={<Button variant="primary" size="sm" icon={<Icons.Plus size={15} />} onClick={openAdd}>Add package</Button>}
+          />
+        </Card>
       ) : (
-        <div className="card overflow-hidden">
-          {packages.length === 0 ? (
-            <div className="text-center py-16 mono" style={{ color: '#4C535B' }}>No packages yet — add one to get started.</div>
-          ) : (
-            <div className="scroll-x table-responsive">
-              <table className="table-plain" style={{ minWidth: 820 }}>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>CPU</th>
-                    <th>RAM</th>
-                    <th>Disk</th>
-                    <th>Popular</th>
-                    <th>Status</th>
-                    <th>Order</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {packages.map(pkg => (
-                    <tr key={pkg.id}>
-                      <td data-label="Name">
-                        <span className="flex items-center gap-2.5">
-                          <span className="flex-shrink-0" style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: pkg.accent }} />
-                          <span style={{ fontWeight: 600, color: '#E9E7E2' }}>{pkg.name}</span>
-                        </span>
-                      </td>
-                      <td data-label="Price" style={{ color: '#3ECF8E', fontWeight: 600 }}>{fmtKes(pkg.price)}</td>
-                      <td data-label="CPU" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtCpu(pkg.cpu)}</td>
-                      <td data-label="RAM" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtRam(pkg.ram)}</td>
-                      <td data-label="Disk" style={{ color: '#AEB5BD', fontSize: 13 }}>{fmtDisk(pkg.disk)}</td>
-                      <td data-label="Popular"><span className={`tag ${pkg.popular ? 'tag-amber' : ''}`}>{pkg.popular ? 'Yes' : 'No'}</span></td>
-                      <td data-label="Status"><span className={`tag ${pkg.active ? 'tag-green' : 'tag-red'}`}>{pkg.active ? 'Active' : 'Hidden'}</span></td>
-                      <td data-label="Order" className="mono" style={{ fontSize: 12, color: '#4C535B' }}>{pkg.sort_order}</td>
-                      <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        <button onClick={() => openEdit(pkg)} className="btn btn-dark"
-                          style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}>Edit</button>
-                        <button onClick={() => setDeleteId(pkg.id)} className="btn btn-danger"
-                          style={{ fontSize: 10, padding: '6px 12px' }}>Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="grid-cards anim-fade-up">
+          {packages.map((pkg) => (
+            <article key={pkg.id} className={`card ${pkg.popular ? 'card-accent' : ''}`} style={{ padding: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                  <span aria-hidden="true" style={{ width: 10, height: 10, flex: '0 0 10px', borderRadius: '50%', background: pkg.accent || 'var(--brand)' }} />
+                  <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: 'var(--ink)' }}>{pkg.name}</h3>
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {pkg.popular && <Badge tone="brand">Popular</Badge>}
+                  <Badge tone={pkg.active ? 'good' : 'bad'}>{pkg.active ? 'Active' : 'Hidden'}</Badge>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em' }}>{fmtKes(pkg.price)}</span>
+                <span style={{ fontSize: 13, color: 'var(--muted)' }}>/mo</span>
+              </div>
+
+              {pkg.description && <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.55 }}>{pkg.description}</p>}
+
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 6 }}>
+                {[fmtCpu(pkg.cpu), fmtRam(pkg.ram), fmtDisk(pkg.disk), fmtDuration(pkg.expires_after_hours)].map((line) => (
+                  <li key={line} style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13.5, color: 'var(--ink-2)' }}>
+                    <span aria-hidden="true" style={{ color: 'var(--good)', display: 'inline-flex' }}><Icons.Check size={14} /></span>{line}
+                  </li>
+                ))}
+              </ul>
+
+              <div style={{ marginTop: 'auto', display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid var(--line-soft)' }}>
+                <Button variant="dark" size="sm" icon={<Icons.Pencil size={14} />} onClick={() => openEdit(pkg)}>Edit</Button>
+                <Button variant="ghost" size="sm" icon={<Icons.Trash size={14} />} onClick={() => setDeleteTarget(pkg)} style={{ color: 'var(--bad)' }}>Delete</Button>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {/* Add / edit modal */}
+      <Modal
+        open={!!modal}
+        onClose={() => setModal(null)}
+        title={modal === 'edit' ? 'Edit package' : 'Add package'}
+        description="Prices are in KES. 0 means unlimited for CPU, RAM and Disk."
+        size="lg"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setModal(null)}>Cancel</Button>
+            <Button variant="primary" loading={saving} onClick={handleSave}>{modal === 'edit' ? 'Save changes' : 'Create package'}</Button>
+          </>
+        }
+      >
+        <form onSubmit={handleSave}>
+          {formError && (
+            <div style={{ marginBottom: 14 }}>
+              <ErrorState title="Could not save" message={formError} minHeight={0} />
             </div>
           )}
-        </div>
-      )}
-
-      {/* Add / Edit modal */}
-      {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={closeModal}>
-          <div className="w-full max-w-lg card" style={{ padding: 24 }} onClick={e => e.stopPropagation()}>
-            <div className="eyebrow mb-4">{modal === 'add' ? 'New entry' : 'Edit entry'}</div>
-            <h2 className="section-title mb-6" style={{ fontSize: '1.3rem' }}>{modal === 'add' ? 'Add package' : 'Edit package'}</h2>
-            {error && <div className="tag tag-red mb-5" style={{ padding: '9px 12px', width: '100%', textTransform: 'none', letterSpacing: '0.02em' }}>{error}</div>}
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid-2-responsive">
-                <div className="sm:col-span-2">
-                  <label className="label">Package name</label>
-                  <input className="input" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Pro" />
-                </div>
-                <div>
-                  <label className="label">Price (KES/mo)</label>
-                  <input className="input" type="number" min="0" step="0.01" required value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="150" />
-                </div>
-                <div>
-                  <label className="label">Sort order</label>
-                  <input className="input" type="number" min="0" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))} placeholder="5" />
-                </div>
-                <div>
-                  <label className="label">Expires after (hours, blank = never)</label>
-                  <input className="input" type="number" min="1" value={form.expires_after_hours} onChange={e => setForm(f => ({ ...f, expires_after_hours: e.target.value }))} placeholder="e.g. 6" />
-                </div>
-                <div>
-                  <label className="label">CPU % (0 = unlimited)</label>
-                  <input className="input" type="number" min="0" required value={form.cpu} onChange={e => setForm(f => ({ ...f, cpu: e.target.value }))} placeholder="100" />
-                </div>
-                <div>
-                  <label className="label">RAM MB (0 = unlimited)</label>
-                  <input className="input" type="number" min="0" required value={form.ram} onChange={e => setForm(f => ({ ...f, ram: e.target.value }))} placeholder="2048" />
-                </div>
-                <div>
-                  <label className="label">Disk MB (0 = unlimited)</label>
-                  <input className="input" type="number" min="0" required value={form.disk} onChange={e => setForm(f => ({ ...f, disk: e.target.value }))} placeholder="10240" />
-                </div>
-                <div>
-                  <label className="label">Accent color</label>
-                  <div className="flex gap-2 items-center">
-                    <input type="color" value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} style={{ width: 40, height: 40, border: '1px solid #262C33', backgroundColor: '#0F1215', cursor: 'pointer', padding: 2 }} />
-                    <input className="input" style={{ flex: 1 }} value={form.accent} onChange={e => setForm(f => ({ ...f, accent: e.target.value }))} placeholder="#2563eb" />
-                  </div>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="label">Description</label>
-                  <textarea className="input" style={{ resize: 'vertical', minHeight: '4rem' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Describe what this plan is good for" />
-                </div>
-                <label className="flex items-center gap-3" style={{ cursor: 'pointer' }}>
-                  <input type="checkbox" id="popular" checked={!!form.popular} onChange={e => setForm(f => ({ ...f, popular: e.target.checked }))} style={{ accentColor: '#F2A93B' }} />
-                  <span className="mono" style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#AEB5BD' }}>Mark as popular</span>
-                </label>
-                <label className="flex items-center gap-3" style={{ cursor: 'pointer' }}>
-                  <input type="checkbox" id="active" checked={!!form.active} onChange={e => setForm(f => ({ ...f, active: e.target.checked }))} style={{ accentColor: '#F2A93B' }} />
-                  <span className="mono" style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#AEB5BD' }}>Active (visible to users)</span>
-                </label>
-              </div>
-
-              {/* Live preview */}
-              <div className="rounded-md p-4 mt-2" style={{ backgroundColor: '#0F1215', border: `1px solid ${form.accent || '#262C33'}` }}>
-                <p className="mono mb-2" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4C535B' }}>Preview</p>
-                <p style={{ fontWeight: 700, color: '#E9E7E2', margin: 0 }}>{form.name || 'Package Name'}</p>
-                <p className="stat-num" style={{ fontSize: '1.4rem', color: form.accent, margin: '6px 0' }}>
-                  {fmtKes(form.price || 0)}<span className="mono" style={{ fontSize: '0.45em', fontWeight: 400, color: '#4C535B', marginLeft: 6 }}>/mo</span>
-                </p>
-                <p className="mono" style={{ fontSize: 11, color: '#79818A', margin: 0 }}>{fmtCpu(form.cpu || 0)} · {fmtRam(form.ram || 0)} · {fmtDisk(form.disk || 0)}</p>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={closeModal} className="btn btn-ghost flex-1">Cancel</button>
-                <button type="submit" disabled={saving} className="btn btn-primary flex-1" style={{ opacity: saving ? 0.6 : 1 }}>
-                  {saving ? 'Saving…' : modal === 'add' ? 'Create package' : 'Save changes'}
-                </button>
-              </div>
-            </form>
+          <Field label="Package name" id="pkg-name" required>
+            <Input id="pkg-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. Standard" required />
+          </Field>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+            <Field label="Price (KES/mo)" id="pkg-price" required>
+              <Input id="pkg-price" type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} placeholder="150" required />
+            </Field>
+            <Field label="Sort order" id="pkg-sort">
+              <Input id="pkg-sort" type="number" min="0" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: e.target.value }))} placeholder="5" />
+            </Field>
+            <Field label="Expires after (hours, blank = never)" id="pkg-exp">
+              <Input id="pkg-exp" type="number" min="1" value={form.expires_after_hours} onChange={(e) => setForm((f) => ({ ...f, expires_after_hours: e.target.value }))} placeholder="e.g. 6" />
+            </Field>
+            <Field label="CPU % (0 = unlimited)" id="pkg-cpu">
+              <Input id="pkg-cpu" type="number" min="0" value={form.cpu} onChange={(e) => setForm((f) => ({ ...f, cpu: e.target.value }))} placeholder="100" />
+            </Field>
+            <Field label="RAM MB (0 = unlimited)" id="pkg-ram">
+              <Input id="pkg-ram" type="number" min="0" value={form.ram} onChange={(e) => setForm((f) => ({ ...f, ram: e.target.value }))} placeholder="2048" />
+            </Field>
+            <Field label="Disk MB (0 = unlimited)" id="pkg-disk">
+              <Input id="pkg-disk" type="number" min="0" value={form.disk} onChange={(e) => setForm((f) => ({ ...f, disk: e.target.value }))} placeholder="10240" />
+            </Field>
           </div>
-        </div>
-      )}
-
-      {/* Delete confirmation */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setDeleteId(null)}>
-          <div className="w-full max-w-sm card" style={{ padding: 24, borderColor: 'rgba(229,72,77,0.4)' }} onClick={e => e.stopPropagation()}>
-            <div className="eyebrow mb-4">Destructive</div>
-            <h3 className="section-title mb-2" style={{ fontSize: '1.2rem' }}>Delete package?</h3>
-            <p className="lede mb-6" style={{ fontSize: '0.9rem' }}>This cannot be undone. Existing panels using this package are unaffected.</p>
-            <div className="flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="btn btn-ghost flex-1">Cancel</button>
-              <button onClick={() => handleDelete(deleteId)} className="btn btn-danger flex-1">Delete</button>
+          <Field label="Accent colour" id="pkg-accent" hint="A CSS colour, e.g. #7c3aed or var(--brand).">
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <span aria-hidden="true" style={{ width: 34, height: 34, flex: '0 0 34px', borderRadius: 'var(--r-sm)', border: '1px solid var(--line)', background: form.accent || 'var(--brand)' }} />
+              <Input id="pkg-accent" value={form.accent} onChange={(e) => setForm((f) => ({ ...f, accent: e.target.value }))} placeholder="var(--brand)" />
             </div>
-          </div>
-        </div>
-      )}
+          </Field>
+          <Field label="Description" id="pkg-desc">
+            <Textarea id="pkg-desc" rows={3} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Describe what this plan is good for" />
+          </Field>
+          <Toggle id="pkg-popular" checked={!!form.popular} onChange={(v) => setForm((f) => ({ ...f, popular: v }))} label="Mark as popular" />
+          <Toggle id="pkg-active" checked={!!form.active} onChange={(v) => setForm((f) => ({ ...f, active: v }))} label="Active (visible to users)" />
+        </form>
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => handleDelete(deleteTarget.id)}
+        loading={busy}
+        title={`Delete ${deleteTarget?.name || 'package'}?`}
+        description="This removes the package from the catalogue. Existing panels are unaffected. It cannot be undone."
+        confirmLabel="Delete package"
+      />
+
+      <ConfirmDialog
+        open={restoreOpen}
+        onClose={() => setRestoreOpen(false)}
+        onConfirm={handleRestore}
+        loading={busy}
+        title="Restore default packages?"
+        description="This deletes every package and re-creates the four shipped defaults. Existing panels are unaffected."
+        confirmLabel="Restore defaults"
+      />
     </div>
   );
 }

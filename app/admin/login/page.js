@@ -1,7 +1,12 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
+import {
+  AppBackground, Alert, Button, Card, Field, Input, ThemeProvider, ToastProvider, ThemeToggle,
+  humaniseError, Icons,
+} from '@/components/ui';
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -10,91 +15,107 @@ export default function AdminLogin() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/admin/me').then(r => { if (r.ok) router.replace('/admin/dashboard'); });
-  }, []);
+    fetch('/api/admin/me').then((r) => { if (r.ok) router.replace('/admin/dashboard'); });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); setError('');
+    setLoading(true);
+    setError('');
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      const data = await res.json();
-      if (res.ok) router.push('/admin/dashboard');
-      else setError(data.error || 'Invalid credentials');
-    } catch { setError('Connection error. Please try again.'); }
-    setLoading(false);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        router.push('/admin/dashboard');
+      } else {
+        // Never surface the raw message — humaniseError translates short,
+        // already-human API copy and falls back to friendly text otherwise.
+        setError(humaniseError(data.error, 'Those details did not match. Please check and try again.'));
+        setLoading(false);
+      }
+    } catch (err) {
+      setError(humaniseError(err, 'We could not reach the server. Check your connection and try again.'));
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-stretch">
-      {/* ── Left: auth card ── */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md">
-          <Logo size={40} withText />
-
-          <div className="eyebrow mt-12 mb-5">Restricted access</div>
-          <h1 className="headline" style={{ fontSize: 'clamp(2rem, 4vw, 2.8rem)' }}>
-            Admin<br />Portal
-          </h1>
-          <p className="lede mt-4 mb-10" style={{ maxWidth: 380 }}>
-            Authorized staff only. All admin activity is logged and monitored.
-          </p>
-
-          <div className="card card-pad" style={{ padding: '28px' }}>
-            {error && (
-              <div className="tag tag-red mb-5" style={{ padding: '9px 12px', width: '100%', textTransform: 'none', letterSpacing: '0.02em' }}>
-                {error}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="label" htmlFor="admin-email">Admin email</label>
-                <input id="admin-email" type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  placeholder="admin@mzazi.shop" className="input" autoComplete="username" />
-              </div>
-              <div>
-                <label className="label" htmlFor="admin-password">Password</label>
-                <input id="admin-password" type="password" required value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                  placeholder="••••••••" className="input" autoComplete="current-password" />
-              </div>
-              <button type="submit" disabled={loading} className="btn btn-primary w-full mt-2">
-                {loading ? 'Authenticating…' : 'Access panel'}
-              </button>
-            </form>
+    <ThemeProvider>
+      <ToastProvider>
+        <AppBackground variant="auth" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+          <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
+            <ThemeToggle />
           </div>
 
-          <p className="mono mt-6" style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#4C535B' }}>
-            Mzazi Tech Inc · 2026
-          </p>
-        </div>
-      </div>
+          <div style={{ width: '100%', maxWidth: 430 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 26 }}>
+              <Logo size={38} withText />
+            </div>
 
-      {/* ── Right: editorial rail (desktop only) ── */}
-      <div className="hidden lg:flex w-1/2 items-center justify-center relative"
-        style={{ borderLeft: '1px solid #1B2026', backgroundColor: 'rgba(15,18,21,0.45)' }}>
-        <div className="max-w-md px-10">
-          <div className="eyebrow mb-6">Ops console</div>
-          <p className="section-title" style={{ fontSize: 'clamp(1.6rem, 2.4vw, 2.2rem)', lineHeight: 1.2 }}>
-            One database. One source of truth. Every panel, voucher, order and conversation in a single view.
-          </p>
-          <div className="mt-10 space-y-4">
-            {[
-              ['Neon DB', 'shared live with the public site'],
-              ['Live sync', 'bot commands and settings within ~15s'],
-              ['Full audit', 'transactions, sessions, inquiries'],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-baseline gap-4">
-                <span className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', color: '#F2A93B', whiteSpace: 'nowrap' }}>{k}</span>
-                <span style={{ fontSize: 13, color: '#79818A' }}>{v}</span>
-              </div>
-            ))}
+            <Card pad={false} style={{ padding: '28px 26px' }} className="anim-fade-up">
+              <div className="eyebrow" style={{ marginBottom: 10 }}>Restricted access</div>
+              <h1 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 5vw, 2rem)', fontWeight: 700 }}>
+                Admin portal
+              </h1>
+              <p style={{ margin: '8px 0 20px', color: 'var(--muted)', fontSize: 14.5, lineHeight: 1.6 }}>
+                Authorised staff only. All admin activity is logged and monitored.
+              </p>
+
+              {error && (
+                <div className="anim-fade-up" style={{ marginBottom: 18 }}>
+                  <Alert kind="error">{error}</Alert>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} noValidate>
+                <Field label="Admin email" id="admin-email" required>
+                  <Input
+                    id="admin-email"
+                    type="email"
+                    required
+                    autoComplete="username"
+                    placeholder="admin@mzazi.shop"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  />
+                </Field>
+
+                <Field label="Password" id="admin-password" required>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={form.password}
+                    onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                  />
+                </Field>
+
+                <Button
+                  type="submit"
+                  block
+                  size="lg"
+                  loading={loading}
+                  loadingText="Authenticating…"
+                  icon={<Icons.Shield size={16} />}
+                  style={{ marginTop: 6 }}
+                >
+                  Access panel
+                </Button>
+              </form>
+            </Card>
+
+            <p className="mono" style={{ textAlign: 'center', marginTop: 20, fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--dim)' }}>
+              Mzazi Tech Inc · 2026
+            </p>
           </div>
-        </div>
-      </div>
-    </div>
+        </AppBackground>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }

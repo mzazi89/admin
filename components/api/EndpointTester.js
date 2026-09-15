@@ -53,31 +53,31 @@ export default function EndpointTester({ endpoint }) {
   };
 
   return (
-    <div className="rounded-xl p-4" style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a' }}>
+    <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--blue-deep)' }}>
       <div className="flex flex-wrap items-end gap-3 mb-3">
         <div className="flex-1 min-w-[200px]">
-          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#64748b' }}>
-            API Key <span style={{ color: '#4ade80' }}>(optional)</span>
+          <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>
+            API Key <span style={{ color: 'var(--good)' }}>(optional)</span>
           </label>
           <input value={key} onChange={e => setKey(e.target.value)} placeholder="mzazi_..."
             className="w-full px-3 py-2 rounded-lg text-xs font-mono outline-none"
-            style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
+            style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--blue-deep)', color: 'var(--ink)' }} />
         </div>
         {all.map(p => (
           <div key={p.name} className="flex-1 min-w-[140px]">
-            <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: '#64748b' }}>
+            <label className="block text-[10px] font-bold uppercase tracking-wide mb-1" style={{ color: 'var(--muted)' }}>
               {p.name}
-              {required.some(r => r.name === p.name) && <span style={{ color: '#f87171' }}> *</span>}
+              {required.some(r => r.name === p.name) && <span style={{ color: 'var(--bad)' }}> *</span>}
             </label>
             <input value={values[p.name] || ''} onChange={e => setValues(v => ({ ...v, [p.name]: e.target.value }))}
               placeholder={p.example || p.name}
               className="w-full px-3 py-2 rounded-lg text-xs outline-none"
-              style={{ backgroundColor: '#060b16', border: '1px solid #1e3a8a', color: '#f0f4ff' }} />
+              style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--blue-deep)', color: 'var(--ink)' }} />
           </div>
         ))}
         <button onClick={run} disabled={testing}
           className="px-4 py-2 rounded-lg text-xs font-bold text-white transition-all"
-          style={{ background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
+          style={{ background: 'linear-gradient(135deg,var(--blue-deep),var(--blue-deep))', opacity: testing ? 0.6 : 1, cursor: testing ? 'not-allowed' : 'pointer' }}>
           {testing ? 'SENDING…' : 'SEND REQUEST'}
         </button>
       </div>
@@ -87,10 +87,10 @@ export default function EndpointTester({ endpoint }) {
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
             <span className="px-2 py-0.5 rounded font-bold" style={{
               backgroundColor: result.ok ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)',
-              color: result.ok ? '#4ade80' : '#f87171',
+              color: result.ok ? 'var(--good)' : 'var(--bad)',
             }}>HTTP {result.status}</span>
-            <span style={{ color: '#94a3b8' }}>{result.ms}ms</span>
-            <span className="break-all" style={{ color: '#475569' }}>{result.url}</span>
+            <span style={{ color: 'var(--dim)' }}>{result.ms}ms</span>
+            <span className="break-all" style={{ color: 'var(--muted)' }}>{result.url}</span>
             <CopyButton text={result.url} label="Copy URL" />
           </div>
           <CodeBlock label="JSON response" code={result.body} />

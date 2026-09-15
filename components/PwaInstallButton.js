@@ -16,7 +16,7 @@ export default function PwaInstallButton({ className = '' }) {
   return (
     <button onClick={requestInstall}
       className={`px-7 py-3.5 rounded-xl font-bold text-sm transition-all inline-flex items-center gap-2 ${className}`}
-      style={{ background: 'rgba(74,222,128,0.1)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.35)', cursor: 'pointer' }}>
+      style={{ background: 'rgba(74,222,128,0.1)', color: 'var(--good)', border: '1px solid rgba(74,222,128,0.35)', cursor: 'pointer' }}>
       ⬇️ {isIOS ? 'Get the App' : 'Download App'}
     </button>
   );

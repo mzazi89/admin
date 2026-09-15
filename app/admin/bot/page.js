@@ -14,10 +14,20 @@ function fmtUptime(s) {
   return `${h}h ${m}m ${sec}s`;
 }
 
+// Never render the live bot API key in full — only the last 4 characters.
+function maskKey(key) {
+  const s = String(key || '');
+  if (!s) return '—';
+  if (s.length <= 4) return '••••';
+  return `${'•'.repeat(Math.max(4, s.length - 4))}${s.slice(-4)}`;
+}
+
 export default function BotControlPage() {
   const [status, setStatus] = useState(null);
   const [controls, setControls] = useState([]);
   const [apiKeyCfg, setApiKeyCfg] = useState({ configured: false, key: '' });
+  // The live key is only ever shown masked; "Reveal" opts in for this view.
+  const [revealKey, setRevealKey] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [msg, setMsg] = useState('');
   const [botName, setBotName] = useState('');
@@ -65,6 +75,7 @@ export default function BotControlPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save key');
       setApiKeyCfg({ configured: true, key: apiKeyInput.trim() });
+      setRevealKey(false);
       setApiKeyInput('');
       setNotice('Bot API key saved. The bot will authenticate on its next sync (or restart the bot to apply immediately).');
       load();
@@ -115,7 +126,7 @@ export default function BotControlPage() {
           padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em',
           backgroundColor: notice.includes('Error') || notice.includes('Failed') ? 'rgba(229,72,77,0.06)' : 'rgba(62,207,142,0.06)',
           borderColor: notice.includes('Error') || notice.includes('Failed') ? 'rgba(229,72,77,0.35)' : 'rgba(62,207,142,0.35)',
-          color: notice.includes('Error') || notice.includes('Failed') ? '#E5484D' : '#3ECF8E',
+          color: notice.includes('Error') || notice.includes('Failed') ? 'var(--bad)' : 'var(--good)',
         }}>
           {notice}
         </div>
@@ -124,13 +135,13 @@ export default function BotControlPage() {
       {/* Status panel */}
       <div className="card mb-5" style={{ padding: '24px' }}>
         <div className="flex items-center gap-3 mb-5">
-          <span className="dot" style={{ width: 10, height: 10, backgroundColor: online ? '#3ECF8E' : '#E5484D' }} />
+          <span className="dot" style={{ width: 10, height: 10, backgroundColor: online ? 'var(--good)' : 'var(--bad)' }} />
           <h2 className="section-title" style={{ fontSize: '1.15rem', margin: 0 }}>{online ? 'Bot online' : 'Bot offline'}</h2>
           {status?.lastSeenAgoSeconds !== null && (
-            <span className="mono" style={{ color: '#4C535B', fontSize: 11 }}>— last seen {fmtAgo(status?.lastSeenAgoSeconds)}</span>
+            <span className="mono" style={{ color: 'var(--dim)', fontSize: 11 }}>— last seen {fmtAgo(status?.lastSeenAgoSeconds)}</span>
           )}
         </div>
-        <div className="grid-2-responsive" style={{ gap: 1, backgroundColor: '#1B2026', border: '1px solid #262C33', borderRadius: 4, overflow: 'hidden' }}>
+        <div className="grid-2-responsive" style={{ gap: 1, backgroundColor: 'var(--line-soft)', border: '1px solid var(--line)', borderRadius: 4, overflow: 'hidden' }}>
           {[
             ['Version', status?.version || '—'],
             ['Uptime', status?.uptimeSeconds ? fmtUptime(status.uptimeSeconds) : '—'],
@@ -138,15 +149,15 @@ export default function BotControlPage() {
             ['WhatsApp sessions', String(status?.whatsappSessions ?? '—')],
             ['Command count', String(status?.commandCount ?? '—')],
           ].map(([label, value]) => (
-            <div key={label} style={{ background: '#14181D', padding: '14px 16px' }}>
-              <div className="mono" style={{ color: '#4C535B', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
-              <div className="mono" style={{ color: '#E9E7E2', fontWeight: 600, fontSize: 14 }}>{value}</div>
+            <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px' }}>
+              <div className="mono" style={{ color: 'var(--dim)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
+              <div className="mono" style={{ color: 'var(--ink)', fontWeight: 600, fontSize: 14 }}>{value}</div>
             </div>
           ))}
         </div>
-        <p className="mono mt-4" style={{ fontSize: 11, color: '#4C535B', margin: 0 }}>
+        <p className="mono mt-4" style={{ fontSize: 11, color: 'var(--dim)', margin: 0 }}>
           Last command sync: {status?.lastSyncAt ? new Date(status.lastSyncAt).toLocaleString() : 'never'}
-          {status?.lastSyncError && <span style={{ color: '#E5484D' }}> — {status.lastSyncError}</span>}
+          {status?.lastSyncError && <span style={{ color: 'var(--bad)' }}> — {status.lastSyncError}</span>}
         </p>
       </div>
 
@@ -173,12 +184,33 @@ export default function BotControlPage() {
             {busy ? 'Saving…' : 'Save key'}
           </button>
           {apiKeyCfg.configured && (
-            <button
-              onClick={() => { navigator.clipboard.writeText(apiKeyCfg.key); setNotice('Key copied — paste it into the bot\'s .env if needed.'); }}
-              className="btn btn-ghost"
-            >
-              Copy key
-            </button>
+            <>
+              <code
+                className="mono"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 12px',
+                  border: '1px solid var(--line)', borderRadius: 'var(--r-sm)',
+                  background: 'var(--surface-2)', color: 'var(--ink-2)', fontSize: 13, letterSpacing: '0.06em',
+                }}
+              >
+                {revealKey ? apiKeyCfg.key : maskKey(apiKeyCfg.key)}
+              </code>
+              <button
+                type="button"
+                onClick={() => setRevealKey((v) => !v)}
+                className="btn btn-ghost"
+                aria-pressed={revealKey}
+              >
+                {revealKey ? 'Hide key' : 'Reveal'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { navigator.clipboard.writeText(apiKeyCfg.key); setNotice('Key copied — paste it into the bot\'s .env if needed.'); }}
+                className="btn btn-ghost"
+              >
+                Copy key
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -229,16 +261,16 @@ export default function BotControlPage() {
 
       {/* Control history */}
       <div className="card overflow-hidden">
-        <div className="px-5 py-3.5" style={{ borderBottom: '1px solid #262C33' }}>
-          <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#79818A', margin: 0 }}>
+        <div className="px-5 py-3.5" style={{ borderBottom: '1px solid var(--line)' }}>
+          <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
             Control history
           </p>
         </div>
         {controls.length === 0 ? (
-          <p className="mono py-8 text-center" style={{ color: '#4C535B' }}>No controls issued yet.</p>
+          <p className="mono py-8 text-center" style={{ color: 'var(--dim)' }}>No controls issued yet.</p>
         ) : (
           <div className="scroll-x table-responsive">
-            <table className="table-plain" style={{ minWidth: 680 }}>
+            <table className="table-plain" style={{ minWidth: 0 }}>
               <thead>
                 <tr>
                   <th>Action</th>
@@ -251,13 +283,13 @@ export default function BotControlPage() {
               <tbody>
                 {controls.map((c) => (
                   <tr key={c.id}>
-                    <td data-label="Action" className="mono" style={{ color: '#E9E7E2', fontWeight: 600 }}>{c.action}</td>
-                    <td data-label="Payload" className="mono" style={{ color: '#AEB5BD', fontSize: 12 }}>{JSON.stringify(c.payload).slice(0, 60)}</td>
+                    <td data-label="Action" className="mono" style={{ color: 'var(--ink)', fontWeight: 600 }}>{c.action}</td>
+                    <td data-label="Payload" className="mono" style={{ color: 'var(--ink-2)', fontSize: 12 }}>{JSON.stringify(c.payload).slice(0, 60)}</td>
                     <td data-label="Status">
                       <span className={`tag ${c.status === 'done' ? 'tag-green' : c.status === 'failed' ? 'tag-red' : 'tag-amber'}`}>{c.status}</span>
                     </td>
-                    <td data-label="Result" style={{ color: '#AEB5BD', maxWidth: 220, fontSize: 13 }}>{c.result || '—'}</td>
-                    <td data-label="When" className="mono" style={{ color: '#4C535B', fontSize: 12 }}>{c.createdAt ? new Date(c.createdAt).toLocaleString() : '—'}</td>
+                    <td data-label="Result" style={{ color: 'var(--ink-2)', maxWidth: 220, fontSize: 13 }}>{c.result || '—'}</td>
+                    <td data-label="When" className="mono" style={{ color: 'var(--dim)', fontSize: 12 }}>{c.createdAt ? new Date(c.createdAt).toLocaleString() : '—'}</td>
                   </tr>
                 ))}
               </tbody>

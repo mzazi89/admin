@@ -67,19 +67,19 @@ export default function ResellersPage() {
       </div>
 
       {notice && (
-        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(62,207,142,0.08)', border: '1px solid rgba(62,207,142,0.3)', color: '#3ECF8E', borderRadius: 8 }}>
+        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(62,207,142,0.08)', border: '1px solid rgba(62,207,142,0.3)', color: 'var(--good)', borderRadius: 8 }}>
           {notice}
         </div>
       )}
       {error && (
-        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D', borderRadius: 8 }}>
+        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)', borderRadius: 8 }}>
           {error}
         </div>
       )}
 
       {/* Generator */}
       <div className="card mt-5 p-6">
-        <h2 className="display text-sm font-bold" style={{ color: '#E9E7E2' }}>Generate passwords</h2>
+        <h2 className="display text-sm font-bold" style={{ color: 'var(--ink)' }}>Generate passwords</h2>
         <div className="d-flex mt-4" style={{ gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <input
             type="number"
@@ -99,14 +99,14 @@ export default function ResellersPage() {
         {freshCodes.length > 0 && (
           <div className="mt-4" style={{ background: 'rgba(242,169,59,0.06)', border: '1px solid rgba(242,169,59,0.35)', borderRadius: 8, padding: '12px 14px' }}>
             <div className="d-flex" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-              <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: '#F2A93B' }}>
+              <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>
                 NEW PASSWORDS — share them once (one activation each)
               </span>
               <button onClick={copyCodes} className="btn" style={{ fontSize: 12, padding: '6px 12px' }}>📋 Copy all</button>
             </div>
             <div className="mt-3" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))' }}>
               {freshCodes.map((c) => (
-                <div key={c.id} className="mono" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid #1B2026', borderRadius: 6, padding: '10px 12px', fontSize: 15, letterSpacing: '0.08em', color: '#E9E7E2' }}>
+                <div key={c.id} className="mono" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--line-soft)', borderRadius: 6, padding: '10px 12px', fontSize: 15, letterSpacing: '0.08em', color: 'var(--ink)' }}>
                   {c.code}
                 </div>
               ))}
@@ -117,33 +117,33 @@ export default function ResellersPage() {
 
       {/* History */}
       <div className="card mt-5 p-6">
-        <h2 className="display text-sm font-bold" style={{ color: '#E9E7E2' }}>
-          Passwords <span style={{ color: '#4C535B' }}>({rows.length})</span>
+        <h2 className="display text-sm font-bold" style={{ color: 'var(--ink)' }}>
+          Passwords <span style={{ color: 'var(--dim)' }}>({rows.length})</span>
         </h2>
         {loading ? (
-          <p className="mt-4" style={{ color: '#79818A' }}>Loading…</p>
+          <p className="mt-4" style={{ color: 'var(--muted)' }}>Loading…</p>
         ) : (
           <div className="table-wrap mt-4">
-            <table>
+            <table className="table-responsive">
               <thead>
                 <tr><th>#</th><th>Code</th><th>Status</th><th>Activated by</th><th>Activated</th><th>Created</th><th>Panels made</th></tr>
               </thead>
               <tbody>
                 {rows.length === 0 && (
-                  <tr><td colSpan={7} className="py-8 text-center" style={{ color: '#79818A' }}>No reseller passwords yet — generate some above.</td></tr>
+                  <tr><td colSpan={7} data-label="" className="py-8 text-center" style={{ color: 'var(--muted)' }}>No reseller passwords yet — generate some above.</td></tr>
                 )}
                 {rows.map((r, i) => (
                   <tr key={r.id}>
-                    <td className="mono" style={{ color: '#4C535B' }}>{i + 1}</td>
-                    <td className="mono" style={{ letterSpacing: '0.06em' }}>{r.code}</td>
-                    <td>{r.status === 'active'
+                    <td data-label="" className="mono" style={{ color: 'var(--dim)' }}>{i + 1}</td>
+                    <td data-label="Code" className="mono" style={{ letterSpacing: '0.06em' }}>{r.code}</td>
+                    <td data-label="Status">{r.status === 'active'
                       ? <span className="tag tag-green">ACTIVE</span>
                       : <span className="tag">UNUSED</span>}
                     </td>
-                    <td className="mono">{r.activated_by || '—'}</td>
-                    <td className="mono" style={{ fontSize: 12 }}>{r.activated_at ? new Date(r.activated_at).toLocaleString() : '—'}</td>
-                    <td className="mono" style={{ fontSize: 12 }}>{new Date(r.created_at).toLocaleString()}</td>
-                    <td className="mono" style={{ color: r.panels_created > 0 ? '#3ECF8E' : '#4C535B' }}>{r.panels_created || 0}</td>
+                    <td data-label="Activated by" className="mono">{r.activated_by || '—'}</td>
+                    <td data-label="Activated" className="mono" style={{ fontSize: 12 }}>{r.activated_at ? new Date(r.activated_at).toLocaleString() : '—'}</td>
+                    <td data-label="Created" className="mono" style={{ fontSize: 12 }}>{new Date(r.created_at).toLocaleString()}</td>
+                    <td data-label="Panels made" className="mono" style={{ color: r.panels_created > 0 ? 'var(--good)' : 'var(--dim)' }}>{r.panels_created || 0}</td>
                   </tr>
                 ))}
               </tbody>

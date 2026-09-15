@@ -6,7 +6,7 @@ const contributors = [
     role: 'Founder',
     company: 'Mzazi Tech',
     initials: 'DM',
-    color: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    color: 'linear-gradient(135deg, var(--blue), var(--blue-deep))',
     glow: 'rgba(37,99,235,0.35)',
     badge: '🚀',
   },
@@ -15,7 +15,7 @@ const contributors = [
     role: 'Founder',
     company: 'Blacklord Tech',
     initials: 'AO',
-    color: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
+    color: 'linear-gradient(135deg, var(--brand), var(--brand-deep))',
     glow: 'rgba(124,58,237,0.35)',
     badge: '⚡',
   },
@@ -24,7 +24,7 @@ const contributors = [
     role: 'Founder',
     company: 'Darknode XMD',
     initials: 'BB',
-    color: 'linear-gradient(135deg, #0f766e, #0d9488)',
+    color: 'linear-gradient(135deg, var(--good), var(--good))',
     glow: 'rgba(15,118,110,0.35)',
     badge: '🌐',
   },
@@ -36,7 +36,7 @@ function ContributorCard({ c }) {
       style={{
         backgroundColor: 'rgba(22,24,42,0.85)',
         backdropFilter: 'blur(8px)',
-        border: '1px solid #1e3a8a',
+        border: '1px solid var(--blue-deep)',
         borderRadius: '20px',
         padding: '36px 28px',
         textAlign: 'center',
@@ -50,7 +50,7 @@ function ContributorCard({ c }) {
       onMouseLeave={e => {
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = 'none';
-        e.currentTarget.style.borderColor = '#1e3a8a';
+        e.currentTarget.style.borderColor = 'var(--blue-deep)';
       }}
     >
       {/* Avatar */}
@@ -68,7 +68,7 @@ function ContributorCard({ c }) {
         <div style={{
           position: 'absolute', bottom: 0, right: -4,
           width: '28px', height: '28px', borderRadius: '50%',
-          backgroundColor: 'rgba(2,4,9,0.45)', border: '2px solid #1e3a8a',
+          backgroundColor: 'rgba(2,4,9,0.45)', border: '2px solid var(--blue-deep)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '14px',
         }}>
@@ -76,11 +76,11 @@ function ContributorCard({ c }) {
         </div>
       </div>
 
-      <h3 style={{ color: '#f0f4ff', fontWeight: 800, fontSize: '16px', marginBottom: '6px', lineHeight: 1.3 }}>
+      <h3 style={{ color: 'var(--ink)', fontWeight: 800, fontSize: '16px', marginBottom: '6px', lineHeight: 1.3 }}>
         {c.name}
       </h3>
-      <p style={{ color: '#60a5fa', fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{c.role}</p>
-      <p style={{ color: '#475569', fontSize: '13px' }}>{c.company}</p>
+      <p style={{ color: 'var(--blue-bright)', fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{c.role}</p>
+      <p style={{ color: 'var(--muted)', fontSize: '13px' }}>{c.company}</p>
       <div style={{ width: '40px', height: '2px', margin: '16px auto 0', background: c.color, borderRadius: '2px' }} />
     </div>
   );
@@ -93,10 +93,10 @@ export default function Contributors() {
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
             style={{ backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)' }}>
-            <span style={{ color: '#60a5fa', fontSize: '14px', fontWeight: 600 }}>🤝 Project Contributors</span>
+            <span style={{ color: 'var(--blue-bright)', fontSize: '14px', fontWeight: 600 }}>🤝 Project Contributors</span>
           </div>
-          <h2 className="text-4xl font-extrabold mb-4" style={{ color: '#f0f4ff' }}>Built by Visionaries</h2>
-          <p style={{ color: '#64748b', maxWidth: '480px', margin: '0 auto' }}>
+          <h2 className="text-4xl font-extrabold mb-4" style={{ color: 'var(--ink)' }}>Built by Visionaries</h2>
+          <p style={{ color: 'var(--muted)', maxWidth: '480px', margin: '0 auto' }}>
             The founders and innovators who brought this platform to life.
           </p>
         </div>

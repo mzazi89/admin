@@ -64,17 +64,17 @@ export default function ClickLoader() {
       }}
     >
       <div style={{ position: 'relative', width: 92, height: 92, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="loader-ring" style={{ inset: 0, borderColor: 'rgba(242,169,59,0.12)', borderTopColor: '#F2A93B', borderWidth: 2, animationDuration: '1.3s' }} />
-        <div className="loader-ring loader-ring-rev" style={{ inset: 10, borderWidth: 1, borderColor: 'rgba(76,125,252,0.10)', borderTopColor: '#4C7DFC', animationDuration: '1.7s' }} />
+        <div className="loader-ring" style={{ inset: 0, borderColor: 'rgba(242,169,59,0.12)', borderTopColor: 'var(--brand)', borderWidth: 2, animationDuration: '1.3s' }} />
+        <div className="loader-ring loader-ring-rev" style={{ inset: 10, borderWidth: 1, borderColor: 'rgba(76,125,252,0.10)', borderTopColor: 'var(--blue)', animationDuration: '1.7s' }} />
         <Logo size={44} />
       </div>
 
-      <div className="mono text-[11px] tracking-[0.4em] uppercase" style={{ color: '#79818A' }}>
+      <div className="mono text-[11px] tracking-[0.4em] uppercase" style={{ color: 'var(--muted)' }}>
         Mzazi Tech
       </div>
 
-      <div style={{ width: 200, height: 2, borderRadius: 1, backgroundColor: '#1B2026', overflow: 'hidden' }}>
-        <div className="loader-bar" style={{ height: '100%', background: '#F2A93B' }} />
+      <div style={{ width: 200, height: 2, borderRadius: 1, backgroundColor: 'var(--line-soft)', overflow: 'hidden' }}>
+        <div className="loader-bar" style={{ height: '100%', background: 'var(--brand)' }} />
       </div>
     </div>
   );

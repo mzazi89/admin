@@ -15,7 +15,7 @@ function TestimonialCard({ testimonial }) {
       style={{
         backgroundColor: 'rgba(22,24,42,0.85)',
         backdropFilter: 'blur(8px)',
-        border: '1px solid #1e3a8a',
+        border: '1px solid var(--blue-deep)',
         borderRadius: '16px',
         padding: '28px',
         display: 'flex',
@@ -26,19 +26,19 @@ function TestimonialCard({ testimonial }) {
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(37,99,235,0.2)'; }}
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      <div style={{ color: '#2563eb', fontSize: '32px', lineHeight: 1, opacity: 0.6 }}>"</div>
-      <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: '1.7', flex: 1 }}>{testimonial.message}</p>
+      <div style={{ color: 'var(--blue-deep)', fontSize: '32px', lineHeight: 1, opacity: 0.6 }}>"</div>
+      <p style={{ color: 'var(--dim)', fontSize: '15px', lineHeight: '1.7', flex: 1 }}>{testimonial.message}</p>
       <StarRating value={testimonial.rating} readonly />
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid #1e3a8a' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px', borderTop: '1px solid var(--blue-deep)' }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '50%',
-          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+          background: 'linear-gradient(135deg, var(--blue), var(--blue-deep))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontWeight: 700, fontSize: '14px', color: '#fff', flexShrink: 0,
         }}>{initials}</div>
         <div>
-          <div style={{ color: '#f0f4ff', fontWeight: 600, fontSize: '14px' }}>{testimonial.name}</div>
-          <div style={{ color: '#475569', fontSize: '12px' }}>{date}</div>
+          <div style={{ color: 'var(--ink)', fontWeight: 600, fontSize: '14px' }}>{testimonial.name}</div>
+          <div style={{ color: 'var(--muted)', fontSize: '12px' }}>{date}</div>
         </div>
       </div>
     </div>
@@ -75,9 +75,9 @@ function TestimonialForm({ onSubmitted }) {
     return (
       <div style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid rgba(37,99,235,0.4)', borderRadius: '16px', padding: '40px', textAlign: 'center' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎉</div>
-        <h3 style={{ color: '#f0f4ff', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Thank You!</h3>
-        <p style={{ color: '#64748b' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
-        <button onClick={() => setSuccess(false)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '10px', background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
+        <h3 style={{ color: 'var(--ink)', fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Thank You!</h3>
+        <p style={{ color: 'var(--muted)' }}>Your testimonial has been submitted successfully. It will appear after a quick approval.</p>
+        <button onClick={() => setSuccess(false)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '10px', background: 'linear-gradient(135deg, var(--blue), var(--blue-deep))', color: '#fff', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
           Add Another
         </button>
       </div>
@@ -87,47 +87,47 @@ function TestimonialForm({ onSubmitted }) {
   const inputStyle = {
     width: '100%', padding: '12px 16px', borderRadius: '10px',
     backgroundColor: 'rgba(2,4,9,0.70)', backdropFilter: 'blur(6px)',
-    border: '1px solid #1e3a8a', color: '#f0f4ff', fontSize: '15px',
+    border: '1px solid var(--blue-deep)', color: 'var(--ink)', fontSize: '15px',
     outline: 'none', transition: 'border-color 0.2s',
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e3a8a', borderRadius: '16px', padding: '32px' }}>
-      <h3 style={{ color: '#f0f4ff', fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Share Your Experience</h3>
+    <form onSubmit={handleSubmit} style={{ backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid var(--blue-deep)', borderRadius: '16px', padding: '32px' }}>
+      <h3 style={{ color: 'var(--ink)', fontSize: '20px', fontWeight: 700, marginBottom: '24px' }}>Share Your Experience</h3>
 
       {error && (
-        <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px 16px', color: '#f87171', fontSize: '14px', marginBottom: '20px' }}>
+        <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px 16px', color: 'var(--bad)', fontSize: '14px', marginBottom: '20px' }}>
           {error}
         </div>
       )}
 
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Name *</label>
+        <label style={{ display: 'block', color: 'var(--dim)', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Name *</label>
         <input type="text" placeholder="e.g. John Kamau" value={form.name} required
           onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle}
-          onFocus={e => e.target.style.borderColor = '#2563eb'}
-          onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
+          onFocus={e => e.target.style.borderColor = 'var(--blue-deep)'}
+          onBlur={e => e.target.style.borderColor = 'var(--blue-deep)'} />
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Rating *</label>
+        <label style={{ display: 'block', color: 'var(--dim)', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Rating *</label>
         <StarRating value={form.rating} onChange={r => setForm({ ...form, rating: r })} />
       </div>
 
       <div style={{ marginBottom: '24px' }}>
-        <label style={{ display: 'block', color: '#94a3b8', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Testimonial *</label>
+        <label style={{ display: 'block', color: 'var(--dim)', fontSize: '13px', fontWeight: 600, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Your Testimonial *</label>
         <textarea placeholder="Tell others about your experience with MZAZI TECH..." value={form.message} required rows={5}
           onChange={e => setForm({ ...form, message: e.target.value })}
           style={{ ...inputStyle, resize: 'vertical', minHeight: '120px' }}
-          onFocus={e => e.target.style.borderColor = '#2563eb'}
-          onBlur={e => e.target.style.borderColor = '#1e3a8a'} />
-        <div style={{ color: '#475569', fontSize: '12px', marginTop: '6px', textAlign: 'right' }}>{form.message.length} / 1000</div>
+          onFocus={e => e.target.style.borderColor = 'var(--blue-deep)'}
+          onBlur={e => e.target.style.borderColor = 'var(--blue-deep)'} />
+        <div style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '6px', textAlign: 'right' }}>{form.message.length} / 1000</div>
       </div>
 
       <button type="submit" disabled={loading} style={{
         width: '100%', padding: '14px', borderRadius: '12px',
-        background: loading ? '#1e3a8a' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-        color: loading ? '#64748b' : '#fff', fontWeight: 700, fontSize: '16px',
+        background: loading ? 'var(--blue-deep)' : 'linear-gradient(135deg, var(--blue), var(--blue-deep))',
+        color: loading ? 'var(--muted)' : '#fff', fontWeight: 700, fontSize: '16px',
         border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
         boxShadow: loading ? 'none' : '0 0 24px rgba(37,99,235,0.35)', transition: 'all 0.2s',
       }}>
@@ -194,17 +194,17 @@ export default function Testimonials() {
             padding: '6px 16px', borderRadius: '99px', marginBottom: '20px',
             backgroundColor: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.3)',
           }}>
-            <span style={{ color: '#facc15', fontSize: '16px' }}>★</span>
-            <span style={{ color: '#60a5fa', fontSize: '14px', fontWeight: 600 }}>
+            <span style={{ color: 'var(--warn)', fontSize: '16px' }}>★</span>
+            <span style={{ color: 'var(--blue-bright)', fontSize: '14px', fontWeight: 600 }}>
               {avgRating ? `${avgRating} avg rating · ` : ''}{total} {total === 1 ? 'review' : 'reviews'}
             </span>
           </div>
-          <h2 style={{ color: '#f0f4ff', fontSize: '36px', fontWeight: 800, marginBottom: '12px' }}>What Our Clients Say</h2>
-          <p style={{ color: '#64748b', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
+          <h2 style={{ color: 'var(--ink)', fontSize: '36px', fontWeight: 800, marginBottom: '12px' }}>What Our Clients Say</h2>
+          <p style={{ color: 'var(--muted)', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
             Real experiences from real customers worldwide.
           </p>
           <div style={{ marginTop: '16px' }}>
-            <Link href="/testimonials" style={{ color: '#60a5fa', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>
+            <Link href="/testimonials" style={{ color: 'var(--blue-bright)', fontSize: '14px', fontWeight: 600, textDecoration: 'none' }}>
               View all reviews →
             </Link>
           </div>
@@ -212,9 +212,9 @@ export default function Testimonials() {
 
         {/* Cards */}
         {loading ? (
-          <div style={{ textAlign: 'center', color: '#475569', padding: '40px 0' }}>Loading testimonials…</div>
+          <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '40px 0' }}>Loading testimonials…</div>
         ) : testimonials.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid #1e3a8a', borderRadius: '16px', marginBottom: '48px', color: '#64748b' }}>
+          <div style={{ textAlign: 'center', padding: '48px', backgroundColor: 'rgba(22,24,42,0.85)', backdropFilter: 'blur(8px)', border: '1px solid var(--blue-deep)', borderRadius: '16px', marginBottom: '48px', color: 'var(--muted)' }}>
             <div style={{ fontSize: '40px', marginBottom: '12px' }}>💬</div>
             <p>No testimonials yet — be the first to share your experience!</p>
           </div>
@@ -233,7 +233,7 @@ export default function Testimonials() {
                   style={{
                     padding: '12px 36px', borderRadius: '12px',
                     backgroundColor: 'rgba(37,99,235,0.1)',
-                    color: '#60a5fa', border: '1px solid rgba(37,99,235,0.35)',
+                    color: 'var(--blue-bright)', border: '1px solid rgba(37,99,235,0.35)',
                     fontWeight: 600, fontSize: '15px', cursor: loadingMore ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s',
                   }}

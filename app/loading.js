@@ -14,7 +14,7 @@ export default function Loading() {
       <div className="spinner" />
       <div
         className="mono"
-        style={{ fontSize: 11, letterSpacing: '0.34em', textTransform: 'uppercase', color: '#4C535B' }}
+        style={{ fontSize: 11, letterSpacing: '0.34em', textTransform: 'uppercase', color: 'var(--dim)' }}
       >
         Mzazi Tech
       </div>

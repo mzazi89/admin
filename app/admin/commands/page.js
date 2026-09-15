@@ -1,40 +1,39 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+
+import { useCallback, useEffect, useState } from 'react';
+import {
+  Button, Card, ConfirmDialog, DataTable, EmptyState, ErrorState, Field, Input,
+  Modal, PageHeader, SearchInput, Select, Skeleton, StatusIndicator, Textarea, Toggle,
+  humaniseError, useToast,
+  Icons,
+} from '@/components/ui';
 
 const EMPTY = {
-  name: '',
-  aliases: '',
-  description: '',
-  category: 'General',
-  usage: '',
-  ownerOnly: false,
-  adminOnly: false,
-  groupOnly: false,
-  enabled: true,
-  code: '',
+  name: '', aliases: '', description: '', category: 'General', usage: '',
+  ownerOnly: false, adminOnly: false, groupOnly: false, enabled: true, code: '',
 };
 
-// Commands the bot handles in its own code (quartz/case.js) BEFORE the remote
-// registry — the bot intercepts these keywords, so edits here never affect it.
-// They are edited directly in bot code and deployed with the bot.
-const ENGINE_LOCKED = new Set([
-  'buy', 'pay', 'payment',
-  'plan', 'plans', 'subscription',
-  'pair', 'connect', 'mzazibot',
-  'verify',
-]);
-const ENGINE_TIP = 'Engine command — handled in bot code (quartz/case.js). Edits here are saved to the DB but do NOT change the bot. Edit the bot source instead.';
+// Commands the bot handles in its own code before the remote registry. Edits
+// here are saved to the DB but do NOT change the running bot.
+const ENGINE_LOCKED = new Set(['buy', 'pay', 'payment', 'plan', 'plans', 'subscription', 'pair', 'connect', 'mzazibot', 'verify']);
+const ENGINE_TIP = 'Engine command — handled in bot code. Edits here are saved to the DB but do NOT change the bot.';
 
 export default function CommandsPage() {
+  const toast = useToast();
+
   const [commands, setCommands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('all');
-  const [modal, setModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', cmd }
+  const [modal, setModal] = useState(null); // null | { mode, name?, loadingCode? }
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncingTo, setSyncingTo] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [confirmKind, setConfirmKind] = useState(null); // 'sync' | 'syncToSeed'
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -43,12 +42,12 @@ export default function CommandsPage() {
       if (q) params.set('q', q);
       if (category && category !== 'all') params.set('category', category);
       const res = await fetch(`/api/admin/bot-commands?${params.toString()}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to load commands');
       setCommands(data.commands || []);
       setError('');
     } catch (e) {
-      setError(e.message);
+      setError(humaniseError(e, 'We could not load commands right now. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -61,57 +60,8 @@ export default function CommandsPage() {
 
   const categories = [...new Set(commands.map((c) => c.category))].sort();
 
-  const openAdd = () => {
-    setForm(EMPTY);
-    setModal({ mode: 'add' });
-  };
+  const openAdd = () => { setForm(EMPTY); setModal({ mode: 'add' }); };
 
-  const [syncing, setSyncing] = useState(false);
-  const syncFromSeed = async () => {
-    if (!window.confirm('Sync ALL commands from the seed file?\n\nThis overwrites every command row with the shipped version (new + fixed code) — including any manual edits made in this panel.')) return;
-    setSyncing(true);
-    setNotice('');
-    setError('');
-    try {
-      const res = await fetch('/api/admin/bot-commands/sync', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Sync failed.');
-      } else {
-        setNotice(`✅ Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}. Bot will re-import shortly.`);
-        load();
-      }
-    } catch (e) {
-      setError('Network error during sync.');
-    } finally {
-      setSyncing(false);
-    }
-  };
-  const [syncingTo, setSyncingTo] = useState(false);
-  const syncToSeed = async () => {
-    if (!window.confirm('Sync ALL commands TO the seed file (data/bot-commands.json)?\n\nThis overwrites the shipped seed with the current live database state — including manual edits, plus any commands added or deleted here. Commit the updated file to git to make it the new seed.')) return;
-    setSyncingTo(true);
-    setNotice('');
-    setError('');
-    try {
-      const res = await fetch('/api/admin/bot-commands/sync-to-seed', { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Sync to seed failed.');
-      } else {
-        setNotice(
-          data.target === 'github'
-            ? `✅ Exported ${data.written} commands — committed to GitHub (${data.commit ? data.commit.slice(0, 7) : ''}). The seed is now the live registry.`
-            : `✅ Exported ${data.written} commands to the seed file. Commit data/bot-commands.json to git to make it the new shipped seed.`
-        );
-        setTimeout(() => setNotice(''), 6000);
-      }
-    } catch (e) {
-      setError('Network error during sync to seed.');
-    } finally {
-      setSyncingTo(false);
-    }
-  };
   const openEdit = async (cmd) => {
     setForm({
       name: cmd.name,
@@ -128,7 +78,7 @@ export default function CommandsPage() {
     setModal({ mode: 'edit', name: cmd.name, loadingCode: true });
     try {
       const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}`);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.command) {
         setForm((f) => ({
           ...f,
@@ -143,65 +93,40 @@ export default function CommandsPage() {
           code: data.command.code || '',
         }));
       }
-    } catch {}
-    setModal((m) => ({ ...m, loadingCode: false }));
+    } catch { /* leave the metadata form usable even if the code load failed */ }
+    setModal((m) => (m ? { ...m, loadingCode: false } : m));
   };
+
+  const payload = () => ({
+    name: form.name.trim(),
+    aliases: form.aliases.split(',').map((a) => a.trim().toLowerCase()).filter(Boolean),
+    description: form.description.trim(),
+    category: form.category.trim() || 'General',
+    usage: form.usage.trim(),
+    ownerOnly: form.ownerOnly,
+    adminOnly: form.adminOnly,
+    groupOnly: form.groupOnly,
+    enabled: form.enabled,
+    code: form.code,
+  });
 
   const save = async () => {
     setSaving(true);
-    setError('');
     try {
-      const payload = {
-        name: form.name.trim(),
-        aliases: form.aliases.split(',').map((a) => a.trim().toLowerCase()).filter(Boolean),
-        description: form.description.trim(),
-        category: form.category.trim() || 'General',
-        usage: form.usage.trim(),
-        ownerOnly: form.ownerOnly,
-        adminOnly: form.adminOnly,
-        groupOnly: form.groupOnly,
-        enabled: form.enabled,
-        code: form.code,
-      };
-      if (modal.mode === 'add') {
-        const res = await fetch('/api/admin/bot-commands', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to create');
-      } else {
-        const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(modal.name)}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to update');
-      }
+      const isEdit = modal.mode === 'edit';
+      const res = await fetch(
+        isEdit ? `/api/admin/bot-commands/${encodeURIComponent(modal.name)}` : '/api/admin/bot-commands',
+        { method: isEdit ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload()) },
+      );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to save command');
       setModal(null);
-      setNotice('Saved — the bot will use this in ~15 seconds.');
-      setTimeout(() => setNotice(''), 4000);
+      toast.success('Saved — the bot will use this within ~15 seconds.');
       load();
     } catch (e) {
-      setError(e.message);
+      toast.error(humaniseError(e, 'We could not save this command. Please try again.'));
     } finally {
       setSaving(false);
-    }
-  };
-
-  const del = async (name) => {
-    if (!window.confirm(`Delete command "${name}"? The bot will stop responding to it within ~15 seconds.`)) return;
-    try {
-      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(name)}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete');
-      setNotice('Deleted — the bot will stop using it in ~15 seconds.');
-      setTimeout(() => setNotice(''), 4000);
-      load();
-    } catch (e) {
-      alert(e.message);
     }
   };
 
@@ -222,203 +147,233 @@ export default function CommandsPage() {
           enabled: !cmd.enabled,
         }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to toggle');
-      setNotice(cmd.enabled ? 'Disabled — takes effect in ~15 seconds.' : 'Enabled — takes effect in ~15 seconds.');
-      setTimeout(() => setNotice(''), 4000);
+      toast.success(cmd.enabled ? 'Disabled — takes effect in ~15 seconds.' : 'Enabled — takes effect in ~15 seconds.');
       load();
     } catch (e) {
-      alert(e.message);
+      toast.error(humaniseError(e, 'We could not change this command. Please try again.'));
+    }
+  };
+
+  const del = async (name) => {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to delete');
+      toast.success('Deleted — the bot will stop using it in ~15 seconds.');
+      setDeleteTarget(null);
+      load();
+    } catch (e) {
+      toast.error(humaniseError(e, 'We could not delete this command. Please try again.'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const syncFromSeed = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/admin/bot-commands/sync', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Sync failed.');
+      toast.success(`Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}.`);
+      setConfirmKind(null);
+      load();
+    } catch (e) {
+      toast.error(humaniseError(e, 'The sync failed. Please try again.'));
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const syncToSeed = async () => {
+    setSyncingTo(true);
+    try {
+      const res = await fetch('/api/admin/bot-commands/sync-to-seed', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Sync to seed failed.');
+      toast.success(data.target === 'github'
+        ? `Exported ${data.written} commands — committed to GitHub.`
+        : `Exported ${data.written} commands to the seed file. Commit it to git.`);
+      setConfirmKind(null);
+    } catch (e) {
+      toast.error(humaniseError(e, 'The sync to seed failed. Please try again.'));
+    } finally {
+      setSyncingTo(false);
     }
   };
 
   return (
     <div style={{ maxWidth: 1180, margin: '0 auto' }}>
-      {/* Header */}
-      <div className="mb-8">
-        <div className="eyebrow mb-4">Bot registry</div>
-        <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>Bot commands</h1>
-        <p className="lede mt-3" style={{ maxWidth: 600, fontSize: '0.92rem' }}>
-          {commands.length} commands hosted on mzazi.shop — saves go live on the bot within ~15 seconds.
-        </p>
-        <p className="lede mt-2" style={{ maxWidth: 620, fontSize: '0.82rem', color: '#6EA8FE' }}>
-          🔒 Engine commands (buy, pay, plan, pair, connect, verify…) are handled in the bot's own code — you can edit them here, but changes only take effect on the bot if mirrored in the bot source (quartz/case.js).
-        </p>
-      </div>
+      <PageHeader
+        title="Commands"
+        description={`${commands.length} commands hosted on the site — saves go live on the bot within ~15 seconds.`}
+        icon={<Icons.Command size={20} />}
+        actions={
+          <>
+            <Button variant="ghost" size="sm" icon={<Icons.Refresh size={15} />} onClick={() => setConfirmKind('sync')}>Sync from seed</Button>
+            <Button variant="ghost" size="sm" icon={<Icons.Upload size={15} />} onClick={() => setConfirmKind('syncToSeed')}>Sync to seed</Button>
+            <Button variant="primary" size="sm" icon={<Icons.Plus size={15} />} onClick={openAdd}>Add command</Button>
+          </>
+        }
+      />
 
-      {notice && (
-        <div className="tag tag-green mb-5" style={{ padding: '10px 14px', textTransform: 'none', letterSpacing: '0.02em', width: '100%' }}>
-          {notice}
+      <Card style={{ padding: 16, marginBottom: 18 }}>
+        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)' }}>
+          <SearchInput id="cmd-search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search commands" />
+          <Field id="cmd-category" label="" className="!mb-0">
+            <Select id="cmd-category" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter by category">
+              <option value="all">All categories</option>
+              {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+            </Select>
+          </Field>
         </div>
-      )}
+      </Card>
 
-      {error && (
-        <div className="tag tag-red mb-5" style={{ padding: '10px 14px', textTransform: 'none', letterSpacing: '0.02em', width: '100%' }}>
-          {error}
-        </div>
-      )}
-
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
-        <input placeholder="Search commands" value={q} onChange={(e) => setQ(e.target.value)} className="input mono" style={{ maxWidth: 260, fontSize: 13 }} />
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="input" style={{ maxWidth: 180, width: 'auto', fontSize: 13 }}>
-          <option value="all">All categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-        <button onClick={syncFromSeed} className="btn" style={{ fontSize: 13 }} disabled={syncing} title="Upserts all commands from data/bot-commands.json (fixes existing rows the seed never overwrites)">
-          {syncing ? 'Syncing…' : '⟳ Sync from seed'}
-        </button>
-        <button onClick={syncToSeed} className="btn btn-dark" style={{ fontSize: 13 }} disabled={syncingTo} title="Exports ALL commands from the database back into data/bot-commands.json (vice versa — makes the live state the new seed)">
-          {syncingTo ? 'Syncing…' : '⟳ Sync to seed'}
-        </button>
-        <button onClick={openAdd} className="btn btn-primary" style={{ marginLeft: 'auto' }}>Add command</button>
-      </div>
-
-      {/* Table */}
-      <div className="card overflow-hidden">
-        <div className="scroll-x table-responsive">
-          <table className="table-plain" style={{ minWidth: 820 }}>
-            <thead>
-              <tr>
-                <th>Command</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Flags</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+      {error ? (
+        <Card><ErrorState title="Could not load commands" message={error} onRetry={load} /></Card>
+      ) : loading ? (
+        <Card style={{ padding: 16, display: 'grid', gap: 12 }}>
+          {[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} h={40} />)}
+        </Card>
+      ) : commands.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={<Icons.Command size={26} />}
+            title="No commands found"
+            description="Add your first command, or clear the filters."
+            action={<Button variant="primary" size="sm" icon={<Icons.Plus size={15} />} onClick={openAdd}>Add command</Button>}
+          />
+        </Card>
+      ) : (
+        <Card style={{ padding: 0 }} className="anim-fade-up">
+          <DataTable columns={['Command', 'Description', 'Bot', 'Status', 'Actions']}>
+            {commands.map((cmd) => (
+              <tr key={cmd.id}>
+                <td data-label="Command">
+                  <div className="mono" style={{ color: 'var(--ink)', fontWeight: 600 }}>.{cmd.name}</div>
+                  <div className="mono" style={{ fontSize: 11, color: 'var(--dim)', marginTop: 2 }}>
+                    {cmd.category}{cmd.aliases.length ? ` · ${cmd.aliases.join(', ')}` : ''}
+                    {ENGINE_LOCKED.has(cmd.name) && <span title={ENGINE_TIP} style={{ color: 'var(--blue)' }}> · engine</span>}
+                  </div>
+                </td>
+                <td data-label="Description" style={{ color: 'var(--ink-2)', fontSize: 13.5, maxWidth: 340 }}>{cmd.description || '—'}</td>
+                <td data-label="Bot" style={{ color: 'var(--muted)', fontSize: 13.5 }}>All bots</td>
+                <td data-label="Status">
+                  <button
+                    type="button"
+                    onClick={() => toggle(cmd)}
+                    aria-label={`${cmd.enabled ? 'Disable' : 'Enable'} ${cmd.name}`}
+                    style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+                  >
+                    <StatusIndicator
+                      status={cmd.enabled ? 'good' : 'offline'}
+                      label={cmd.enabled ? 'Enabled' : 'Disabled'}
+                    />
+                  </button>
+                </td>
+                <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'inline-flex', gap: 8, justifyContent: 'flex-end' }}>
+                    <Button variant="dark" size="sm" icon={<Icons.Pencil size={14} />} onClick={() => openEdit(cmd)}>Edit</Button>
+                    <Button variant="ghost" size="sm" icon={<Icons.Trash size={14} />} onClick={() => setDeleteTarget(cmd)} style={{ color: 'var(--bad)' }}>Delete</Button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loading && (
-                <tr><td colSpan={6} style={{ padding: '48px 0', textAlign: 'center' }}><div className="spinner" style={{ margin: '0 auto' }} /></td></tr>
-              )}
-              {!loading && commands.length === 0 && (
-                <tr><td colSpan={6} style={{ padding: '48px 0', textAlign: 'center', color: '#4C535B' }}>No commands found. Add your first command.</td></tr>
-              )}
-              {commands.map((cmd) => (
-                <tr key={cmd.id}>
-                  <td data-label="Command">
-                    <div className="mono" style={{ color: '#E9E7E2', fontWeight: 600 }}>.{cmd.name}</div>
-                    {cmd.aliases.length > 0 && (
-                      <div className="mono" style={{ color: '#4C535B', fontSize: 11, marginTop: 2 }}>aliases: {cmd.aliases.join(', ')}</div>
-                    )}
-                  </td>
-                  <td data-label="Category" style={{ color: '#AEB5BD' }}>{cmd.category}</td>
-                  <td data-label="Description" style={{ color: '#AEB5BD', maxWidth: 300, fontSize: 13 }}>{cmd.description}</td>
-                  <td data-label="Flags">
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {ENGINE_LOCKED.has(cmd.name) && (
-                        <span className="tag" title={ENGINE_TIP} style={{ color: '#6EA8FE', borderColor: 'rgba(110,168,254,0.35)', background: 'rgba(110,168,254,0.06)' }}>🔒 Engine</span>
-                      )}
-                      {cmd.ownerOnly && <span className="tag tag-red">Owner</span>}
-                      {cmd.adminOnly && <span className="tag tag-amber">Admin</span>}
-                      {cmd.groupOnly && <span className="tag">Group</span>}
-                    </div>
-                  </td>
-                  <td data-label="Status">
-                    <button
-                      onClick={() => toggle(cmd)}
-                      className="btn"
-                      style={{ fontSize: 10, padding: '5px 10px', borderColor: 'transparent', background: 'transparent', cursor: 'pointer' }}
-                    >
-                      <span className={`tag ${cmd.enabled ? 'tag-green' : ''}`}>
-                        <span className="dot" style={{ color: cmd.enabled ? '#3ECF8E' : '#4C535B', marginRight: 2 }} />
-                        {cmd.enabled ? 'Enabled' : 'Disabled'}
-                      </span>
-                    </button>
-                  </td>
-                  <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <button
-                      onClick={() => openEdit(cmd)}
-                      className="btn btn-dark"
-                      style={{ fontSize: 10, padding: '6px 12px', marginRight: 6 }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => del(cmd.name)}
-                      className="btn btn-danger"
-                      style={{ fontSize: 10, padding: '6px 12px' }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Modal */}
-      {modal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setModal(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#14181D', border: '1px solid #262C33', borderRadius: 6, width: '100%', maxWidth: 680, maxHeight: '90vh', overflowY: 'auto', padding: 26 }}>
-            <div className="eyebrow mb-3">{modal.mode === 'add' ? 'New command' : 'Edit command'}</div>
-            <h2 className="section-title mb-5" style={{ fontSize: '1.3rem' }}>
-              {modal.mode === 'add' ? 'Add command' : `Edit .${modal.name}`}
-            </h2>
-
-            <div className="grid-2-responsive mb-4">
-              <div>
-                <label className="label">Name (a-z, 0-9, _ -)</label>
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="input mono" disabled={modal.mode === 'edit'} placeholder="mycommand" />
-              </div>
-              <div>
-                <label className="label">Aliases (comma separated)</label>
-                <input value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} className="input" placeholder="mc, cmd" />
-              </div>
-              <div>
-                <label className="label">Category</label>
-                <input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="input" />
-              </div>
-              <div>
-                <label className="label">Usage hint</label>
-                <input value={form.usage} onChange={(e) => setForm({ ...form, usage: e.target.value })} className="input mono" placeholder=".mycommand [arg]" />
-              </div>
-            </div>
-
-            <label className="label">Description</label>
-            <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="input" style={{ marginBottom: 16 }} placeholder="What this command does" />
-
-            <div style={{ display: 'flex', gap: 18, marginBottom: 16, flexWrap: 'wrap' }}>
-              {[
-                ['ownerOnly', 'Owner only'],
-                ['adminOnly', 'Admin only'],
-                ['groupOnly', 'Groups only'],
-                ['enabled', 'Enabled'],
-              ].map(([key, label]) => (
-                <label key={key} className="flex items-center gap-2" style={{ color: '#AEB5BD', fontSize: 13, cursor: 'pointer' }}>
-                  <input type="checkbox" checked={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.checked })} style={{ accentColor: '#F2A93B' }} />
-                  {label}
-                </label>
-              ))}
-            </div>
-
-            <label className="label">
-              Handler code {modal.mode === 'edit' && <span style={{ color: '#4C535B' }}>— the command's current code is loaded, edit as needed</span>}
-            </label>
-            <textarea
-              value={modal.loadingCode ? 'Loading current code…' : form.code}
-              onChange={(e) => setForm({ ...form, code: e.target.value })}
-              rows={10}
-              placeholder={modal.mode === 'edit' ? '// loading…' : "await mzazireply('Hello from the website!');"}
-              readOnly={!!modal.loadingCode}
-              className="input mono"
-              style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 12.5, marginBottom: 18, resize: 'vertical', lineHeight: 1.6 }}
-            />
-
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setModal(null)} className="btn btn-ghost">Cancel</button>
-              <button onClick={save} disabled={saving} className="btn btn-primary" style={{ opacity: saving ? 0.6 : 1 }}>
-                {saving ? 'Saving…' : 'Save command'}
-              </button>
-            </div>
-          </div>
-        </div>
+            ))}
+          </DataTable>
+        </Card>
       )}
+
+      <Modal
+        open={!!modal}
+        onClose={() => setModal(null)}
+        title={modal?.mode === 'edit' ? `Edit .${modal.name}` : 'Add command'}
+        description="Handler code is JavaScript run by the bot. Saves reach the bot within ~15 seconds."
+        size="xl"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setModal(null)}>Cancel</Button>
+            <Button variant="primary" loading={saving} onClick={save}>Save command</Button>
+          </>
+        }
+      >
+        {modal && (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+              <Field label="Name (a-z, 0-9, _ -)" id="cmd-name">
+                <Input id="cmd-name" className="mono" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} disabled={modal.mode === 'edit'} placeholder="mycommand" />
+              </Field>
+              <Field label="Aliases (comma separated)" id="cmd-aliases">
+                <Input id="cmd-aliases" value={form.aliases} onChange={(e) => setForm({ ...form, aliases: e.target.value })} placeholder="mc, cmd" />
+              </Field>
+              <Field label="Category" id="cmd-cat">
+                <Input id="cmd-cat" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+              </Field>
+              <Field label="Usage hint" id="cmd-usage">
+                <Input id="cmd-usage" className="mono" value={form.usage} onChange={(e) => setForm({ ...form, usage: e.target.value })} placeholder=".mycommand [arg]" />
+              </Field>
+            </div>
+
+            <Field label="Description" id="cmd-desc">
+              <Input id="cmd-desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What this command does" />
+            </Field>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 4, margin: '4px 0 10px' }}>
+              <Toggle id="cmd-owner" checked={form.ownerOnly} onChange={(v) => setForm({ ...form, ownerOnly: v })} label="Owner only" />
+              <Toggle id="cmd-admin" checked={form.adminOnly} onChange={(v) => setForm({ ...form, adminOnly: v })} label="Admin only" />
+              <Toggle id="cmd-group" checked={form.groupOnly} onChange={(v) => setForm({ ...form, groupOnly: v })} label="Groups only" />
+              <Toggle id="cmd-enabled" checked={form.enabled} onChange={(v) => setForm({ ...form, enabled: v })} label="Enabled" />
+            </div>
+
+            <Field label="Handler code" id="cmd-code" hint={modal.mode === 'edit' ? 'The current code is loaded — edit as needed.' : undefined}>
+              <Textarea
+                id="cmd-code"
+                className="mono"
+                value={modal.loadingCode ? 'Loading current code…' : form.code}
+                onChange={(e) => setForm({ ...form, code: e.target.value })}
+                rows={10}
+                readOnly={!!modal.loadingCode}
+                placeholder="await mzazireply('Hello from the website!');"
+                style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.6 }}
+              />
+            </Field>
+          </div>
+        )}
+      </Modal>
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => del(deleteTarget.name)}
+        loading={busy}
+        title={`Delete .${deleteTarget?.name}?`}
+        description="The bot stops responding to this command within ~15 seconds. This cannot be undone."
+        confirmLabel="Delete command"
+      />
+
+      <ConfirmDialog
+        open={confirmKind === 'sync'}
+        onClose={() => setConfirmKind(null)}
+        onConfirm={syncFromSeed}
+        loading={syncing}
+        tone="default"
+        title="Sync all commands from the seed file?"
+        description="This overwrites every command row with the shipped version, including any manual edits made here."
+        confirmLabel="Sync from seed"
+      />
+
+      <ConfirmDialog
+        open={confirmKind === 'syncToSeed'}
+        onClose={() => setConfirmKind(null)}
+        onConfirm={syncToSeed}
+        loading={syncingTo}
+        tone="default"
+        title="Sync all commands to the seed file?"
+        description="This overwrites the shipped seed with the current live database state, including your manual edits."
+        confirmLabel="Sync to seed"
+      />
     </div>
   );
 }

@@ -138,7 +138,7 @@ export default function AdminPanel() {
           padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em',
           backgroundColor: notice.startsWith('✅') ? 'rgba(62,207,142,0.06)' : 'rgba(229,72,77,0.06)',
           borderColor: notice.startsWith('✅') ? 'rgba(62,207,142,0.35)' : 'rgba(229,72,77,0.35)',
-          color: notice.startsWith('✅') ? '#3ECF8E' : '#E5484D',
+          color: notice.startsWith('✅') ? 'var(--good)' : 'var(--bad)',
         }}>
           {notice}
         </div>
@@ -147,13 +147,13 @@ export default function AdminPanel() {
       {loading ? (
         <div className="flex justify-center py-16"><div className="spinner" /></div>
       ) : users.length === 0 ? (
-        <div className="card card-pad" style={{ padding: '26px', textAlign: 'center', color: '#7A828A' }}>
-          No panel users found. (Configure the panel URL + API key on the <a href="/admin/settings" style={{ color: '#F5A623' }}>Settings</a> page.)
+        <div className="card card-pad" style={{ padding: '26px', textAlign: 'center', color: 'var(--muted)' }}>
+          No panel users found. (Configure the panel URL + API key on the <a href="/admin/settings" style={{ color: 'var(--brand)' }}>Settings</a> page.)
         </div>
       ) : (
         <div className="card card-pad" style={{ padding: '22px' }}>
           <div className="flex justify-between items-center mb-4">
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7A828A' }}>
+            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               {users.length} user{users.length === 1 ? '' : 's'}
             </span>
             <button onClick={load} disabled={busy === 'del'} className="btn" style={{ fontSize: 11, padding: '6px 12px' }}>🔄 Refresh</button>
@@ -166,15 +166,15 @@ export default function AdminPanel() {
               const selected = selectedByUser[u.id] || new Set();
               const allSelected = servers.length > 0 && servers.every((s) => selected.has(s.id));
               return (
-                <div key={u.id} className="tag" style={{ display: 'block', width: '100%', padding: 0, borderRadius: 12, borderColor: isOpen ? 'rgba(245,166,35,0.45)' : '#1B2026', overflow: 'hidden' }}>
+                <div key={u.id} className="tag" style={{ display: 'block', width: '100%', padding: 0, borderRadius: 12, borderColor: isOpen ? 'rgba(245,166,35,0.45)' : 'var(--line-soft)', overflow: 'hidden' }}>
                   {/* user row */}
                   <div className="flex justify-between items-center" style={{ padding: '14px 16px' }}>
                     <div style={{ minWidth: 0 }}>
-                      <div className="mono" style={{ fontSize: 13, color: '#FFFFFF' }}>
+                      <div className="mono" style={{ fontSize: 13, color: 'var(--ink)' }}>
                         {u.username}
-                        {u.root_admin && <span className="tag" style={{ marginLeft: 8, fontSize: 9, padding: '1px 6px', color: '#F5A623' }}>ADMIN</span>}
+                        {u.root_admin && <span className="tag" style={{ marginLeft: 8, fontSize: 9, padding: '1px 6px', color: 'var(--brand)' }}>ADMIN</span>}
                       </div>
-                      <div className="mono" style={{ fontSize: 10.5, color: '#7A828A', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div className="mono" style={{ fontSize: 10.5, color: 'var(--muted)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {u.first_name || ''} {u.last_name || ''} · {u.email}
                       </div>
                     </div>
@@ -190,9 +190,9 @@ export default function AdminPanel() {
 
                   {/* servers of this user */}
                   {isOpen && (
-                    <div style={{ borderTop: '1px solid #1B2026', padding: '12px 16px' }}>
+                    <div style={{ borderTop: '1px solid var(--line-soft)', padding: '12px 16px' }}>
                       {servers.length === 0 ? (
-                        <div className="mono" style={{ fontSize: 11, color: '#7A828A', padding: '6px 0' }}>No servers on this user.</div>
+                        <div className="mono" style={{ fontSize: 11, color: 'var(--muted)', padding: '6px 0' }}>No servers on this user.</div>
                       ) : (
                         <div className="space-y-2">
                           {servers.map((s) => (
@@ -202,13 +202,13 @@ export default function AdminPanel() {
                                   type="checkbox"
                                   checked={selected.has(s.id)}
                                   onChange={() => toggleServer(u.id, s.id)}
-                                  style={{ accentColor: '#F5A623' }}
+                                  style={{ accentColor: 'var(--brand)' }}
                                 />
                                 <span style={{ minWidth: 0 }}>
-                                  <span className="mono" style={{ fontSize: 12, color: '#FFFFFF', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span className="mono" style={{ fontSize: 12, color: 'var(--ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {s.name}
                                   </span>
-                                  <span className="mono" style={{ fontSize: 10, color: '#7A828A', display: 'block', marginTop: 2 }}>
+                                  <span className="mono" style={{ fontSize: 10, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
                                     #{s.id}{s.node ? ` · node: ${s.node}` : ''} · {fmtLimit(s.limits, 'cpu')} CPU · {fmtLimit(s.limits, 'memory')} RAM · {fmtLimit(s.limits, 'disk')} disk
                                   </span>
                                 </span>

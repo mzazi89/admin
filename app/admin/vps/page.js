@@ -131,16 +131,16 @@ export default function VpsPage() {
       </div>
 
       {notice && (
-        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(62,207,142,0.08)', border: '1px solid rgba(62,207,142,0.3)', color: '#3ECF8E', borderRadius: 8 }}>
+        <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(62,207,142,0.08)', border: '1px solid rgba(62,207,142,0.3)', color: 'var(--good)', borderRadius: 8 }}>
           {notice}
         </div>
       )}
-      {error && <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: '#E5484D', borderRadius: 8 }}>{error}</div>}
+      {error && <div className="mt-4 px-4 py-3 text-sm" style={{ background: 'rgba(229,72,77,0.08)', border: '1px solid rgba(229,72,77,0.3)', color: 'var(--bad)', borderRadius: 8 }}>{error}</div>}
 
       {/* ── Package form ── */}
       {showForm && (
         <div className="card p-6 mt-6">
-          <h2 className="text-sm font-bold mb-4" style={{ color: '#E9E7E2' }}>{editingId ? `Edit package #${editingId}` : 'New VPS package'}</h2>
+          <h2 className="text-sm font-bold mb-4" style={{ color: 'var(--ink)' }}>{editingId ? `Edit package #${editingId}` : 'New VPS package'}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <input className="input" placeholder="Name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
             <input className="input" type="number" placeholder="Price (KES) *" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
@@ -150,7 +150,7 @@ export default function VpsPage() {
             ))}
           </div>
           <div className="flex items-center gap-4 mt-4">
-            <label className="flex items-center gap-2 text-xs" style={{ color: '#AEB5BD', cursor: 'pointer' }}>
+            <label className="flex items-center gap-2 text-xs" style={{ color: 'var(--ink-2)', cursor: 'pointer' }}>
               <input type="checkbox" checked={form.active !== false} onChange={e => setForm({ ...form, active: e.target.checked })} />
               Live on store
             </label>
@@ -165,7 +165,7 @@ export default function VpsPage() {
       {/* ── Packages table ── */}
       <div className="card mt-6">
         <div className="table-wrap">
-          <table>
+          <table className="table-responsive">
             <thead>
               <tr>
                 <th>Package</th><th>Specs</th><th>Price</th><th>Pool</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th>
@@ -173,30 +173,30 @@ export default function VpsPage() {
             </thead>
             <tbody>
               {packages.length === 0 && (
-                <tr><td colSpan={6} className="py-10 text-center" style={{ color: '#79818A' }}>No packages yet — create your first VPS package.</td></tr>
+                <tr><td colSpan={6} data-label="" className="py-10 text-center" style={{ color: 'var(--muted)' }}>No packages yet — create your first VPS package.</td></tr>
               )}
               {packages.map(p => (
                 <tr key={p.id} style={{ opacity: p.active === false ? 0.55 : 1 }}>
-                  <td>
-                    <p className="font-semibold" style={{ color: '#E9E7E2' }}>{p.name}</p>
-                    <p className="text-[11px] mt-0.5" style={{ color: '#79818A' }}>{p.os || 'Linux'} · {p.location || '—'}</p>
+                  <td data-label="">
+                    <p className="font-semibold" style={{ color: 'var(--ink)' }}>{p.name}</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>{p.os || 'Linux'} · {p.location || '—'}</p>
                   </td>
-                  <td>
-                    <p className="text-[11px]" style={{ color: '#AEB5BD' }}>{[p.ram, p.cpu, p.disk, p.bandwidth].filter(Boolean).join(' · ') || '—'}</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: '#4C535B' }}>{p.orders} sale(s)</p>
+                  <td data-label="Specs">
+                    <p className="text-[11px]" style={{ color: 'var(--ink-2)' }}>{[p.ram, p.cpu, p.disk, p.bandwidth].filter(Boolean).join(' · ') || '—'}</p>
+                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--dim)' }}>{p.orders} sale(s)</p>
                   </td>
-                  <td className="mono font-semibold" style={{ color: '#F2A93B' }}>KES {Number(p.price).toLocaleString()}</td>
-                  <td>
-                    <span className="tag tag-green"><span className="dot" style={{ color: '#3ECF8E' }} />{p.stock} free</span>{' '}
+                  <td data-label="Price" className="mono font-semibold" style={{ color: 'var(--brand)' }}>KES {Number(p.price).toLocaleString()}</td>
+                  <td data-label="Pool">
+                    <span className="tag tag-green"><span className="dot" style={{ color: 'var(--good)' }} />{p.stock} free</span>{' '}
                     <span className="tag">{p.sold} sold</span>
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <button onClick={() => toggleActive(p)} className="tag" style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}>
-                      <span className="dot" style={{ color: p.active === false ? '#E5484D' : '#3ECF8E' }} />
+                      <span className="dot" style={{ color: p.active === false ? 'var(--bad)' : 'var(--good)' }} />
                       {p.active === false ? 'Hidden' : 'Live'}
                     </button>
                   </td>
-                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button onClick={() => { setSelected(p); loadInstances(p.id); }} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 10px', marginRight: 4 }}>Manage pool</button>
                     <button onClick={() => { setEditingId(p.id); setForm({ ...p, price: String(Number(p.price)) }); setShowForm(true); }} className="btn" style={{ fontSize: 10, padding: '6px 10px', marginRight: 4 }}>Edit</button>
                     <button onClick={() => deletePackage(p)} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 10px' }}>Delete</button>
@@ -213,8 +213,8 @@ export default function VpsPage() {
         <div className="card p-6 mt-6" style={{ border: '1px solid rgba(242,169,59,0.25)' }}>
           <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
             <div>
-              <h2 className="text-sm font-bold" style={{ color: '#E9E7E2' }}>Credential pool — {selected.name}</h2>
-              <p className="text-[11px] mt-0.5" style={{ color: '#79818A' }}>
+              <h2 className="text-sm font-bold" style={{ color: 'var(--ink)' }}>Credential pool — {selected.name}</h2>
+              <p className="text-[11px] mt-0.5" style={{ color: 'var(--muted)' }}>
                 Add real VPS instances (host / user / password). Each sale auto-assigns the next available one.
               </p>
             </div>
@@ -230,46 +230,46 @@ export default function VpsPage() {
           </div>
           <div className="flex items-center gap-3 mb-4">
             <button onClick={addInstance} className="btn btn-primary" style={{ fontSize: 12, padding: '9px 16px' }}>＋ Add instance</button>
-            <span className="text-[11px]" style={{ color: '#4C535B' }}>Only these fields are required · SSH port defaults to 22</span>
+            <span className="text-[11px]" style={{ color: 'var(--dim)' }}>Only these fields are required · SSH port defaults to 22</span>
           </div>
-          {error && <p className="text-xs mb-3" style={{ color: '#E5484D' }}>{error}</p>}
+          {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
 
           <div className="table-wrap">
-            <table>
+            <table className="table-responsive">
               <thead>
                 <tr><th>#</th><th>Instance</th><th>Password</th><th>Status</th><th>Buyer</th><th style={{ textAlign: 'right' }}>Actions</th></tr>
               </thead>
               <tbody>
                 {instances.length === 0 && (
-                  <tr><td colSpan={6} className="py-8 text-center" style={{ color: '#79818A' }}>No instances yet — add a droplet above. Buyers can't order until stock &gt; 0.</td></tr>
+                  <tr><td colSpan={6} data-label="" className="py-8 text-center" style={{ color: 'var(--muted)' }}>No instances yet — add a droplet above. Buyers can't order until stock &gt; 0.</td></tr>
                 )}
                 {instances.map(i => {
                   const isSold = i.status === 'sold';
                   const meta = [i.hostname, i.region, i.os, i.cpu, i.droplet_id ? `ID ${i.droplet_id}` : ''].filter(Boolean).join(' · ');
                   return (
                     <tr key={i.id} style={{ opacity: isSold ? 0.8 : 1 }}>
-                      <td className="mono" style={{ color: '#4C535B' }}>#{i.id}</td>
-                      <td>
-                        <p className="mono font-semibold text-[12px]" style={{ color: '#E9E7E2' }}>
-                          🌐 {i.host} <span style={{ color: '#4C535B', fontWeight: 400 }}>· 🆔 {i.username}</span>
+                      <td data-label="" className="mono" style={{ color: 'var(--dim)' }}>#{i.id}</td>
+                      <td data-label="Instance">
+                        <p className="mono font-semibold text-[12px]" style={{ color: 'var(--ink)' }}>
+                          🌐 {i.host} <span style={{ color: 'var(--dim)', fontWeight: 400 }}>· 🆔 {i.username}</span>
                         </p>
-                        {meta && <p className="mono text-[10px] mt-1" style={{ color: '#79818A' }}>{meta}</p>}
+                        {meta && <p className="mono text-[10px] mt-1" style={{ color: 'var(--muted)' }}>{meta}</p>}
                       </td>
-                      <td className="mono" style={{ color: '#AEB5BD' }}>
+                      <td data-label="Password" className="mono" style={{ color: 'var(--ink-2)' }}>
                         <button onClick={() => setReveal(r => ({ ...r, [i.id]: !r[i.id] }))} className="btn" style={{ fontSize: 10, padding: '2px 8px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                           {reveal[i.id] ? i.password : '••••••••••'}
                         </button>
                       </td>
-                      <td>
+                      <td data-label="Status">
                         <span className={isSold ? 'tag tag-amber' : 'tag tag-green'}>
-                          <span className="dot" style={{ color: isSold ? '#F2A93B' : '#3ECF8E' }} />
+                          <span className="dot" style={{ color: isSold ? 'var(--brand)' : 'var(--good)' }} />
                           {isSold ? 'Sold' : 'Available'}
                         </span>
                       </td>
-                      <td className="text-[11px]" style={{ color: '#79818A' }}>
+                      <td data-label="Buyer" className="text-[11px]" style={{ color: 'var(--muted)' }}>
                         {isSold ? (i.buyer_email || `user #${i.sold_to}`) : '—'}
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td data-label="Actions" style={{ textAlign: 'right' }}>
                         {!isSold && (
                           <button onClick={() => deleteInstance(i.id)} className="btn btn-danger" style={{ fontSize: 10, padding: '4px 8px' }}>Remove</button>
                         )}

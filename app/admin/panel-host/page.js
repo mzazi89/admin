@@ -92,7 +92,7 @@ export default function PanelHost() {
         <div className="tag mb-6" style={{ display: 'block', width: '100%', textTransform: 'none', letterSpacing: '0.02em', padding: '10px 14px',
           backgroundColor: msg.startsWith('🛑') || msg.includes('fail') || msg.includes('Fail') ? 'rgba(229,72,77,0.06)' : 'rgba(62,207,142,0.06)',
           borderColor: msg.startsWith('🛑') || msg.includes('fail') || msg.includes('Fail') ? 'rgba(229,72,77,0.35)' : 'rgba(62,207,142,0.35)',
-          color: msg.startsWith('🛑') || msg.includes('fail') || msg.includes('Fail') ? '#E5484D' : '#3ECF8E' }}>
+          color: msg.startsWith('🛑') || msg.includes('fail') || msg.includes('Fail') ? 'var(--bad)' : 'var(--good)' }}>
           {msg}
         </div>
       )}
@@ -124,14 +124,14 @@ export default function PanelHost() {
             <textarea id="p-key" className="input mono" value={form.privateKey} onChange={set('privateKey')} placeholder="-----BEGIN OPENSSH PRIVATE KEY-----…" rows={3} style={{ fontSize: 11, resize: 'vertical' }} />
           </div>
 
-          <div style={{ borderTop: '1px solid #1B2026', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
+          <div style={{ borderTop: '1px solid var(--line-soft)', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
 
           <div className="mb-4">
             <label className="label" htmlFor="p-admin">Panel admin username</label>
             <input id="p-admin" className="input mono" value={form.adminUser} onChange={set('adminUser')} style={{ fontSize: 13 }} />
           </div>
           <div className="mb-4">
-            <label className="label" htmlFor="p-adminpass">Panel admin password <span style={{ color: '#4C535B' }}>(empty = random)</span></label>
+            <label className="label" htmlFor="p-adminpass">Panel admin password <span style={{ color: 'var(--dim)' }}>(empty = random)</span></label>
             <input id="p-adminpass" className="input mono" value={form.adminPass} onChange={set('adminPass')} placeholder="generated if empty" style={{ fontSize: 13 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
@@ -139,7 +139,7 @@ export default function PanelHost() {
             <input id="p-email" className="input mono" value={form.adminEmail} onChange={set('adminEmail')} style={{ fontSize: 13 }} />
           </div>
 
-          <div style={{ borderTop: '1px solid #1B2026', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
+          <div style={{ borderTop: '1px solid var(--line-soft)', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
 
           <div className="mb-4">
             <label className="label" htmlFor="p-node">Node name</label>
@@ -158,7 +158,7 @@ export default function PanelHost() {
             <input id="p-disk" className="input mono" value={form.nodeDisk} onChange={set('nodeDisk')} placeholder="20480" style={{ fontSize: 13 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
-            <label className="label" htmlFor="p-egg">Egg JSON URL <span style={{ color: '#4C535B' }}>(optional — default: Minecraft Paper)</span></label>
+            <label className="label" htmlFor="p-egg">Egg JSON URL <span style={{ color: 'var(--dim)' }}>(optional — default: Minecraft Paper)</span></label>
             <input id="p-egg" className="input mono" value={form.eggUrl} onChange={set('eggUrl')} placeholder="https://raw.githubusercontent.com/parkervcp/eggs/master/…" style={{ fontSize: 13 }} />
           </div>
         </div>
@@ -176,19 +176,19 @@ export default function PanelHost() {
       {(phase === 'polling' || phase === 'done' || phase === 'failed' || log.length > 0) && (
         <div className="card card-pad mt-6" style={{ padding: '18px' }}>
           <div className="flex justify-between items-center mb-3">
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#7A828A' }}>
+            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               {phase === 'done' ? '✅ Deployment complete' : phase === 'failed' ? '❌ Deployment failed' : '⏳ Deploying — log refreshes every 5s'}
             </span>
           </div>
 
           {(phase === 'done' || Object.keys(summary).length > 0) && (
             <div className="mb-4" style={{ border: '1px solid rgba(62,207,142,0.35)', borderRadius: 8, padding: '12px 14px', backgroundColor: 'rgba(62,207,142,0.05)' }}>
-              <div className="mono" style={{ fontSize: 10.5, color: '#3ECF8E', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
-              {summary.PANEL_URL && <div className="mono" style={{ fontSize: 12, color: '#E9E7E2', marginBottom: 4 }}>🔗 Panel: <span style={{ color: '#F5A623' }}>{summary.PANEL_URL}</span></div>}
-              {summary.ADMIN_USER && <div className="mono" style={{ fontSize: 12, color: '#E9E7E2', marginBottom: 4 }}>👤 User: {summary.ADMIN_USER}</div>}
-              {summary.ADMIN_PASS && <div className="mono" style={{ fontSize: 12, color: '#E9E7E2', marginBottom: 4 }}>🔑 Pass: <span style={{ color: '#F5A623' }}>{summary.ADMIN_PASS}</span></div>}
-              {summary.NODE_ID && <div className="mono" style={{ fontSize: 12, color: '#E9E7E2', marginBottom: 4 }}>🖥 Node id: {summary.NODE_ID}</div>}
-              {summary.EGG_ID && <div className="mono" style={{ fontSize: 12, color: '#E9E7E2' }}>🥚 Egg id: {summary.EGG_ID}</div>}
+              <div className="mono" style={{ fontSize: 10.5, color: 'var(--good)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
+              {summary.PANEL_URL && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🔗 Panel: <span style={{ color: 'var(--brand)' }}>{summary.PANEL_URL}</span></div>}
+              {summary.ADMIN_USER && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>👤 User: {summary.ADMIN_USER}</div>}
+              {summary.ADMIN_PASS && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🔑 Pass: <span style={{ color: 'var(--brand)' }}>{summary.ADMIN_PASS}</span></div>}
+              {summary.NODE_ID && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🖥 Node id: {summary.NODE_ID}</div>}
+              {summary.EGG_ID && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)' }}>🥚 Egg id: {summary.EGG_ID}</div>}
             </div>
           )}
 
@@ -197,8 +197,8 @@ export default function PanelHost() {
             className="mono"
             style={{
               maxHeight: 320, overflow: 'auto', margin: 0, padding: '12px 14px',
-              backgroundColor: '#0C0E11', border: '1px solid #1B2026', borderRadius: 8,
-              fontSize: 11, lineHeight: 1.55, color: '#B9C0C7', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+              backgroundColor: 'var(--bg)', border: '1px solid var(--line-soft)', borderRadius: 8,
+              fontSize: 11, lineHeight: 1.55, color: 'var(--ink-2)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
             }}
           >
             {log.length ? log.join('\n') : 'Waiting for the installer to write its log…'}

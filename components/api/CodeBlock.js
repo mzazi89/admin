@@ -4,10 +4,10 @@ import CopyButton from './CopyButton';
 // Code block with a copy button — no external syntax highlighter needed
 export default function CodeBlock({ code, lang = 'json', label = null }) {
   return (
-    <div className="rounded-xl overflow-hidden" style={{ backgroundColor: '#020409', border: '1px solid #1e3a8a' }}>
+    <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--blue-deep)' }}>
       {(label || lang) && (
-        <div className="flex items-center justify-between px-4 py-2" style={{ backgroundColor: '#060b16', borderBottom: '1px solid #1e3a8a' }}>
-          <span className="text-xs font-mono" style={{ color: '#64748b' }}>{label || lang}</span>
+        <div className="flex items-center justify-between px-4 py-2" style={{ backgroundColor: 'var(--bg)', borderBottom: '1px solid var(--blue-deep)' }}>
+          <span className="text-xs font-mono" style={{ color: 'var(--muted)' }}>{label || lang}</span>
           <CopyButton text={code} label="Copy" />
         </div>
       )}
@@ -16,7 +16,7 @@ export default function CodeBlock({ code, lang = 'json', label = null }) {
           <CopyButton text={code} label="Copy" />
         </div>
       )}
-      <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono" style={{ color: '#cbd5e1', maxHeight: 480 }}>
+      <pre className="p-4 overflow-x-auto text-xs leading-relaxed font-mono" style={{ color: 'var(--ink-2)', maxHeight: 480 }}>
         {code}
       </pre>
     </div>

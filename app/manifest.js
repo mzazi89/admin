@@ -9,8 +9,8 @@ export default function manifest() {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#0B0D0F',
-    theme_color: '#0B0D0F',
+    background_color: '#F6F7FB',
+    theme_color: '#7C3AED',
     categories: ['business', 'productivity'],
     icons: [
       { src: '/icon', sizes: '512x512', type: 'image/png' },
@@ -18,8 +18,8 @@ export default function manifest() {
     ],
     shortcuts: [
       { name: 'Dashboard', url: '/admin/dashboard', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Sessions', url: '/admin/sessions', icons: [{ src: '/icon', sizes: '512x512' }] },
-      { name: 'Bot Control', url: '/admin/bot', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Devices', url: '/admin/sessions', icons: [{ src: '/icon', sizes: '512x512' }] },
+      { name: 'Broadcast', url: '/admin/broadcast', icons: [{ src: '/icon', sizes: '512x512' }] },
     ],
   };
 }

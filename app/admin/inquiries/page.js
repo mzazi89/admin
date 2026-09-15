@@ -110,9 +110,9 @@ export default function AdminInquiries() {
               className="mono btn"
               style={{
                 fontSize: 10.5, padding: '8px 14px', textTransform: 'uppercase',
-                backgroundColor: filter === f ? '#F2A93B' : 'transparent',
-                color: filter === f ? '#14100A' : '#79818A',
-                border: `1px solid ${filter === f ? '#F2A93B' : '#262C33'}`,
+                backgroundColor: filter === f ? 'var(--brand)' : 'transparent',
+                color: filter === f ? 'var(--on-brand)' : 'var(--muted)',
+                border: `1px solid ${filter === f ? 'var(--brand)' : 'var(--line)'}`,
                 cursor: 'pointer',
               }}>
               {f}{f === 'open' && openCount > 0 ? ` (${openCount})` : ''}
@@ -128,8 +128,8 @@ export default function AdminInquiries() {
 
           {mobileView === 'list' && (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <div className="px-4 py-3" style={{ borderBottom: '1px solid #262C33', backgroundColor: '#0F1215', flexShrink: 0 }}>
-                <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#79818A', margin: 0 }}>
+              <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--line)', backgroundColor: 'var(--bg-2)', flexShrink: 0 }}>
+                <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
                   {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
                 </p>
               </div>
@@ -138,7 +138,7 @@ export default function AdminInquiries() {
                   <div className="flex items-center justify-center h-full"><div className="spinner" /></div>
                 ) : filtered.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
-                    <p className="mono" style={{ color: '#4C535B' }}>No inquiries</p>
+                    <p className="mono" style={{ color: 'var(--dim)' }}>No inquiries</p>
                   </div>
                 ) : filtered.map(inq => (
                   <AdminThreadRow key={inq.id} inq={inq} active={false} onClick={() => openThread(inq)} fmtDate={fmtDate} />
@@ -162,9 +162,9 @@ export default function AdminInquiries() {
         {/* ─── DESKTOP ─── */}
         <div className="hidden md:flex" style={{ height: '620px' }}>
           {/* Left: thread list */}
-          <div style={{ width: 300, minWidth: 240, borderRight: '1px solid #262C33', display: 'flex', flexDirection: 'column', flexShrink: 0, backgroundColor: '#0F1215' }}>
-            <div className="px-4 py-3" style={{ borderBottom: '1px solid #262C33', flexShrink: 0 }}>
-              <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#79818A', margin: 0 }}>
+          <div style={{ width: 300, minWidth: 240, borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', flexShrink: 0, backgroundColor: 'var(--bg-2)' }}>
+            <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
+              <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
                 {filtered.length} conversation{filtered.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -173,7 +173,7 @@ export default function AdminInquiries() {
                 <div className="flex items-center justify-center h-full"><div className="spinner" /></div>
               ) : filtered.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
-                  <p className="mono" style={{ color: '#4C535B' }}>No inquiries</p>
+                  <p className="mono" style={{ color: 'var(--dim)' }}>No inquiries</p>
                 </div>
               ) : filtered.map(inq => (
                 <AdminThreadRow key={inq.id} inq={inq} active={selected?.id === inq.id} onClick={() => openThread(inq)} fmtDate={fmtDate} />
@@ -193,7 +193,7 @@ export default function AdminInquiries() {
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full gap-2 px-6">
-                <p className="mono" style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4C535B' }}>No thread selected</p>
+                <p className="mono" style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--dim)' }}>No thread selected</p>
                 <p className="lede" style={{ fontSize: '0.9rem', textAlign: 'center' }}>Select an inquiry on the left to open the conversation.</p>
               </div>
             )}
@@ -212,27 +212,27 @@ function AdminThreadRow({ inq, active, onClick, fmtDate }) {
     <button onClick={onClick} className="w-full text-left px-4 py-3 transition-colors"
       style={{
         backgroundColor: active ? 'rgba(242,169,59,0.05)' : 'transparent',
-        borderBottom: '1px solid #1B2026',
-        borderLeft: `2px solid ${active ? '#F2A93B' : 'transparent'}`,
+        borderBottom: '1px solid var(--line-soft)',
+        borderLeft: `2px solid ${active ? 'var(--brand)' : 'transparent'}`,
         cursor: 'pointer',
       }}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 mb-0.5">
-            {inq.status === 'open' && <span className="dot anim-pulse" style={{ color: '#F2A93B' }} />}
-            <p style={{ fontSize: 12.5, fontWeight: 700, color: '#E9E7E2', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {inq.status === 'open' && <span className="dot anim-pulse" style={{ color: 'var(--brand)' }} />}
+            <p style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--ink)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {inq.user_name || inq.user_email || 'Unknown'}
             </p>
           </div>
-          <p className="mono" style={{ fontSize: 10.5, color: '#79818A', margin: '2px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p className="mono" style={{ fontSize: 10.5, color: 'var(--muted)', margin: '2px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {inq.subject}
           </p>
-          <p className="mono" style={{ fontSize: 10, color: '#4C535B', margin: '3px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p className="mono" style={{ fontSize: 10, color: 'var(--dim)', margin: '3px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {inq.last_sender === 'admin' ? '[staff] ' : ''}{(inq.last_message || inq.message || '').slice(0, 35)}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-          <p className="mono" style={{ fontSize: 10, color: '#4C535B', margin: 0 }}>{fmtDate(inq.updated_at || inq.created_at)}</p>
+          <p className="mono" style={{ fontSize: 10, color: 'var(--dim)', margin: 0 }}>{fmtDate(inq.updated_at || inq.created_at)}</p>
           <span className={`tag ${tagCls}`} style={{ fontSize: 9.5, padding: '2px 8px' }}>{inq.status}</span>
         </div>
       </div>
@@ -245,12 +245,12 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header */}
       <div className="flex items-center justify-between gap-3 px-4 py-3"
-        style={{ borderBottom: '1px solid #262C33', backgroundColor: '#0F1215', flexShrink: 0 }}>
+        style={{ borderBottom: '1px solid var(--line)', backgroundColor: 'var(--bg-2)', flexShrink: 0 }}>
         <div className="flex items-center gap-3 min-w-0">
           {showBack && (
             <button onClick={onBack}
               className="flex items-center justify-center flex-shrink-0"
-              style={{ width: 30, height: 30, color: '#AEB5BD', backgroundColor: '#14181D', border: '1px solid #262C33', cursor: 'pointer' }}
+              style={{ width: 30, height: 30, color: 'var(--ink-2)', backgroundColor: 'var(--surface)', border: '1px solid var(--line)', cursor: 'pointer' }}
               aria-label="Back to list">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" strokeWidth="1.4" />
@@ -258,14 +258,14 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
             </button>
           )}
           <span className="mono flex items-center justify-center flex-shrink-0"
-            style={{ width: 30, height: 30, border: '1px solid #262C33', borderRadius: 3, fontSize: 13, fontWeight: 600, color: '#F2A93B', backgroundColor: '#14181D' }}>
+            style={{ width: 30, height: 30, border: '1px solid var(--line)', borderRadius: 3, fontSize: 13, fontWeight: 600, color: 'var(--brand)', backgroundColor: 'var(--surface)' }}>
             {(selected.user_name || selected.user_email || 'U')[0].toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p style={{ fontWeight: 700, fontSize: 13.5, color: '#E9E7E2', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <p style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--ink)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {selected.user_name || selected.user_email}
             </p>
-            <p className="mono" style={{ fontSize: 10.5, color: '#79818A', margin: '2px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <p className="mono" style={{ fontSize: 10.5, color: 'var(--muted)', margin: '2px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {selected.subject}
             </p>
           </div>
@@ -273,7 +273,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
         <div className="flex items-center gap-2 flex-shrink-0">
           <span className={`tag ${STATUS_TAG[selected.status] || 'tag-amber'}`}>{selected.status}</span>
           {selected.status !== 'closed' && (
-            <button onClick={onClose} className="btn btn-ghost" style={{ fontSize: 10, padding: '6px 12px', color: '#79818A' }}>
+            <button onClick={onClose} className="btn btn-ghost" style={{ fontSize: 10, padding: '6px 12px', color: 'var(--muted)' }}>
               Close
             </button>
           )}
@@ -291,7 +291,7 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
             <div key={msg.id}>
               {showDate && (
                 <div className="flex justify-center my-3">
-                  <span className="mono" style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#4C535B' }}>
+                  <span className="mono" style={{ fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--dim)' }}>
                     {fmtDate(msg.created_at)}
                   </span>
                 </div>
@@ -301,14 +301,14 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
                   className="px-3.5 py-2 text-sm leading-relaxed"
                   style={{
                     maxWidth: 'min(75%, 380px)',
-                    background: isAdmin ? '#F2A93B' : '#1A1F25',
-                    color: isAdmin ? '#14100A' : '#E9E7E2',
-                    border: `1px solid ${isAdmin ? 'rgba(242,169,59,0.6)' : '#262C33'}`,
+                    background: isAdmin ? 'var(--brand)' : 'var(--surface-2)',
+                    color: isAdmin ? 'var(--on-brand)' : 'var(--ink)',
+                    border: `1px solid ${isAdmin ? 'rgba(242,169,59,0.6)' : 'var(--line)'}`,
                     borderRadius: isAdmin ? '4px 4px 2px 4px' : '4px 4px 4px 2px',
                   }}
                 >
                   <p className="whitespace-pre-wrap break-words" style={{ margin: 0, fontSize: 13.5 }}>{msg.message}</p>
-                  <p className="mono" style={{ fontSize: 10, color: isAdmin ? 'rgba(20,16,10,0.6)' : '#4C535B', margin: '4px 0 0', textAlign: 'right' }}>
+                  <p className="mono" style={{ fontSize: 10, color: isAdmin ? 'rgba(20,16,10,0.6)' : 'var(--dim)', margin: '4px 0 0', textAlign: 'right' }}>
                     {fmtTime(msg.created_at)}{isAdmin ? ' · sent' : ''}
                   </p>
                 </div>
@@ -320,9 +320,9 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
       </div>
 
       {/* Reply input */}
-      <div className="px-3 py-3" style={{ borderTop: '1px solid #262C33', backgroundColor: '#0F1215', flexShrink: 0 }}>
+      <div className="px-3 py-3" style={{ borderTop: '1px solid var(--line)', backgroundColor: 'var(--bg-2)', flexShrink: 0 }}>
         {selected.status === 'closed' ? (
-          <p className="mono text-center py-1" style={{ fontSize: 11, color: '#4C535B', margin: 0 }}>This inquiry is closed.</p>
+          <p className="mono text-center py-1" style={{ fontSize: 11, color: 'var(--dim)', margin: 0 }}>This inquiry is closed.</p>
         ) : (
           <div className="flex items-end gap-2">
             <textarea

@@ -26,7 +26,7 @@ export default function CopyButton({ text, label = 'Copy', className = '' }) {
       onClick={handleCopy}
       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${className}`}
       style={{
-        color: copied ? '#4ade80' : '#60a5fa',
+        color: copied ? 'var(--good)' : 'var(--blue-bright)',
         backgroundColor: copied ? 'rgba(74,222,128,0.1)' : 'rgba(37,99,235,0.1)',
         border: `1px solid ${copied ? 'rgba(74,222,128,0.3)' : 'rgba(37,99,235,0.25)'}`,
         cursor: 'pointer',

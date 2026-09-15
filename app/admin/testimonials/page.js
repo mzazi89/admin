@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 function Stars({ value }) {
   return (
-    <span className="mono" style={{ color: '#F2A93B', letterSpacing: '3px', fontSize: 12 }} aria-label={`${value} out of 5 stars`}>
+    <span className="mono" style={{ color: 'var(--brand)', letterSpacing: '3px', fontSize: 12 }} aria-label={`${value} out of 5 stars`}>
       {'★'.repeat(value)}{'☆'.repeat(5 - value)}
     </span>
   );
@@ -69,9 +69,9 @@ export default function AdminTestimonials() {
             className="mono btn"
             style={{
               fontSize: 11, padding: '8px 16px',
-              backgroundColor: tab === v ? '#F2A93B' : 'transparent',
-              color: tab === v ? '#14100A' : '#79818A',
-              border: `1px solid ${tab === v ? '#F2A93B' : '#262C33'}`,
+              backgroundColor: tab === v ? 'var(--brand)' : 'transparent',
+              color: tab === v ? 'var(--on-brand)' : 'var(--muted)',
+              border: `1px solid ${tab === v ? 'var(--brand)' : 'var(--line)'}`,
               cursor: 'pointer',
             }}>
             {l}
@@ -83,12 +83,12 @@ export default function AdminTestimonials() {
         <div className="flex items-center justify-center py-16"><div className="spinner" /></div>
       ) : list.length === 0 ? (
         <div className="card p-10 text-center">
-          <p className="mono" style={{ color: '#4C535B' }}>No {tab} testimonials.</p>
+          <p className="mono" style={{ color: 'var(--dim)' }}>No {tab} testimonials.</p>
         </div>
       ) : (
         <div className="card" style={{ padding: '8px 24px' }}>
           {list.map((t, i) => (
-            <div key={t.id} className="py-5" style={{ borderTop: i === 0 ? 'none' : '1px solid #1B2026' }}>
+            <div key={t.id} className="py-5" style={{ borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-3">
                   <strong className="section-title" style={{ fontSize: '0.95rem' }}>{t.name}</strong>
@@ -100,7 +100,7 @@ export default function AdminTestimonials() {
               </div>
               <p className="lede mb-2" style={{ fontSize: '0.92rem', maxWidth: 640 }}>{t.message}</p>
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <p className="mono" style={{ fontSize: 10.5, color: '#4C535B', margin: 0 }}>
+                <p className="mono" style={{ fontSize: 10.5, color: 'var(--dim)', margin: 0 }}>
                   {new Date(t.created_at).toLocaleString()}
                 </p>
                 <div className="flex gap-2">
