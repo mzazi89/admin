@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/Logo';
 import {
-  AppBackground, Alert, Button, Card, Field, Input, ThemeProvider, ToastProvider, ThemeToggle,
+  AppBackground, RouteBackdrop, Alert, Button, Card, Field, Input, ThemeProvider, ToastProvider, ThemeToggle,
   humaniseError, Icons,
 } from '@/components/ui';
 
@@ -46,7 +46,8 @@ export default function AdminLogin() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <AppBackground variant="auth" image="/images/auth-bg.webp" imageOpacity={0.5} scrim={0.5} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+        <AppBackground variant="auth" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+        <RouteBackdrop />
           <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
             <ThemeToggle />
           </div>

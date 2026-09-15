@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import {
-  AppBackground, ThemeProvider, ToastProvider, ThemeToggle, Icons,
+  AppBackground, RouteBackdrop, ThemeProvider, ToastProvider, ThemeToggle, Icons,
 } from '@/components/ui';
 
 // Grouped admin navigation. Labels are friendly; hrefs are unchanged.
@@ -145,7 +145,9 @@ export default function AdminLayout({ children }) {
   const shell = isLogin ? (
     <>{children}</>
   ) : (
-    <AppBackground variant="admin" image="/images/dashboard-bg.webp" imageOpacity={0.4} scrim={0.6}>
+    <AppBackground variant="admin">
+      {/* Wallpaper/photo that matches the current admin page */}
+      <RouteBackdrop />
     <div style={{ minHeight: '100vh' }}>
       {/* ── Desktop sidebar (fixed) ── */}
       <aside
