@@ -21,7 +21,7 @@ const GROUPS = [
     title: 'Bot',
     icon: <Icons.Bot size={17} />,
     fields: [
-      { key: 'bot_name', label: 'Bot name', placeholder: 'MZAZI TECH QUARTZ BOT', type: 'text' },
+      { key: 'bot_name', label: 'Bot name', placeholder: 'QUARTZ XD', type: 'text' },
       { key: 'owner', label: 'Owner display name', placeholder: 'Mrs Mzazi', type: 'text' },
       { key: 'whatsapp_owner', label: 'WhatsApp owner number', placeholder: '254741388986@s.whatsapp.net', type: 'text' },
       { key: 'connection_image', label: 'Connection image URL', placeholder: 'https://files.catbox.moe/…', type: 'text' },
@@ -45,7 +45,7 @@ const GROUPS = [
     icon: <Icons.Bot size={17} />,
     description: 'The second WhatsApp bot (MZAZI XMD). These namespaced xmd_ keys never touch the QUARTZ settings above.',
     fields: [
-      { key: 'xmd_bot_name', label: 'XMD bot name', placeholder: 'MZAZI TECH XMD BOT', type: 'text' },
+      { key: 'xmd_bot_name', label: 'XMD bot name', placeholder: 'MZAZI XMD', type: 'text' },
       {
         key: 'xmd_bot_profiles',
         label: 'XMD bot profiles',
