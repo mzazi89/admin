@@ -17,7 +17,7 @@ import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
 import { requestBotCommandSync } from '@/lib/botSync';
-import { primaryProfileId } from '@/lib/primaryProfile';
+import { listBots } from '@/lib/bots';
 import fs from 'fs';
 import path from 'path';
 
@@ -96,16 +96,34 @@ export async function POST() {
     // Wake EVERY bot this seed wrote to. A bot_control row with no bot_id is
     // claimed by whichever bot polls first (see lib/botSync.js), so a single
     // untargeted nudge would reload one bot and leave the other serving its old
-    // registry until something else happened to nudge it. Each bot also falls
-    // back to its own ~15s poll, so a failed nudge is a delay, not a stall.
-    let primary = '';
-    try { primary = await primaryProfileId(); } catch (e) {}
-    const targets = [...new Set(Object.keys(byProfile).map((p) => (p === '' ? primary : p)).filter(Boolean))];
-    for (const target of targets) {
+    // registry until something else happened to nudge it.
+    //
+    // Targeting has its own trap: the bot only claims a targeted row when bot_id
+    // is one of its OWN profile ids (quartz/lib/botTelemetry.js — `bot_id IN
+    // (targets)`). A row aimed at an id no bot owns is therefore never claimed,
+    // and the sync silently reaches nobody. So every target is checked against
+    // the configured bot list first, and anything unrecognised is reported
+    // rather than written and forgotten.
+    const bots = await listBots(); // never throws, always at least one
+    const knownIds = bots.map((b) => b.id);
+    const primary = knownIds[0] || '';
+    const named = [...new Set(Object.keys(byProfile))];
+    const targets = [...new Set(named.map((p) => (p === '' ? primary : p)).filter(Boolean))];
+    const claimable = targets.filter((t) => knownIds.indexOf(t) !== -1);
+    const unclaimed = targets.filter((t) => knownIds.indexOf(t) === -1);
+
+    for (const target of claimable) {
       try { await requestBotCommandSync(target); } catch (e) {}
     }
+    // Seed entries that map to no configured bot — e.g. a profile that was
+    // renamed or a bot_profiles setting that never listed this bot. Fall back to
+    // one untargeted row, which ANY bot may claim, so the sync still becomes
+    // visible somewhere instead of quietly doing nothing.
+    if (!claimable.length) {
+      try { await requestBotCommandSync(); } catch (e) {}
+    }
 
-    return NextResponse.json({ synced, failed, errors, byProfile, nudged: targets });
+    return NextResponse.json({ synced, failed, errors, byProfile, nudged: claimable, unclaimed });
   } catch (e) {
     console.error('Sync error:', e.message);
     return NextResponse.json({ error: 'Sync failed: ' + e.message }, { status: 500 });

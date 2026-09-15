@@ -251,7 +251,15 @@ export default function CommandsPage() {
       const perBot = Object.entries(data.byProfile || {})
         .map(([p, n]) => `${n} ${botLabel(p)}`)
         .join(', ');
-      toast.success(`Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}${perBot ? ` — ${perBot}` : ''}.`);
+      const summary = `Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}${perBot ? ` — ${perBot}` : ''}.`;
+      // A profile in the seed that no configured bot serves is written but can
+      // never be fetched, so say so instead of reporting a clean sync.
+      const orphans = data.unclaimed || [];
+      if (orphans.length) {
+        toast.error(`${summary} No bot serves these profiles, so nothing will pick them up: ${orphans.join(', ')}. Add them under Settings → bot profiles.`);
+      } else {
+        toast.success(summary);
+      }
       setConfirmKind(null);
       load();
     } catch (e) {
