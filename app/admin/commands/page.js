@@ -246,7 +246,12 @@ export default function CommandsPage() {
       const res = await fetch('/api/admin/bot-commands/sync', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Sync failed.');
-      toast.success(`Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}.`);
+      // Name every bot the seed covered, so "did it reach the other bot?" is
+      // answerable from the toast instead of from the database.
+      const perBot = Object.entries(data.byProfile || {})
+        .map(([p, n]) => `${n} ${botLabel(p)}`)
+        .join(', ');
+      toast.success(`Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}${perBot ? ` — ${perBot}` : ''}.`);
       setConfirmKind(null);
       load();
     } catch (e) {
@@ -440,7 +445,7 @@ export default function CommandsPage() {
         loading={syncing}
         tone="default"
         title="Sync all commands from the seed file?"
-        description="This overwrites every command row with the shipped version, including any manual edits made here."
+        description="This upserts every command in the shipped seed for every bot it names, overwriting the live rows — including any manual edits made here. Commands the seed does not mention are left alone."
         confirmLabel="Sync from seed"
       />
 

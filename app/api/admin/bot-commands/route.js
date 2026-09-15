@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
 import { requestBotCommandSync } from '@/lib/botSync';
+import { primaryProfileId } from '@/lib/primaryProfile';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,21 +45,8 @@ function validateCommand(body) {
   return null;
 }
 
-/**
- * The id of the primary bot profile — the first entry of the `bot_profiles`
- * setting, which is the same rule the bots use (`profiles.primary()`).
- * Defaults to 'quartz', matching every deployment that predates profiles.
- */
-async function primaryProfileId() {
-  try {
-    const rows = await sql`SELECT value FROM settings WHERE key = 'bot_profiles'`;
-    const parsed = JSON.parse(rows[0]?.value || '');
-    if (Array.isArray(parsed) && parsed.length && parsed[0]?.id) return String(parsed[0].id);
-  } catch {
-    // Unset or unparseable means a single bot; both bots treat that as primary.
-  }
-  return 'quartz';
-}
+// primaryProfileId() now lives in lib/primaryProfile.js — the seed sync route
+// needs the same answer to aim its reload, and two copies would drift.
 
 export async function GET(request) {
   if (!(await verifyAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

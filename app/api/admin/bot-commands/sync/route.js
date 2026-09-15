@@ -1,17 +1,23 @@
 // MZAZI API — POST /api/admin/bot-commands/sync
-// One-click FULL command sync from data/bot-commands.json.
+// One-click FULL command sync from data/bot-commands.json — for EVERY bot.
 //
 // Upserts every command (INSERT ... ON CONFLICT (profile, name) DO UPDATE), so
 // the live database rows always match the shipped registry — including fixes to
 // EXISTING commands that the first-run seed never overwrites. The conflict is
 // scoped to (profile, name) because `name` is no longer unique on its own: two
 // bots may each own a command of the same name. Admin-authenticated.
+//
+// Every seed entry carries the `profile` of the bot that serves it (an absent or
+// empty profile means the primary bot), so one press of the button seeds all the
+// bots the seed describes — there is no per-bot target to pick. Rows the seed
+// does not mention are left alone: this is an upsert, never a delete.
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
 import { requestBotCommandSync } from '@/lib/botSync';
+import { primaryProfileId } from '@/lib/primaryProfile';
 import fs from 'fs';
 import path from 'path';
 
@@ -50,6 +56,10 @@ export async function POST() {
     let synced = 0;
     let failed = 0;
     const errors = [];
+    // Which bots this seed covers, and how many rows each one got. The '' key is
+    // the primary bot, so it is resolved to a real profile id before it is used
+    // to aim a reload. Reported back so the panel can name every bot it touched.
+    const byProfile = {};
 
     for (const c of commands) {
       try {
@@ -76,16 +86,26 @@ export async function POST() {
             updated_at = CURRENT_TIMESTAMP
         `;
         synced++;
+        byProfile[profile] = (byProfile[profile] || 0) + 1;
       } catch (e) {
         failed++;
         if (errors.length < 5) errors.push(`${c.name}: ${e.message}`);
       }
     }
 
-    // Nudge the bot to re-import the registry (falls back to its 15s telemetry poll).
-    try { await requestBotCommandSync(); } catch (e) {}
+    // Wake EVERY bot this seed wrote to. A bot_control row with no bot_id is
+    // claimed by whichever bot polls first (see lib/botSync.js), so a single
+    // untargeted nudge would reload one bot and leave the other serving its old
+    // registry until something else happened to nudge it. Each bot also falls
+    // back to its own ~15s poll, so a failed nudge is a delay, not a stall.
+    let primary = '';
+    try { primary = await primaryProfileId(); } catch (e) {}
+    const targets = [...new Set(Object.keys(byProfile).map((p) => (p === '' ? primary : p)).filter(Boolean))];
+    for (const target of targets) {
+      try { await requestBotCommandSync(target); } catch (e) {}
+    }
 
-    return NextResponse.json({ synced, failed, errors });
+    return NextResponse.json({ synced, failed, errors, byProfile, nudged: targets });
   } catch (e) {
     console.error('Sync error:', e.message);
     return NextResponse.json({ error: 'Sync failed: ' + e.message }, { status: 500 });
