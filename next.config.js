@@ -7,6 +7,17 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['ssh2'],
   },
+  // data/bot-commands.json is read at runtime with fs.readFileSync(path.join(
+  // process.cwd(), 'data', ...)) — by the Sync from seed route and by the
+  // first-run importer in lib/database.js. A path assembled at runtime is
+  // invisible to Next's file tracer, so a serverless build ships WITHOUT the file
+  // and both readers do nothing at all. Locally it works, because cwd is the repo
+  // — which is exactly why this is easy to miss. Listing it here forces it into
+  // the function bundles. initializeDatabase() is called from many routes, so the
+  // pattern covers all of them rather than just the sync route.
+  outputFileTracingIncludes: {
+    '/**/*': ['./data/bot-commands.json'],
+  },
   async headers() {
     return [
       {

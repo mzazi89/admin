@@ -251,7 +251,11 @@ export default function CommandsPage() {
       const perBot = Object.entries(data.byProfile || {})
         .map(([p, n]) => `${n} ${botLabel(p)}`)
         .join(', ');
-      const summary = `Synced ${data.synced} commands from seed${data.failed ? ` (${data.failed} failed)` : ''}${perBot ? ` — ${perBot}` : ''}.`;
+      // Say which source answered. 'mirror' means the shipped seed file was not
+      // in this build, so the primary bot's rows were copied instead — the
+      // result is the same shape, but it is worth being able to tell them apart.
+      const from = data.source === 'mirror' ? ' by copying the main bot' : ' from seed';
+      const summary = `Synced ${data.synced} commands${from}${data.failed ? ` (${data.failed} failed)` : ''}${perBot ? ` — ${perBot}` : ''}.`;
       // A profile in the seed that no configured bot serves is written but can
       // never be fetched, so say so instead of reporting a clean sync.
       const orphans = data.unclaimed || [];

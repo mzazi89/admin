@@ -11,6 +11,19 @@
 // empty profile means the primary bot), so one press of the button seeds all the
 // bots the seed describes — there is no per-bot target to pick. Rows the seed
 // does not mention are left alone: this is an upsert, never a delete.
+//
+// ── Two sources, because the file is not always there ────────────────────────
+// The seed is read with fs, not imported, so Next.js's file tracer cannot see it
+// and a serverless build leaves it out of the function bundle. Locally that
+// works; deployed it produced a button that did nothing. Two defences:
+//
+//   1. next.config.js lists it in outputFileTracingIncludes, so the file IS in
+//      the bundle. This is the normal path (`source: 'seed'`).
+//   2. If it is still missing, mirror the primary bot's rows onto every other
+//      configured bot (`source: 'mirror'`). That needs only the database, which
+//      is reachable whenever the panel itself is — a manual Add command already
+//      proves that. The button therefore works even on a build that predates
+//      the tracing fix.
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -46,54 +59,110 @@ export async function POST() {
   try {
     await ensureDatabase();
 
-    const seedPath = path.join(process.cwd(), 'data', 'bot-commands.json');
-    if (!fs.existsSync(seedPath)) {
-      return NextResponse.json({ error: 'Seed file not found: data/bot-commands.json' }, { status: 500 });
-    }
-    const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
-    const commands = Array.isArray(seed.commands) ? seed.commands : [];
+    // Which bots exist. Resolved before anything is written, because an empty
+    // profile means "the primary bot" and that needs a real id to be usable.
+    const bots = await listBots(); // never throws, always at least one
+    const knownIds = bots.map((b) => b.id);
+    const primary = knownIds[0] || '';
 
     let synced = 0;
     let failed = 0;
     const errors = [];
-    // Which bots this seed covers, and how many rows each one got. The '' key is
-    // the primary bot, so it is resolved to a real profile id before it is used
-    // to aim a reload. Reported back so the panel can name every bot it touched.
+    // Which bots this run covered, and how many rows each one got. '' is the
+    // primary bot's legacy representation in the table.
     const byProfile = {};
+    let source = 'seed';
 
-    for (const c of commands) {
-      try {
-        // Preserve the bot a row belongs to: a seed entry without a profile (the
-        // legacy shipped file) means the primary bot, never "all bots".
-        const profile = typeof c.profile === 'string' && /^[A-Za-z0-9_-]{0,64}$/.test(c.profile) ? c.profile : '';
-        await sql`
-          INSERT INTO bot_commands
-            (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, profile)
-          VALUES
-            (${c.name}, ${JSON.stringify(c.aliases || [])}::jsonb, ${c.description || ''}, ${c.category || 'General'},
-             ${c.usage || ''}, ${!!c.ownerOnly}, ${!!c.adminOnly}, ${!!c.groupOnly},
-             ${c.enabled !== false}, ${c.code || ''}, ${profile})
-          ON CONFLICT (profile, name) DO UPDATE SET
-            aliases = EXCLUDED.aliases,
-            description = EXCLUDED.description,
-            category = EXCLUDED.category,
-            usage = EXCLUDED.usage,
-            owner_only = EXCLUDED.owner_only,
-            admin_only = EXCLUDED.admin_only,
-            group_only = EXCLUDED.group_only,
-            enabled = EXCLUDED.enabled,
-            code = EXCLUDED.code,
-            updated_at = CURRENT_TIMESTAMP
-        `;
-        synced++;
-        byProfile[profile] = (byProfile[profile] || 0) + 1;
-      } catch (e) {
-        failed++;
-        if (errors.length < 5) errors.push(`${c.name}: ${e.message}`);
+    const seedPath = path.join(process.cwd(), 'data', 'bot-commands.json');
+
+    if (fs.existsSync(seedPath)) {
+      const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+      const commands = Array.isArray(seed.commands) ? seed.commands : [];
+
+      for (const c of commands) {
+        try {
+          // Preserve the bot a row belongs to: a seed entry without a profile
+          // (the legacy shipped file) means the primary bot, never "all bots".
+          const profile = typeof c.profile === 'string' && /^[A-Za-z0-9_-]{0,64}$/.test(c.profile) ? c.profile : '';
+          await sql`
+            INSERT INTO bot_commands
+              (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, profile)
+            VALUES
+              (${c.name}, ${JSON.stringify(c.aliases || [])}::jsonb, ${c.description || ''}, ${c.category || 'General'},
+               ${c.usage || ''}, ${!!c.ownerOnly}, ${!!c.adminOnly}, ${!!c.groupOnly},
+               ${c.enabled !== false}, ${c.code || ''}, ${profile})
+            ON CONFLICT (profile, name) DO UPDATE SET
+              aliases = EXCLUDED.aliases,
+              description = EXCLUDED.description,
+              category = EXCLUDED.category,
+              usage = EXCLUDED.usage,
+              owner_only = EXCLUDED.owner_only,
+              admin_only = EXCLUDED.admin_only,
+              group_only = EXCLUDED.group_only,
+              enabled = EXCLUDED.enabled,
+              code = EXCLUDED.code,
+              updated_at = CURRENT_TIMESTAMP
+          `;
+          synced++;
+          byProfile[profile] = (byProfile[profile] || 0) + 1;
+        } catch (e) {
+          failed++;
+          if (errors.length < 5) errors.push(`${c.name}: ${e.message}`);
+        }
+      }
+    } else {
+      // ── The file is not in this deployment ─────────────────────────────────
+      // Fall back to the one source that is always present: the database. Every
+      // bot except the primary gets a copy of the primary's rows, in one
+      // statement per bot. DISTINCT ON (name) is required rather than optional:
+      // a name can legitimately exist twice for the same bot (profile '' and the
+      // explicit primary id), and an ON CONFLICT DO UPDATE that would touch the
+      // same row twice aborts the whole statement with "cannot affect row a
+      // second time". The most recently updated copy wins.
+      source = 'mirror';
+      const targets = knownIds.slice(1);
+
+      if (!targets.length) {
+        return NextResponse.json({
+          error:
+            'The seed file is missing from this deployment and only one bot is configured, so there is nothing to mirror. ' +
+            'Add data/bot-commands.json to outputFileTracingIncludes in next.config.js, or configure a second bot profile.',
+        }, { status: 500 });
+      }
+
+      for (const target of targets) {
+        try {
+          const written = await sql`
+            INSERT INTO bot_commands
+              (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, profile)
+            SELECT DISTINCT ON (name)
+              name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, ${target}
+            FROM bot_commands
+            WHERE COALESCE(profile, '') = '' OR COALESCE(profile, '') = ${primary}
+            ORDER BY name, updated_at DESC
+            ON CONFLICT (profile, name) DO UPDATE SET
+              aliases = EXCLUDED.aliases,
+              description = EXCLUDED.description,
+              category = EXCLUDED.category,
+              usage = EXCLUDED.usage,
+              owner_only = EXCLUDED.owner_only,
+              admin_only = EXCLUDED.admin_only,
+              group_only = EXCLUDED.group_only,
+              enabled = EXCLUDED.enabled,
+              code = EXCLUDED.code,
+              updated_at = CURRENT_TIMESTAMP
+            RETURNING id
+          `;
+          synced += written.length;
+          byProfile[target] = written.length;
+        } catch (e) {
+          failed++;
+          if (errors.length < 5) errors.push(`${target}: ${e.message}`);
+        }
       }
     }
 
-    // Wake EVERY bot this seed wrote to. A bot_control row with no bot_id is
+    // Wake EVERY bot this run wrote to. A bot_control row with no bot_id is
     // claimed by whichever bot polls first (see lib/botSync.js), so a single
     // untargeted nudge would reload one bot and leave the other serving its old
     // registry until something else happened to nudge it.
@@ -104,9 +173,6 @@ export async function POST() {
     // and the sync silently reaches nobody. So every target is checked against
     // the configured bot list first, and anything unrecognised is reported
     // rather than written and forgotten.
-    const bots = await listBots(); // never throws, always at least one
-    const knownIds = bots.map((b) => b.id);
-    const primary = knownIds[0] || '';
     const named = [...new Set(Object.keys(byProfile))];
     const targets = [...new Set(named.map((p) => (p === '' ? primary : p)).filter(Boolean))];
     const claimable = targets.filter((t) => knownIds.indexOf(t) !== -1);
@@ -123,7 +189,7 @@ export async function POST() {
       try { await requestBotCommandSync(); } catch (e) {}
     }
 
-    return NextResponse.json({ synced, failed, errors, byProfile, nudged: claimable, unclaimed });
+    return NextResponse.json({ synced, failed, errors, byProfile, nudged: claimable, unclaimed, source });
   } catch (e) {
     console.error('Sync error:', e.message);
     return NextResponse.json({ error: 'Sync failed: ' + e.message }, { status: 500 });
