@@ -1,9 +1,11 @@
 // MZAZI API — POST /api/admin/bot-commands/sync
 // One-click FULL command sync from data/bot-commands.json.
 //
-// Upserts every command (INSERT ... ON CONFLICT (name) DO UPDATE), so the live
-// database rows always match the shipped registry — including fixes to EXISTING
-// commands that the first-run seed never overwrites. Admin-authenticated.
+// Upserts every command (INSERT ... ON CONFLICT (profile, name) DO UPDATE), so
+// the live database rows always match the shipped registry — including fixes to
+// EXISTING commands that the first-run seed never overwrites. The conflict is
+// scoped to (profile, name) because `name` is no longer unique on its own: two
+// bots may each own a command of the same name. Admin-authenticated.
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -51,14 +53,17 @@ export async function POST() {
 
     for (const c of commands) {
       try {
+        // Preserve the bot a row belongs to: a seed entry without a profile (the
+        // legacy shipped file) means the primary bot, never "all bots".
+        const profile = typeof c.profile === 'string' && /^[A-Za-z0-9_-]{0,64}$/.test(c.profile) ? c.profile : '';
         await sql`
           INSERT INTO bot_commands
-            (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code)
+            (name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, profile)
           VALUES
             (${c.name}, ${JSON.stringify(c.aliases || [])}::jsonb, ${c.description || ''}, ${c.category || 'General'},
              ${c.usage || ''}, ${!!c.ownerOnly}, ${!!c.adminOnly}, ${!!c.groupOnly},
-             ${c.enabled !== false}, ${c.code || ''})
-          ON CONFLICT (name) DO UPDATE SET
+             ${c.enabled !== false}, ${c.code || ''}, ${profile})
+          ON CONFLICT (profile, name) DO UPDATE SET
             aliases = EXCLUDED.aliases,
             description = EXCLUDED.description,
             category = EXCLUDED.category,

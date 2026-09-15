@@ -38,6 +38,42 @@ const GROUPS = [
     ],
   },
   {
+    // Kept in its own card, apart from the QUARTZ settings above, because these
+    // keys configure a DIFFERENT bot — it must always be obvious which bot a
+    // value belongs to.
+    title: 'MZAZI XMD bot',
+    icon: <Icons.Bot size={17} />,
+    description: 'The second WhatsApp bot (MZAZI XMD). These namespaced xmd_ keys never touch the QUARTZ settings above.',
+    fields: [
+      { key: 'xmd_bot_name', label: 'XMD bot name', placeholder: 'MZAZI TECH XMD BOT', type: 'text' },
+      {
+        key: 'xmd_bot_profiles',
+        label: 'XMD bot profiles',
+        placeholder: '[{"id":"xmd","name":"MZAZI XMD"}]',
+        type: 'textarea',
+        hint: 'This bot serves only the "xmd" profile. Do not add "quartz" — two processes claiming one profile id would overwrite each other\'s heartbeat.',
+      },
+      {
+        key: 'xmd_telegram_bot_token',
+        label: 'XMD Telegram bot token',
+        placeholder: '123456:ABC-…',
+        type: 'password',
+        secret: true,
+        hint: 'The XMD bot\'s OWN token from @BotFather. Never share QUARTZ\'s token — two processes cannot poll the same Telegram bot.',
+      },
+      { key: 'xmd_remote_api_url', label: 'XMD remote command API URL', placeholder: 'https://mzazi.shop/api/xmd-command', type: 'text' },
+      {
+        key: 'xmd_bot_api_key',
+        label: 'XMD bot API key',
+        placeholder: 'key the bot sends to /api/xmd-command',
+        type: 'password',
+        secret: true,
+        hint: 'The key the XMD bot uses to fetch its commands from /api/xmd-command. Must match the bot\'s XMD_BOT_API_KEY.',
+      },
+      { key: 'xmd_connection_image', label: 'XMD connection image URL', placeholder: 'https://files.catbox.moe/…', type: 'text' },
+    ],
+  },
+  {
     title: 'Payments',
     icon: <Icons.CreditCard size={17} />,
     fields: [
@@ -213,6 +249,9 @@ export default function AdminSettings() {
 }
 
 function SettingField({ f, values, setValues }) {
+  // Secret fields render masked and are only revealed on demand — a token
+  // should never sit in plain text on screen by default.
+  const [reveal, setReveal] = useState(false);
   const invalid = f.type === 'textarea' && !jsonOk(values[f.key]);
   const id = `set-${f.key}`;
   const shared = {
@@ -224,9 +263,30 @@ function SettingField({ f, values, setValues }) {
   };
   return (
     <Field label={f.label} id={id} hint={f.hint}>
-      {f.type === 'textarea'
-        ? <Textarea {...shared} className="mono" rows={4} style={{ fontSize: 12.5, lineHeight: 1.6 }} />
-        : <Input {...shared} type={f.type} className="mono" style={{ fontSize: 13 }} />}
+      {f.type === 'textarea' ? (
+        <Textarea {...shared} className="mono" rows={4} style={{ fontSize: 12.5, lineHeight: 1.6 }} />
+      ) : f.secret ? (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+          <Input
+            {...shared}
+            type={reveal ? 'text' : 'password'}
+            autoComplete="off"
+            className="mono"
+            style={{ fontSize: 13, flex: '1 1 auto', minWidth: 0 }}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setReveal((v) => !v)}
+            aria-pressed={reveal}
+            aria-label={`${reveal ? 'Hide' : 'Show'} ${f.label}`}
+          >
+            {reveal ? 'Hide' : 'Show'}
+          </Button>
+        </div>
+      ) : (
+        <Input {...shared} type={f.type} className="mono" style={{ fontSize: 13 }} />
+      )}
     </Field>
   );
 }

@@ -42,6 +42,8 @@ async function verifyAdmin() {
 }
 
 // DB row → seed-file shape (camelCase, matching data/bot-commands.json).
+// `profile` is carried through so a round-trip (export → import via
+// /api/admin/bot-commands/sync) cannot lose or reassign a command's bot.
 const toSeed = (r) => ({
   name: r.name,
   aliases: Array.isArray(r.aliases) ? r.aliases : [],
@@ -53,6 +55,7 @@ const toSeed = (r) => ({
   groupOnly: !!r.group_only,
   enabled: r.enabled !== false,
   code: r.code || '',
+  profile: r.profile || '',
 });
 
 // Commit the seed to GitHub via the contents API (create/update file).
@@ -128,9 +131,9 @@ export async function POST() {
 
   try {
     const rows = await sql`
-      SELECT name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code
+      SELECT name, aliases, description, category, usage, owner_only, admin_only, group_only, enabled, code, profile
       FROM bot_commands
-      ORDER BY name ASC
+      ORDER BY name ASC, profile ASC
     `;
 
     const seed = {

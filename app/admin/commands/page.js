@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Button, Card, ConfirmDialog, DataTable, EmptyState, ErrorState, Field, Input,
+  Badge, Button, Card, ConfirmDialog, DataTable, EmptyState, ErrorState, Field, Input,
   Modal, PageHeader, SearchInput, Select, Skeleton, StatusIndicator, Textarea, Toggle,
   humaniseError, useToast,
   Icons,
@@ -10,8 +10,36 @@ import {
 
 const EMPTY = {
   name: '', aliases: '', description: '', category: 'General', usage: '',
-  ownerOnly: false, adminOnly: false, groupOnly: false, enabled: true, code: '',
+  ownerOnly: false, adminOnly: false, groupOnly: false, enabled: true, code: '', profile: '',
 };
+
+// Fallback bot list when `bot_profiles` is unset (a single-bot deployment). The
+// live list is read from that setting so the labels always match the bots the
+// site actually serves.
+const DEFAULT_BOTS = [
+  { id: 'quartz', name: 'QUARTZ XD' },
+  { id: 'xmd', name: 'MZAZI XMD' },
+];
+
+// Same tolerant parse the site uses: unparseable JSON is treated as unset.
+function parseProfiles(raw) {
+  try {
+    const parsed = JSON.parse(String(raw ?? '').trim() || '[]');
+    if (!Array.isArray(parsed)) return [];
+    const out = [];
+    const seen = new Set();
+    for (const p of parsed) {
+      const id = String(p?.id ?? '').trim();
+      const name = String(p?.name ?? '').trim();
+      if (!id || !name || seen.has(id)) continue;
+      seen.add(id);
+      out.push({ id, name });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
 
 // Commands the bot handles in its own code before the remote registry. Edits
 // here are saved to the DB but do NOT change the running bot.
@@ -26,7 +54,9 @@ export default function CommandsPage() {
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('all');
-  const [modal, setModal] = useState(null); // null | { mode, name?, loadingCode? }
+  const [botFilter, setBotFilter] = useState('all');
+  const [bots, setBots] = useState(DEFAULT_BOTS);
+  const [modal, setModal] = useState(null); // null | { mode, name?, profile?, loadingCode? }
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -41,6 +71,8 @@ export default function CommandsPage() {
       const params = new URLSearchParams();
       if (q) params.set('q', q);
       if (category && category !== 'all') params.set('category', category);
+      // Absent/'all' = every bot; otherwise the server scopes to that profile.
+      if (botFilter && botFilter !== 'all') params.set('profile', botFilter);
       const res = await fetch(`/api/admin/bot-commands?${params.toString()}`);
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to load commands');
@@ -51,18 +83,42 @@ export default function CommandsPage() {
     } finally {
       setLoading(false);
     }
-  }, [q, category]);
+  }, [q, category, botFilter]);
 
   useEffect(() => {
     const t = setTimeout(load, 200);
     return () => clearTimeout(t);
   }, [load]);
 
+  // Read the configured bot list from the shared setting (cheap, one request).
+  // If it is unset or unreadable, the two known bots are used.
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const list = parseProfiles(d?.settings?.bot_profiles);
+        if (list.length) setBots(list);
+      })
+      .catch(() => {});
+  }, []);
+
   const categories = [...new Set(commands.map((c) => c.category))].sort();
+
+  // Which bot a command belongs to. '' is the legacy/primary profile, so it
+  // shows as the primary bot rather than as an unknown value.
+  const botLabel = (p) => (p ? (bots.find((b) => b.id === p)?.name || p) : (bots[0]?.name || 'QUARTZ XD'));
+  const botFilterOptions = [{ value: 'all', label: 'All bots' }, ...bots.map((b) => ({ value: b.id, label: b.name }))];
+  // '' is offered explicitly: it is what a new command defaults to and what any
+  // command created before bot profiles existed already carries.
+  const botFormOptions = [
+    { value: '', label: `${bots[0]?.name || 'QUARTZ XD'} (default)` },
+    ...bots.map((b) => ({ value: b.id, label: b.name })),
+  ];
 
   const openAdd = () => { setForm(EMPTY); setModal({ mode: 'add' }); };
 
   const openEdit = async (cmd) => {
+    const cmdProfile = cmd.profile || '';
     setForm({
       name: cmd.name,
       aliases: (cmd.aliases || []).join(', '),
@@ -74,10 +130,13 @@ export default function CommandsPage() {
       groupOnly: cmd.groupOnly,
       enabled: cmd.enabled,
       code: '',
+      profile: cmdProfile,
     });
-    setModal({ mode: 'edit', name: cmd.name, loadingCode: true });
+    // `modal.profile` records the row being edited, so the PUT can target it
+    // even if the form changes the bot.
+    setModal({ mode: 'edit', name: cmd.name, profile: cmdProfile, loadingCode: true });
     try {
-      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}`);
+      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}?profile=${encodeURIComponent(cmdProfile)}`);
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.command) {
         setForm((f) => ({
@@ -91,6 +150,7 @@ export default function CommandsPage() {
           groupOnly: data.command.groupOnly,
           enabled: data.command.enabled !== false,
           code: data.command.code || '',
+          profile: data.command.profile || cmdProfile,
         }));
       }
     } catch { /* leave the metadata form usable even if the code load failed */ }
@@ -108,6 +168,7 @@ export default function CommandsPage() {
     groupOnly: form.groupOnly,
     enabled: form.enabled,
     code: form.code,
+    profile: form.profile || '',
   });
 
   const save = async () => {
@@ -115,7 +176,9 @@ export default function CommandsPage() {
     try {
       const isEdit = modal.mode === 'edit';
       const res = await fetch(
-        isEdit ? `/api/admin/bot-commands/${encodeURIComponent(modal.name)}` : '/api/admin/bot-commands',
+        isEdit
+          ? `/api/admin/bot-commands/${encodeURIComponent(modal.name)}?profile=${encodeURIComponent(modal.profile || '')}`
+          : '/api/admin/bot-commands',
         { method: isEdit ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload()) },
       );
       const data = await res.json().catch(() => ({}));
@@ -131,8 +194,9 @@ export default function CommandsPage() {
   };
 
   const toggle = async (cmd) => {
+    const cmdProfile = cmd.profile || '';
     try {
-      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}`, {
+      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(cmd.name)}?profile=${encodeURIComponent(cmdProfile)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,6 +209,7 @@ export default function CommandsPage() {
           adminOnly: cmd.adminOnly,
           groupOnly: cmd.groupOnly,
           enabled: !cmd.enabled,
+          profile: cmdProfile,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -156,10 +221,13 @@ export default function CommandsPage() {
     }
   };
 
-  const del = async (name) => {
+  const del = async (cmd) => {
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/bot-commands/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      const res = await fetch(
+        `/api/admin/bot-commands/${encodeURIComponent(cmd.name)}?profile=${encodeURIComponent(cmd.profile || '')}`,
+        { method: 'DELETE' },
+      );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to delete');
       toast.success('Deleted — the bot will stop using it in ~15 seconds.');
@@ -221,8 +289,13 @@ export default function CommandsPage() {
       />
 
       <Card style={{ padding: 16, marginBottom: 18 }}>
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)' }}>
+        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr)' }}>
           <SearchInput id="cmd-search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search commands" />
+          <Field id="cmd-bot-filter" label="" className="!mb-0">
+            <Select id="cmd-bot-filter" value={botFilter} onChange={(e) => setBotFilter(e.target.value)} aria-label="Filter by bot">
+              {botFilterOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </Select>
+          </Field>
           <Field id="cmd-category" label="" className="!mb-0">
             <Select id="cmd-category" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter by category">
               <option value="all">All categories</option>
@@ -260,7 +333,9 @@ export default function CommandsPage() {
                   </div>
                 </td>
                 <td data-label="Description" style={{ color: 'var(--ink-2)', fontSize: 13.5, maxWidth: 340 }}>{cmd.description || '—'}</td>
-                <td data-label="Bot" style={{ color: 'var(--muted)', fontSize: 13.5 }}>All bots</td>
+                <td data-label="Bot">
+                  <Badge tone={cmd.profile ? 'blue' : 'neutral'}>{botLabel(cmd.profile)}</Badge>
+                </td>
                 <td data-label="Status">
                   <button
                     type="button"
@@ -314,6 +389,11 @@ export default function CommandsPage() {
               <Field label="Usage hint" id="cmd-usage">
                 <Input id="cmd-usage" className="mono" value={form.usage} onChange={(e) => setForm({ ...form, usage: e.target.value })} placeholder=".mycommand [arg]" />
               </Field>
+              <Field label="Bot" id="cmd-bot">
+                <Select id="cmd-bot" value={form.profile} onChange={(e) => setForm({ ...form, profile: e.target.value })} aria-label="Which bot serves this command">
+                  {botFormOptions.map((o) => <option key={o.value || '__default'} value={o.value}>{o.label}</option>)}
+                </Select>
+              </Field>
             </div>
 
             <Field label="Description" id="cmd-desc">
@@ -346,7 +426,7 @@ export default function CommandsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => del(deleteTarget.name)}
+        onConfirm={() => del(deleteTarget)}
         loading={busy}
         title={`Delete .${deleteTarget?.name}?`}
         description="The bot stops responding to this command within ~15 seconds. This cannot be undone."

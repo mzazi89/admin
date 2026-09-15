@@ -25,6 +25,12 @@ const ALLOWED_KEYS = [
   'bot_profiles',
   // Telegram
   'telegram_bot_token', 'telegram_owner',
+  // MZAZI XMD bot — the second WhatsApp bot (profile id `xmd`). Namespaced with
+  // `xmd_` so these can never overwrite the QUARTZ keys above in the shared
+  // `settings` table; this table is the single source of truth it reads
+  // (mzazi-xmd/settings.js maps each one onto its config).
+  'xmd_bot_name', 'xmd_bot_profiles', 'xmd_telegram_bot_token',
+  'xmd_remote_api_url', 'xmd_bot_api_key', 'xmd_connection_image',
   // WhatsApp
   'autoJoinGroupLink',
   // Paystack
@@ -139,14 +145,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Expected a settings object.' }, { status: 400 });
     }
 
-    // JSON-valued, so it is checked before the write rather than trusted to the
-    // database. Every other key here is an opaque string the bot falls back on.
-    if ('bot_profiles' in body) {
-      const checked = normaliseBotProfiles(body.bot_profiles);
-      if (!checked.ok) {
-        return NextResponse.json({ error: checked.error }, { status: 400 });
+    // JSON-valued, so they are checked before the write rather than trusted to
+    // the database. Every other key here is an opaque string the bot falls back
+    // on. `xmd_bot_profiles` is the XMD bot's own profile list and is exactly
+    // the same shape, so it runs through the same validation.
+    for (const jsonKey of ['bot_profiles', 'xmd_bot_profiles']) {
+      if (jsonKey in body) {
+        const checked = normaliseBotProfiles(body[jsonKey]);
+        if (!checked.ok) {
+          return NextResponse.json({ error: checked.error }, { status: 400 });
+        }
+        body[jsonKey] = checked.value;
       }
-      body.bot_profiles = checked.value;
     }
 
     const updates = [];
