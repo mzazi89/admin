@@ -69,6 +69,11 @@ export default function AppBackground({
             className="orb orb-blue anim-drift-b"
             style={{ width: '30vw', height: '30vw', bottom: '-10%', right: '-6%' }}
           />
+          <span
+            aria-hidden="true"
+            className="orb orb-pink anim-drift-c"
+            style={{ width: '22vw', height: '22vw', top: '42%', right: '10%' }}
+          />
         </>
       )}
 

@@ -15,40 +15,50 @@
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────── */
-  --brand:        #7C3AED;   /* primary purple */
+  --brand: #7C3AED;   /* primary purple */
   --brand-bright: #8B5CF6;
-  --brand-deep:   #5B21B6;
-  --brand-soft:   #A78BFA;
-  --brand-tint:   rgba(124, 58, 237, 0.10);
+  --brand-deep: #6D28D9;
+  --brand-soft: #A78BFA;
+  --brand-tint: rgba(124, 58, 237, 0.10);
 
-  --blue:         #3B82F6;   /* secondary soft blue */
-  --blue-bright:  #60A5FA;
-  --blue-deep:    #2563EB;
-  --blue-soft:    #93C5FD;
-  --blue-tint:    rgba(59, 130, 246, 0.10);
+  --blue: #2563EB;   /* secondary soft blue */
+  --blue-bright: #3B82F6;
+  --blue-deep: #1D4ED8;
+  --blue-soft: #93C5FD;
+  --blue-tint: rgba(37, 99, 235, 0.10);
+  --pink: #DB2777;   /* pink accent */
+  --pink-bright: #EC4899;
+  --pink-deep: #BE185D;
+  --pink-soft: #F9A8D4;
+  --pink-tint: rgba(219, 39, 119, 0.10);
+  --yellow: #A16207;   /* yellow attention (700 for AA text on white) */
+  --yellow-bright: #FACC15;
+  --yellow-deep: #854D0E;
+  --yellow-soft: #FEF08A;
+  --yellow-tint: rgba(250, 204, 21, 0.18);
 
   /* ── Surfaces (light) ───────────────────────────────────────────────── */
-  --bg:        #F6F7FB;
-  --bg-2:      #FFFFFF;
-  --surface:   #FFFFFF;
-  --surface-2: #F1F3F9;
-  --surface-3: #E9ECF5;
-  --line:      #E2E6F0;
-  --line-soft: #EDEFF6;
+  --bg: #FBFBFD;
+  --bg-2: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-2: #F4F5FA;
+  --surface-3: #EAECF5;
+  --line: #E3E5F0;
+  --line-soft: #EFF0F7;
 
   /* ── Text (light) ───────────────────────────────────────────────────── */
-  --ink:    #12152A;
-  --ink-2:  #3C4260;
-  --muted:  #6A7191;
-  --dim:    #98A0BC;
+  --ink: #0A0A0F;
+  --ink-2: #3A3F52;
+  --muted: #6B7186;
+  --dim: #9BA1B4;
 
   /* ── Status ─────────────────────────────────────────────────────────── */
-  --good:      #0E9F6E;
-  --good-tint: rgba(16, 185, 129, 0.12);
-  --bad:       #DC2626;
-  --bad-tint:  rgba(220, 38, 38, 0.10);
-  --warn:      #D97706;
-  --warn-tint: rgba(217, 119, 6, 0.12);
+  --good: #047857;
+  --good-tint: rgba(4, 120, 87, 0.12);
+  --bad: #E11D48;
+  --bad-tint: rgba(225, 29, 72, 0.10);
+  --warn: #A16207;
+  --warn-tint: rgba(161, 98, 7, 0.14);
 
   /* ── Inverted text on brand fills ───────────────────────────────────── */
   --on-brand: #FFFFFF;
@@ -95,7 +105,7 @@
   --dur: 0.2s;
 
   /* ── Translucent shell backgrounds (broader support than color-mix) ── */
-  --header-bg: rgba(246, 247, 251, 0.85);
+  --header-bg: rgba(251, 251, 253, 0.85);
 
   /* ── Backdrop alias (keep legacy var names working) ─────────────────── */
   --amber:      var(--brand);
@@ -109,37 +119,47 @@
 
 /* ── Dark theme: dark slate / charcoal, never pure black ────────────────── */
 [data-theme='dark'] {
-  --bg:        #0D1020;
-  --bg-2:      #121629;
-  --surface:   #161B2E;
-  --surface-2: #1D2338;
-  --surface-3: #242B44;
-  --line:      #2A3250;
-  --line-soft: #212840;
+  --bg: #0A0A0F;
+  --bg-2: #101018;
+  --surface: #15151F;
+  --surface-2: #1D1D2A;
+  --surface-3: #252533;
+  --line: #2E2E3E;
+  --line-soft: #232330;
 
-  --ink:   #ECEEF8;
-  --ink-2: #B9BFDA;
-  --muted: #8B93B2;
-  --dim:   #5D6584;
+  --ink: #FFFFFF;
+  --ink-2: #C6C6D6;
+  --muted: #8E8EA6;
+  --dim: #5E5E75;
 
-  --brand:        #8B5CF6;
-  --brand-bright: #A78BFA;
-  --brand-deep:   #7C3AED;
-  --brand-soft:   #C4B5FD;
-  --brand-tint:   rgba(139, 92, 246, 0.16);
+  --brand: #A78BFA;
+  --brand-bright: #C4B5FD;
+  --brand-deep: #8B5CF6;
+  --brand-soft: #C4B5FD;
+  --brand-tint: rgba(167, 139, 250, 0.16);
 
-  --blue:        #60A5FA;
+  --blue: #60A5FA;
   --blue-bright: #93C5FD;
-  --blue-deep:   #3B82F6;
-  --blue-soft:   #BFDBFE;
-  --blue-tint:   rgba(96, 165, 250, 0.16);
+  --blue-deep: #3B82F6;
+  --blue-soft: #BFDBFE;
+  --blue-tint: rgba(96, 165, 250, 0.16);
+  --pink: #F472B6;   /* pink accent */
+  --pink-bright: #F9A8D4;
+  --pink-deep: #EC4899;
+  --pink-soft: #FBCFE8;
+  --pink-tint: rgba(244, 114, 182, 0.16);
+  --yellow: #FACC15;   /* yellow attention */
+  --yellow-bright: #FDE047;
+  --yellow-deep: #EAB308;
+  --yellow-soft: #FEF08A;
+  --yellow-tint: rgba(250, 204, 21, 0.16);
 
-  --good:      #34D399;
+  --good: #34D399;
   --good-tint: rgba(52, 211, 153, 0.14);
-  --bad:       #F87171;
-  --bad-tint:  rgba(248, 113, 113, 0.14);
-  --warn:      #FBBF24;
-  --warn-tint: rgba(251, 191, 36, 0.14);
+  --bad: #FB7185;
+  --bad-tint: rgba(251, 113, 133, 0.14);
+  --warn: #FACC15;
+  --warn-tint: rgba(250, 204, 21, 0.14);
 
   --on-brand: #FFFFFF;
 
@@ -149,45 +169,55 @@
   --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
   --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
 
-  --header-bg: rgba(13, 16, 32, 0.85);
+  --header-bg: rgba(10, 10, 15, 0.85);
 }
 
 /* Honour the OS preference when the user has not chosen explicitly. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg:        #0D1020;
-    --bg-2:      #121629;
-    --surface:   #161B2E;
-    --surface-2: #1D2338;
-    --surface-3: #242B44;
-    --line:      #2A3250;
-    --line-soft: #212840;
-    --ink:   #ECEEF8;
-    --ink-2: #B9BFDA;
-    --muted: #8B93B2;
-    --dim:   #5D6584;
-    --brand:        #8B5CF6;
-    --brand-bright: #A78BFA;
-    --brand-deep:   #7C3AED;
-    --brand-soft:   #C4B5FD;
-    --brand-tint:   rgba(139, 92, 246, 0.16);
-    --blue:        #60A5FA;
+    --bg: #0A0A0F;
+    --bg-2: #101018;
+    --surface: #15151F;
+    --surface-2: #1D1D2A;
+    --surface-3: #252533;
+    --line: #2E2E3E;
+    --line-soft: #232330;
+    --ink: #FFFFFF;
+    --ink-2: #C6C6D6;
+    --muted: #8E8EA6;
+    --dim: #5E5E75;
+    --brand: #A78BFA;
+    --brand-bright: #C4B5FD;
+    --brand-deep: #8B5CF6;
+    --brand-soft: #C4B5FD;
+    --brand-tint: rgba(167, 139, 250, 0.16);
+    --blue: #60A5FA;
     --blue-bright: #93C5FD;
-    --blue-deep:   #3B82F6;
-    --blue-soft:   #BFDBFE;
-    --blue-tint:   rgba(96, 165, 250, 0.16);
-    --good:      #34D399;
+    --blue-deep: #3B82F6;
+    --blue-soft: #BFDBFE;
+    --blue-tint: rgba(96, 165, 250, 0.16);
+    --pink: #F472B6;   /* pink accent */
+    --pink-bright: #F9A8D4;
+    --pink-deep: #EC4899;
+    --pink-soft: #FBCFE8;
+    --pink-tint: rgba(244, 114, 182, 0.16);
+    --yellow: #FACC15;   /* yellow attention */
+    --yellow-bright: #FDE047;
+    --yellow-deep: #EAB308;
+    --yellow-soft: #FEF08A;
+    --yellow-tint: rgba(250, 204, 21, 0.16);
+    --good: #34D399;
     --good-tint: rgba(52, 211, 153, 0.14);
-    --bad:       #F87171;
-    --bad-tint:  rgba(248, 113, 113, 0.14);
-    --warn:      #FBBF24;
-    --warn-tint: rgba(251, 191, 36, 0.14);
+    --bad: #FB7185;
+    --bad-tint: rgba(251, 113, 133, 0.14);
+    --warn: #FACC15;
+    --warn-tint: rgba(250, 204, 21, 0.14);
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
     --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
     --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
     --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
     --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
-    --header-bg: rgba(13, 16, 32, 0.85);
+    --header-bg: rgba(10, 10, 15, 0.85);
   }
 }
 
@@ -226,7 +256,7 @@ img, svg, video { max-width: 100%; height: auto; }
 ::-webkit-scrollbar-thumb { background: var(--line); border: 3px solid var(--bg); border-radius: var(--r-pill); }
 ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
 
-::selection { background: var(--brand-tint); color: var(--ink); }
+::selection { background: var(--pink-tint); color: var(--ink); }
 
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: var(--r-xs); }
 
@@ -322,7 +352,8 @@ h3 { font-size: var(--text-xl); }
   z-index: -2;
   background:
     radial-gradient(60% 50% at 12% 0%, var(--brand-tint), transparent 70%),
-    radial-gradient(50% 45% at 92% 8%, var(--blue-tint), transparent 70%);
+    radial-gradient(50% 45% at 92% 8%, var(--blue-tint), transparent 70%),
+    radial-gradient(40% 38% at 72% 96%, var(--pink-tint), transparent 72%);
 }
 
 /* Landing / hero — two blurred orbs + faint grid, most expressive. */
@@ -332,9 +363,10 @@ h3 { font-size: var(--text-xl); }
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(46% 42% at 18% 12%, rgba(124, 58, 237, 0.20), transparent 68%),
-    radial-gradient(42% 40% at 84% 20%, rgba(59, 130, 246, 0.18), transparent 68%),
-    radial-gradient(60% 50% at 50% 100%, rgba(139, 92, 246, 0.10), transparent 72%);
+    radial-gradient(46% 42% at 16% 12%, rgba(124, 58, 237, 0.22), transparent 68%),
+    radial-gradient(42% 40% at 86% 18%, rgba(37, 99, 235, 0.20), transparent 68%),
+    radial-gradient(38% 36% at 74% 74%, rgba(219, 39, 119, 0.18), transparent 70%),
+    radial-gradient(26% 24% at 28% 82%, rgba(250, 204, 21, 0.16), transparent 72%);
 }
 .bg-hero::after {
   content: '';
@@ -359,7 +391,8 @@ h3 { font-size: var(--text-xl); }
   z-index: -2;
   background:
     radial-gradient(80% 32% at 50% -6%, var(--brand-tint), transparent 70%),
-    radial-gradient(40% 26% at 96% 4%, var(--blue-tint), transparent 72%);
+    radial-gradient(40% 26% at 96% 4%, var(--blue-tint), transparent 72%),
+    radial-gradient(34% 24% at 4% 18%, var(--pink-tint), transparent 74%);
 }
 
 /* Auth — soft brand glow behind a centred card, nothing busy. */
@@ -369,8 +402,9 @@ h3 { font-size: var(--text-xl); }
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(52% 46% at 22% 18%, rgba(124, 58, 237, 0.18), transparent 70%),
-    radial-gradient(48% 44% at 80% 82%, rgba(59, 130, 246, 0.16), transparent 70%);
+    radial-gradient(52% 46% at 20% 16%, rgba(124, 58, 237, 0.20), transparent 70%),
+    radial-gradient(46% 44% at 82% 82%, rgba(37, 99, 235, 0.18), transparent 70%),
+    radial-gradient(34% 32% at 88% 14%, rgba(219, 39, 119, 0.16), transparent 72%);
 }
 .bg-auth::after {
   content: '';
@@ -393,7 +427,8 @@ h3 { font-size: var(--text-xl); }
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: radial-gradient(70% 24% at 50% -4%, var(--brand-tint), transparent 72%);
+  background: radial-gradient(70% 24% at 50% -4%, var(--brand-tint), transparent 72%),
+    radial-gradient(38% 22% at 92% 6%, var(--pink-tint), transparent 74%);
 }
 
 /* Decorative blurred circle — opt-in, absolutely positioned by the caller. */
@@ -405,8 +440,10 @@ h3 { font-size: var(--text-xl); }
   pointer-events: none;
   z-index: -1;
 }
-.orb-brand { background: rgba(124, 58, 237, 0.42); }
-.orb-blue  { background: rgba(59, 130, 246, 0.38); }
+.orb-brand  { background: rgba(124, 58, 237, 0.42); }
+.orb-blue   { background: rgba(37, 99, 235, 0.38); }
+.orb-pink   { background: rgba(219, 39, 119, 0.36); }
+.orb-yellow { background: rgba(250, 204, 21, 0.34); }
 
 /* ───────────────────────── 5. LAYOUT SCAFFOLDING ─────────────────────────── */
 
@@ -438,7 +475,7 @@ h3 { font-size: var(--text-xl); }
   height: 3px;
   margin-top: 12px;
   border-radius: var(--r-pill);
-  background: linear-gradient(90deg, var(--brand), var(--blue));
+  background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue));
 }
 
 .page-pad { padding: 16px; }
@@ -563,7 +600,7 @@ h3 { font-size: var(--text-xl); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--brand), var(--blue));
+  background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue));
 }
 
 /* Editorial numbered row (feature lists). Collapses gracefully on mobile. */
@@ -737,8 +774,11 @@ select.input {
 .tag-blue  { color: var(--blue-deep); border-color: transparent; background: var(--blue-tint); }
 .tag-green { color: var(--good); border-color: transparent; background: var(--good-tint); }
 .tag-red   { color: var(--bad); border-color: transparent; background: var(--bad-tint); }
-.tag-warn  { color: var(--warn); border-color: transparent; background: var(--warn-tint); }
+.tag-warn   { color: var(--warn); border-color: transparent; background: var(--warn-tint); }
+.tag-pink   { color: var(--pink); border-color: transparent; background: var(--pink-tint); }
+.tag-yellow { color: var(--warn); border-color: transparent; background: var(--yellow-tint); }
 [data-theme='dark'] .tag-blue { color: var(--blue-bright); }
+[data-theme='dark'] .tag-pink { color: var(--pink-bright); }
 
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
 .dot-online  { color: var(--good); }
@@ -842,7 +882,7 @@ select.input {
 /* ─────────────────────────── 12. UTILITIES ───────────────────────────────── */
 
 .gradient-text {
-  background: linear-gradient(100deg, var(--brand), var(--blue-bright));
+  background: linear-gradient(100deg, var(--brand), var(--pink) 48%, var(--blue));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1099,9 +1139,10 @@ select.input {
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(70% 70% at 30% 20%, rgba(124, 58, 237, 0.85), transparent 70%),
-    radial-gradient(70% 70% at 78% 82%, rgba(59, 130, 246, 0.80), transparent 72%),
-    linear-gradient(135deg, #6D28D9, #3B82F6);
+    radial-gradient(70% 70% at 26% 18%, rgba(124, 58, 237, 0.88), transparent 70%),
+    radial-gradient(62% 62% at 82% 78%, rgba(37, 99, 235, 0.82), transparent 72%),
+    radial-gradient(45% 45% at 88% 12%, rgba(250, 204, 21, 0.55), transparent 70%),
+    linear-gradient(135deg, #6D28D9, #DB2777 52%, #2563EB);
   color: #fff;
   font-family: var(--font-display);
   font-weight: 700;
@@ -1122,7 +1163,7 @@ select.input {
   width: 60px; height: 60px;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--r-lg);
-  background: linear-gradient(135deg, var(--brand-tint), var(--blue-tint));
+  background: linear-gradient(135deg, var(--brand-tint), var(--pink-tint) 50%, var(--yellow-tint));
   color: var(--brand);
   margin-bottom: 4px;
 }
@@ -1257,7 +1298,7 @@ select.input {
 .step.is-done .step-num { background: var(--good-tint); color: var(--good); }
 
 .progress-track { height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
-.progress-fill { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--brand), var(--blue)); transition: width 0.4s var(--ease); }
+.progress-fill { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--brand), var(--pink), var(--blue)); transition: width 0.4s var(--ease); }
 
 /* ─────────────────────── 18. MISC / LEGACY SUPPORT ───────────────────────── */
 

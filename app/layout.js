@@ -19,8 +19,8 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#F6F7FB" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#0D1020" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#FBFBFD" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0A0A0F" media="(prefers-color-scheme: dark)" />
         {/* Applies the saved theme before first paint — no flash of the wrong mode. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>

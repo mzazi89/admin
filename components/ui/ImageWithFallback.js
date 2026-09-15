@@ -108,7 +108,7 @@ export function Avatar({ src, name = '', size = 40, alt, ring = false, style }) 
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, var(--brand), var(--blue))',
+        background: 'linear-gradient(135deg, var(--brand), var(--pink) 52%, var(--blue))',
         color: 'var(--on-brand)',
         fontFamily: 'var(--font-display)',
         fontWeight: 700,

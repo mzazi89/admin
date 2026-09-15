@@ -36,7 +36,7 @@ export function PageHeader({ title, description, icon, actions, breadcrumb, clas
                 width: 40, height: 40, flex: '0 0 40px',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 borderRadius: 'var(--r-md)',
-                background: 'linear-gradient(135deg, var(--brand-tint), var(--blue-tint))',
+                background: 'linear-gradient(135deg, var(--brand-tint), var(--pink-tint) 55%, var(--blue-tint))',
                 color: 'var(--brand)',
               }}
             >

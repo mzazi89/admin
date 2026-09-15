@@ -62,6 +62,8 @@ export function StatCard({ label, value, hint, icon, tone = 'brand', loading = f
   const toneMap = {
     brand: { bg: 'var(--brand-tint)', fg: 'var(--brand)' },
     blue: { bg: 'var(--blue-tint)', fg: 'var(--blue-deep)' },
+    pink: { bg: 'var(--pink-tint)', fg: 'var(--pink)' },
+    yellow: { bg: 'var(--yellow-tint)', fg: 'var(--warn)' },
     good: { bg: 'var(--good-tint)', fg: 'var(--good)' },
     warn: { bg: 'var(--warn-tint)', fg: 'var(--warn)' },
     bad: { bg: 'var(--bad-tint)', fg: 'var(--bad)' },
