@@ -13,11 +13,20 @@ const EMPTY = {
   ownerOnly: false, adminOnly: false, groupOnly: false, enabled: true, code: '', profile: '',
 };
 
-// Fallback bot list when `bot_profiles` is unset (a single-bot deployment). The
-// live list is read from that setting so the labels always match the bots the
-// site actually serves.
+// Fallback bot list used when `bot_profiles` is unset. These ids must be the ids
+// the SITE actually resolves, not display names.
+//
+// With `bot_profiles` unset the primary bot's real id is 'main' — lib/bots.js
+// FALLBACK_ID, the id it publishes in bot_status, and the id every bot_control
+// nudge is aimed at. 'quartz' was only ever a display name. Because every
+// primary row carries an EMPTY profile, the server matches a primary filter as
+// `profile === '' && filter === primary`; a filter of 'quartz' therefore matched
+// no row at all, and selecting QUARTZ XD showed "0 commands" against a full
+// registry. MZAZI XMD is a genuinely separate bot id (its own /api/xmd-command).
+// When `bot_profiles` IS set this list is replaced wholesale, so an operator who
+// names their profiles something else is unaffected.
 const DEFAULT_BOTS = [
-  { id: 'quartz', name: 'QUARTZ XD' },
+  { id: 'main', name: 'QUARTZ XD' },
   { id: 'xmd', name: 'MZAZI XMD' },
 ];
 
@@ -109,10 +118,13 @@ export default function CommandsPage() {
   const botLabel = (p) => (p ? (bots.find((b) => b.id === p)?.name || p) : (bots[0]?.name || 'QUARTZ XD'));
   const botFilterOptions = [{ value: 'all', label: 'All bots' }, ...bots.map((b) => ({ value: b.id, label: b.name }))];
   // '' is offered explicitly: it is what a new command defaults to and what any
-  // command created before bot profiles existed already carries.
+  // command created before bot profiles existed already carries. The primary
+  // bot is NOT repeated by id below — '' already means the primary, and offering
+  // both would put two identically-labelled choices in the dropdown and let a
+  // command be filed under an id instead of the empty profile the bot resolves.
   const botFormOptions = [
     { value: '', label: `${bots[0]?.name || 'QUARTZ XD'} (default)` },
-    ...bots.map((b) => ({ value: b.id, label: b.name })),
+    ...bots.slice(1).map((b) => ({ value: b.id, label: b.name })),
   ];
 
   const openAdd = () => { setForm(EMPTY); setModal({ mode: 'add' }); };
