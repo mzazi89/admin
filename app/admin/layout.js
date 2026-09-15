@@ -145,7 +145,7 @@ export default function AdminLayout({ children }) {
   const shell = isLogin ? (
     <>{children}</>
   ) : (
-    <AppBackground variant="admin">
+    <AppBackground variant="admin" image="/images/dashboard-bg.webp" imageOpacity={0.4} scrim={0.6}>
     <div style={{ minHeight: '100vh' }}>
       {/* ── Desktop sidebar (fixed) ── */}
       <aside

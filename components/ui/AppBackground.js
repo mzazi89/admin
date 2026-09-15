@@ -22,7 +22,8 @@ const VARIANTS = {
 export default function AppBackground({
   variant = 'default',
   image = null,
-  imageOpacity = 0.22,
+  imageOpacity = 0.42,
+  scrim = 0.55,
   orbs = false,
   className = '',
   style,
@@ -37,24 +38,34 @@ export default function AppBackground({
       style={{ position: 'relative', minHeight: '100%', ...style }}
     >
       {showImage && (
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute', inset: 0, zIndex: -3,
-            backgroundImage: `url("${image}")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: imageOpacity,
-          }}
-        >
-          {/* Decode-then-show: no flash of a broken image while loading. */}
+        <>
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute', inset: 0, zIndex: -4,
+              backgroundImage: `url("${image}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: imageOpacity,
+            }}
+          />
+          {/* Scrim: keeps foreground text readable over any photo. */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute', inset: 0, zIndex: -3,
+              background: 'var(--bg)',
+              opacity: scrim,
+            }}
+          />
+          {/* Decode off-screen so a broken URL never paints an icon. */}
           <img
             src={image}
             alt=""
             onError={() => setImgFailed(true)}
             style={{ display: 'none' }}
           />
-        </div>
+        </>
       )}
 
       {orbs && (

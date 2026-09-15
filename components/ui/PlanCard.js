@@ -16,7 +16,29 @@ import ImageWithFallback from './ImageWithFallback';
  * Branded bot mark. `image` is used when one exists (bundled, uploaded or a DB
  * URL); otherwise a gradient + bolt renders. `compact` is the inline variant.
  */
-export function BotMark({ name = 'QUARTZ XD', image = null, size = 52, compact = false }) {
+/**
+ * Bot artwork. Real generated assets live in /public/images; if one is ever
+ * missing or fails to load, ImageWithFallback swaps in the branded gradient
+ * mark, so a bot never renders as an empty box.
+ */
+export const BOT_IMAGES = {
+  'QUARTZ XD': '/images/bot-quartz.webp',
+  'MZAZI XMD': '/images/bot-mzazi.webp',
+};
+
+/** Resolve artwork for a bot name (tolerant of casing / spacing). */
+export function botImage(name) {
+  if (!name) return null;
+  const key = String(name).trim().toUpperCase();
+  if (BOT_IMAGES[key]) return BOT_IMAGES[key];
+  const hit = Object.keys(BOT_IMAGES).find(
+    (k) => key.includes(k.split(' ')[0]) || k.includes(key.split(' ')[0])
+  );
+  return hit ? BOT_IMAGES[hit] : null;
+}
+
+export function BotMark({ name = 'QUARTZ XD', image = undefined, size = 52, compact = false }) {
+  const art = image === undefined ? botImage(name) : image;
   const initial = String(name).trim().charAt(0).toUpperCase() || 'Q';
   const short = String(name).replace(/^MZAZI\s+/i, '');
 
@@ -24,7 +46,7 @@ export function BotMark({ name = 'QUARTZ XD', image = null, size = 52, compact =
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
         <ImageWithFallback
-          src={image}
+          src={art}
           alt=""
           ratio="1-1"
           rounded="md"
@@ -38,7 +60,7 @@ export function BotMark({ name = 'QUARTZ XD', image = null, size = 52, compact =
 
   return (
     <ImageWithFallback
-      src={image}
+      src={art}
       alt={`${name} bot`}
       ratio="1-1"
       rounded="lg"

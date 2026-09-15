@@ -46,7 +46,7 @@ export default function AdminLogin() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <AppBackground variant="auth" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+        <AppBackground variant="auth" image="/images/auth-bg.webp" imageOpacity={0.5} scrim={0.5} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
           <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 2 }}>
             <ThemeToggle />
           </div>

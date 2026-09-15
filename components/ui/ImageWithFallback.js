@@ -3,7 +3,7 @@
 // MZAZI TECH — the image primitive.
 //
 // Accepts any of the four image sources the platform can produce:
-//   1. a bundled asset            ('/icons/bot-quartz.png')
+//   1. a bundled asset            ('/images/bot-quartz.webp')
 //   2. an uploaded file           ('/uploads/abc.png' or a blob: URL)
 //   3. a remote URL               ('https://…')
 //   4. a database-stored URL      (any of the above, read at runtime)
