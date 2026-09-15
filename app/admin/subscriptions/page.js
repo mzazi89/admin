@@ -129,14 +129,14 @@ export default function AdminSubscriptions() {
                       />
                       <div style={{ minWidth: 0 }}>
                         <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>{p.name}</h3>
-                        <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <p style={{ margin: '2px 0 0', fontSize: 13.5, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
                           <Icons.Phone size={13} /> {deviceText(p.devices)}
                         </p>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                       <span style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700 }}>{p.priceKsh ? `KES ${p.priceKsh}` : 'Free'}</span>
-                      <span style={{ fontSize: 13, color: 'var(--muted)' }}>/ {p.days} days</span>
+                      <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>/ {p.days} days</span>
                     </div>
                     <div style={{ marginTop: 'auto', paddingTop: 10, borderTop: '1px solid var(--line-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span className="stat-label" style={{ margin: 0 }}>Subscribers</span>
@@ -183,7 +183,7 @@ export default function AdminSubscriptions() {
                               <div style={{ fontWeight: 600, color: 'var(--ink)' }}>
                                 {s.fullname || s.email || `User #${s.userId}`}
                               </div>
-                              {s.email && <div className="mono" style={{ fontSize: 11.5, color: 'var(--dim)' }}>{s.email}</div>}
+                              {s.email && <div className="mono" style={{ fontSize: 12.5, color: 'var(--dim)' }}>{s.email}</div>}
                             </td>
                             <td data-label="Plan"><Badge tone={planTone(plan)}>{planLabel(plan)}</Badge></td>
                             <td data-label="Devices">{s.botPlan ? deviceText(s.maxDevices) : '—'}</td>

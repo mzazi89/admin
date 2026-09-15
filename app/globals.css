@@ -49,8 +49,8 @@
   /* ── Text (light) ───────────────────────────────────────────────────── */
   --ink: #0A0A0F;
   --ink-2: #3A3F52;
-  --muted: #6B7186;
-  --dim: #9BA1B4;
+  --muted: #4E5468;   /* AA on the washed backdrop (was #6B7186 = 1.7:1) */
+  --dim: #5A6076;     /* AA (was #9BA1B4 = 1.1:1) */
 
   /* ── Status ─────────────────────────────────────────────────────────── */
   --good: #047857;
@@ -105,7 +105,15 @@
   --dur: 0.2s;
 
   /* ── Translucent shell backgrounds (broader support than color-mix) ── */
-  --header-bg: rgba(251, 251, 253, 0.85);
+  --header-bg: rgba(251, 251, 253, 0.92);
+  /* ── Per-page wallpaper strength (consumed by RouteBackdrop) ──────────
+     Dark artwork behind a LIGHT page is exactly what made text unreadable:
+     with the old flat 0.55 scrim the effective background became #98969D and
+     --muted fell to 1.66:1. These are now theme-aware, and light suppresses
+     the artwork much harder. The wallpaper still reads as texture; it no
+     longer moves the background off --bg. */
+  --backdrop-image: 0.28;
+  --backdrop-scrim: 0.88;
 
   /* ── Backdrop alias (keep legacy var names working) ─────────────────── */
   --amber:      var(--brand);
@@ -129,8 +137,8 @@
 
   --ink: #FFFFFF;
   --ink-2: #C6C6D6;
-  --muted: #8E8EA6;
-  --dim: #5E5E75;
+  --muted: #A8AAC2;   /* AA on dark surfaces */
+  --dim: #8E90A8;     /* AA (was #5E5E75 = 2.9:1) */
 
   --brand: #A78BFA;
   --brand-bright: #C4B5FD;
@@ -170,6 +178,8 @@
   --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
 
   --header-bg: rgba(10, 10, 15, 0.85);
+  --backdrop-image: 0.42;
+  --backdrop-scrim: 0.74;
 }
 
 /* Honour the OS preference when the user has not chosen explicitly. */
@@ -184,8 +194,8 @@
     --line-soft: #232330;
     --ink: #FFFFFF;
     --ink-2: #C6C6D6;
-    --muted: #8E8EA6;
-    --dim: #5E5E75;
+    --muted: #A8AAC2;
+    --dim: #8E90A8;
     --brand: #A78BFA;
     --brand-bright: #C4B5FD;
     --brand-deep: #8B5CF6;
@@ -217,7 +227,9 @@
     --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
     --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
     --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
-    --header-bg: rgba(10, 10, 15, 0.85);
+    --header-bg: rgba(10, 10, 15, 0.85);  
+    --backdrop-image: 0.42;
+    --backdrop-scrim: 0.74;
   }
 }
 
@@ -247,6 +259,11 @@ body {
 }
 
 /* Prevent iOS zoom-on-focus while keeping the visual size sane. */
+/* Nothing in the product should render below this. The previous build
+   shipped ~260 inline sizes of 10-13px, which is unreadable on a phone
+   even at good contrast. */
+.text-micro, .tag, .row-tag, .eyebrow { font-size: max(12.5px, 0.78rem); }
+
 input, select, textarea { font-size: max(16px, 1em); }
 
 img, svg, video { max-width: 100%; height: auto; }
@@ -558,7 +575,7 @@ h3 { font-size: var(--text-xl); }
 .btn-danger { background: var(--bad); color: #fff; }
 .btn-danger:hover { filter: brightness(1.08); }
 
-.btn-sm { font-size: 13px; padding: 8px 14px; min-height: 36px; border-radius: var(--r-sm); }
+.btn-sm { font-size: 13.5px; padding: 8px 14px; min-height: 36px; border-radius: var(--r-sm); }
 .btn-lg { font-size: 16px; padding: 15px 28px; min-height: 52px; border-radius: var(--r-lg); }
 .btn-block { width: 100%; }
 
@@ -615,7 +632,7 @@ h3 { font-size: var(--text-xl); }
 }
 .row-item:last-child { border-bottom: 1px solid var(--line); }
 .row-item:hover { background: var(--surface-2); padding-left: 12px; }
-.row-item .row-num { font-family: var(--font-mono); font-size: 12px; color: var(--dim); letter-spacing: 0.06em; }
+.row-item .row-num { font-family: var(--font-mono); font-size: 12.5px; color: var(--dim); letter-spacing: 0.06em; }
 .row-item h3 { font-size: 1.05rem; margin: 0 0 4px; }
 .row-item p { color: var(--muted); margin: 0; font-size: 0.9rem; line-height: 1.6; }
 .row-item .row-tag {
@@ -628,6 +645,20 @@ h3 { font-size: var(--text-xl); }
 @media (min-width: 640px) {
   .row-item { grid-template-columns: 44px 1fr auto; gap: 18px; align-items: baseline; }
   .row-item h3 { font-size: 1.2rem; }
+}
+
+/* ── Per-page wallpaper layer (RouteBackdrop) ───────────────────────── */
+.backdrop-img {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: var(--backdrop-image, 0.30);
+}
+
+.backdrop-scrim {
+  position: absolute; inset: 0;
+  background: var(--bg);
+  opacity: var(--backdrop-scrim, 0.88);
 }
 
 /* ────────────────────────────── 8. FORMS ─────────────────────────────────── */

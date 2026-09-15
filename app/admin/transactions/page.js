@@ -138,7 +138,7 @@ export default function AdminPayments() {
                 <tr key={r.id}>
                   <td data-label="User">
                     <div style={{ color: 'var(--ink-2)' }}>{r.user || '—'}</div>
-                    <div className="mono truncate-1" style={{ fontSize: 11, color: 'var(--dim)' }}>{r.ref ? String(r.ref).slice(-14) : r.detail}</div>
+                    <div className="mono truncate-1" style={{ fontSize: 12.5, color: 'var(--dim)' }}>{r.ref ? String(r.ref).slice(-14) : r.detail}</div>
                   </td>
                   <td data-label="Type"><Badge tone={r.typeKey === 'order' ? 'blue' : debit ? 'bad' : 'good'}>{r.type}</Badge></td>
                   <td data-label="Amount" style={{ fontWeight: 600, color: debit ? 'var(--bad)' : 'var(--good)' }}>

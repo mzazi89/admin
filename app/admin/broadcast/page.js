@@ -193,7 +193,7 @@ export default function AdminBroadcast() {
                     }}
                   >
                     {message || <span style={{ color: 'var(--dim)' }}>Your message will appear here…</span>}
-                    <div className="mono" style={{ textAlign: 'right', fontSize: 10.5, color: 'var(--dim)', marginTop: 6 }}>
+                    <div className="mono" style={{ textAlign: 'right', fontSize: 12.5, color: 'var(--dim)', marginTop: 6 }}>
                       {new Date().toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} ✓✓
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default function AdminBroadcast() {
                   </Button>
                 </div>
                 {targetCount === 0 && !loading && (
-                  <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--warn)' }}>
+                  <p style={{ margin: '10px 0 0', fontSize: 13.5, color: 'var(--warn)' }}>
                     No active sessions are connected, so there are no groups to deliver to.
                   </p>
                 )}

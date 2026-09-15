@@ -138,7 +138,7 @@ export default function BotControlPage() {
           <span className="dot" style={{ width: 10, height: 10, backgroundColor: online ? 'var(--good)' : 'var(--bad)' }} />
           <h2 className="section-title" style={{ fontSize: '1.15rem', margin: 0 }}>{online ? 'Bot online' : 'Bot offline'}</h2>
           {status?.lastSeenAgoSeconds !== null && (
-            <span className="mono" style={{ color: 'var(--dim)', fontSize: 11 }}>— last seen {fmtAgo(status?.lastSeenAgoSeconds)}</span>
+            <span className="mono" style={{ color: 'var(--dim)', fontSize: 12.5 }}>— last seen {fmtAgo(status?.lastSeenAgoSeconds)}</span>
           )}
         </div>
         <div className="grid-2-responsive" style={{ gap: 1, backgroundColor: 'var(--line-soft)', border: '1px solid var(--line)', borderRadius: 4, overflow: 'hidden' }}>
@@ -150,12 +150,12 @@ export default function BotControlPage() {
             ['Command count', String(status?.commandCount ?? '—')],
           ].map(([label, value]) => (
             <div key={label} style={{ background: 'var(--surface)', padding: '14px 16px' }}>
-              <div className="mono" style={{ color: 'var(--dim)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
+              <div className="mono" style={{ color: 'var(--dim)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
               <div className="mono" style={{ color: 'var(--ink)', fontWeight: 600, fontSize: 14 }}>{value}</div>
             </div>
           ))}
         </div>
-        <p className="mono mt-4" style={{ fontSize: 11, color: 'var(--dim)', margin: 0 }}>
+        <p className="mono mt-4" style={{ fontSize: 12.5, color: 'var(--dim)', margin: 0 }}>
           Last command sync: {status?.lastSyncAt ? new Date(status.lastSyncAt).toLocaleString() : 'never'}
           {status?.lastSyncError && <span style={{ color: 'var(--bad)' }}> — {status.lastSyncError}</span>}
         </p>
@@ -166,8 +166,8 @@ export default function BotControlPage() {
         <div className="flex items-center gap-3 mb-1">
           <h3 className="section-title" style={{ fontSize: '1rem', margin: 0 }}>Bot API key</h3>
           {apiKeyCfg.configured
-            ? <span className="tag tag-green" style={{ fontSize: 9.5, padding: '2px 8px' }}>Configured</span>
-            : <span className="tag tag-red" style={{ fontSize: 9.5, padding: '2px 8px' }}>Not set — bot cannot download commands</span>}
+            ? <span className="tag tag-green" style={{ fontSize: 12.5, padding: '2px 8px' }}>Configured</span>
+            : <span className="tag tag-red" style={{ fontSize: 12.5, padding: '2px 8px' }}>Not set — bot cannot download commands</span>}
         </div>
         <p className="lede mb-4" style={{ fontSize: '0.88rem', maxWidth: 640 }}>
           Shared secret between the website and the bot.
@@ -178,7 +178,7 @@ export default function BotControlPage() {
             onChange={(e) => setApiKeyInput(e.target.value)}
             placeholder={apiKeyCfg.configured ? 'Type a new key to replace…' : "Paste the BOT_API_KEY from your bot's .env"}
             className="input mono"
-            style={{ maxWidth: 420, fontSize: 13 }}
+            style={{ maxWidth: 420, fontSize: 13.5 }}
           />
           <button onClick={saveApiKey} disabled={busy || !apiKeyInput.trim()} className="btn btn-primary" style={{ opacity: busy || !apiKeyInput.trim() ? 0.5 : 1 }}>
             {busy ? 'Saving…' : 'Save key'}
@@ -190,7 +190,7 @@ export default function BotControlPage() {
                 style={{
                   display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 12px',
                   border: '1px solid var(--line)', borderRadius: 'var(--r-sm)',
-                  background: 'var(--surface-2)', color: 'var(--ink-2)', fontSize: 13, letterSpacing: '0.06em',
+                  background: 'var(--surface-2)', color: 'var(--ink-2)', fontSize: 13.5, letterSpacing: '0.06em',
                 }}
               >
                 {revealKey ? apiKeyCfg.key : maskKey(apiKeyCfg.key)}
@@ -218,7 +218,7 @@ export default function BotControlPage() {
       {/* Control panel — asymmetric: sync + rename side by side, broadcast full width */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         <div className="card" style={{ padding: '22px' }}>
-          <div className="eyebrow mb-3" style={{ fontSize: 10 }}>Registry</div>
+          <div className="eyebrow mb-3" style={{ fontSize: 12 }}>Registry</div>
           <h3 className="section-title mb-2" style={{ fontSize: '1rem' }}>Sync commands</h3>
           <p className="lede mb-4" style={{ fontSize: '0.85rem' }}>Force the bot to re-fetch the command registry from the website.</p>
           <button onClick={() => issue('sync', {}, 'Sync requested')} disabled={busy || !online} className="btn btn-primary" style={{ opacity: busy || !online ? 0.5 : 1 }}>
@@ -227,7 +227,7 @@ export default function BotControlPage() {
         </div>
 
         <div className="card" style={{ padding: '22px' }}>
-          <div className="eyebrow mb-3" style={{ fontSize: 10 }}>Identity</div>
+          <div className="eyebrow mb-3" style={{ fontSize: 12 }}>Identity</div>
           <h3 className="section-title mb-2" style={{ fontSize: '1rem' }}>Change bot name</h3>
           <input
             value={botName}
@@ -242,7 +242,7 @@ export default function BotControlPage() {
         </div>
 
         <div className="card md:col-span-2" style={{ padding: '22px' }}>
-          <div className="eyebrow mb-3" style={{ fontSize: 10 }}>Outreach</div>
+          <div className="eyebrow mb-3" style={{ fontSize: 12 }}>Outreach</div>
           <h3 className="section-title mb-2" style={{ fontSize: '1rem' }}>Broadcast</h3>
           <p className="lede mb-3" style={{ fontSize: '0.85rem' }}>Message to send to all groups of every WhatsApp session.</p>
           <textarea
@@ -262,7 +262,7 @@ export default function BotControlPage() {
       {/* Control history */}
       <div className="card overflow-hidden">
         <div className="px-5 py-3.5" style={{ borderBottom: '1px solid var(--line)' }}>
-          <p className="mono" style={{ fontSize: 10, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
+          <p className="mono" style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
             Control history
           </p>
         </div>
@@ -284,12 +284,12 @@ export default function BotControlPage() {
                 {controls.map((c) => (
                   <tr key={c.id}>
                     <td data-label="Action" className="mono" style={{ color: 'var(--ink)', fontWeight: 600 }}>{c.action}</td>
-                    <td data-label="Payload" className="mono" style={{ color: 'var(--ink-2)', fontSize: 12 }}>{JSON.stringify(c.payload).slice(0, 60)}</td>
+                    <td data-label="Payload" className="mono" style={{ color: 'var(--ink-2)', fontSize: 13 }}>{JSON.stringify(c.payload).slice(0, 60)}</td>
                     <td data-label="Status">
                       <span className={`tag ${c.status === 'done' ? 'tag-green' : c.status === 'failed' ? 'tag-red' : 'tag-amber'}`}>{c.status}</span>
                     </td>
-                    <td data-label="Result" style={{ color: 'var(--ink-2)', maxWidth: 220, fontSize: 13 }}>{c.result || '—'}</td>
-                    <td data-label="When" className="mono" style={{ color: 'var(--dim)', fontSize: 12 }}>{c.createdAt ? new Date(c.createdAt).toLocaleString() : '—'}</td>
+                    <td data-label="Result" style={{ color: 'var(--ink-2)', maxWidth: 220, fontSize: 13.5 }}>{c.result || '—'}</td>
+                    <td data-label="When" className="mono" style={{ color: 'var(--dim)', fontSize: 13 }}>{c.createdAt ? new Date(c.createdAt).toLocaleString() : '—'}</td>
                   </tr>
                 ))}
               </tbody>

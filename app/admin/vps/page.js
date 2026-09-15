@@ -125,7 +125,7 @@ export default function VpsPage() {
             instantly assigned the next available instance from that package's credential pool.
           </p>
         </div>
-        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm(EMPTY); }} className="btn btn-primary" style={{ fontSize: 13, padding: '10px 18px' }}>
+        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm(EMPTY); }} className="btn btn-primary" style={{ fontSize: 13.5, padding: '10px 18px' }}>
           {showForm && !editingId ? '✕ Close' : '＋ New package'}
         </button>
       </div>
@@ -154,10 +154,10 @@ export default function VpsPage() {
               <input type="checkbox" checked={form.active !== false} onChange={e => setForm({ ...form, active: e.target.checked })} />
               Live on store
             </label>
-            <button onClick={savePackage} className="btn btn-primary" style={{ fontSize: 13, padding: '9px 18px' }}>
+            <button onClick={savePackage} className="btn btn-primary" style={{ fontSize: 13.5, padding: '9px 18px' }}>
               {editingId ? 'Save changes' : 'Create package'}
             </button>
-            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY); }} className="btn" style={{ fontSize: 13 }}>Cancel</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY); }} className="btn" style={{ fontSize: 13.5 }}>Cancel</button>
           </div>
         </div>
       )}
@@ -197,9 +197,9 @@ export default function VpsPage() {
                     </button>
                   </td>
                   <td data-label="Actions" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <button onClick={() => { setSelected(p); loadInstances(p.id); }} className="btn btn-dark" style={{ fontSize: 10, padding: '6px 10px', marginRight: 4 }}>Manage pool</button>
-                    <button onClick={() => { setEditingId(p.id); setForm({ ...p, price: String(Number(p.price)) }); setShowForm(true); }} className="btn" style={{ fontSize: 10, padding: '6px 10px', marginRight: 4 }}>Edit</button>
-                    <button onClick={() => deletePackage(p)} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 10px' }}>Delete</button>
+                    <button onClick={() => { setSelected(p); loadInstances(p.id); }} className="btn btn-dark" style={{ fontSize: 12, padding: '6px 10px', marginRight: 4 }}>Manage pool</button>
+                    <button onClick={() => { setEditingId(p.id); setForm({ ...p, price: String(Number(p.price)) }); setShowForm(true); }} className="btn" style={{ fontSize: 12, padding: '6px 10px', marginRight: 4 }}>Edit</button>
+                    <button onClick={() => deletePackage(p)} className="btn btn-danger" style={{ fontSize: 12, padding: '6px 10px' }}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -218,18 +218,18 @@ export default function VpsPage() {
                 Add real VPS instances (host / user / password). Each sale auto-assigns the next available one.
               </p>
             </div>
-            <button onClick={() => setSelected(null)} className="btn" style={{ fontSize: 11 }}>✕ Close</button>
+            <button onClick={() => setSelected(null)} className="btn" style={{ fontSize: 12.5 }}>✕ Close</button>
           </div>
 
           {/* add form — droplet requirements */}
           <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-4">
             {INST_FIELDS.map(f => (
-              <input key={f.key} className="input" style={{ fontSize: 12 }} placeholder={`${f.label}${f.req ? ' *' : ''}`}
+              <input key={f.key} className="input" style={{ fontSize: 13 }} placeholder={`${f.label}${f.req ? ' *' : ''}`}
                 value={inst[f.key]} onChange={e => setInst({ ...inst, [f.key]: e.target.value })} />
             ))}
           </div>
           <div className="flex items-center gap-3 mb-4">
-            <button onClick={addInstance} className="btn btn-primary" style={{ fontSize: 12, padding: '9px 16px' }}>＋ Add instance</button>
+            <button onClick={addInstance} className="btn btn-primary" style={{ fontSize: 13, padding: '9px 16px' }}>＋ Add instance</button>
             <span className="text-[11px]" style={{ color: 'var(--dim)' }}>Only these fields are required · SSH port defaults to 22</span>
           </div>
           {error && <p className="text-xs mb-3" style={{ color: 'var(--bad)' }}>{error}</p>}
@@ -256,7 +256,7 @@ export default function VpsPage() {
                         {meta && <p className="mono text-[10px] mt-1" style={{ color: 'var(--muted)' }}>{meta}</p>}
                       </td>
                       <td data-label="Password" className="mono" style={{ color: 'var(--ink-2)' }}>
-                        <button onClick={() => setReveal(r => ({ ...r, [i.id]: !r[i.id] }))} className="btn" style={{ fontSize: 10, padding: '2px 8px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                        <button onClick={() => setReveal(r => ({ ...r, [i.id]: !r[i.id] }))} className="btn" style={{ fontSize: 12, padding: '2px 8px', border: 'none', background: 'transparent', cursor: 'pointer' }}>
                           {reveal[i.id] ? i.password : '••••••••••'}
                         </button>
                       </td>
@@ -271,7 +271,7 @@ export default function VpsPage() {
                       </td>
                       <td data-label="Actions" style={{ textAlign: 'right' }}>
                         {!isSold && (
-                          <button onClick={() => deleteInstance(i.id)} className="btn btn-danger" style={{ fontSize: 10, padding: '4px 8px' }}>Remove</button>
+                          <button onClick={() => deleteInstance(i.id)} className="btn btn-danger" style={{ fontSize: 12, padding: '4px 8px' }}>Remove</button>
                         )}
                       </td>
                     </tr>

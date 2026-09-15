@@ -91,7 +91,7 @@ export default function ResellersPage() {
             style={{ width: 90 }}
             aria-label="How many passwords"
           />
-          <button onClick={generate} className="btn btn-primary" disabled={generating} style={{ fontSize: 13 }}>
+          <button onClick={generate} className="btn btn-primary" disabled={generating} style={{ fontSize: 13.5 }}>
             {generating ? 'Generating…' : '＋ Generate'}
           </button>
         </div>
@@ -102,7 +102,7 @@ export default function ResellersPage() {
               <span className="mono text-[10px] uppercase tracking-[0.14em]" style={{ color: 'var(--brand)' }}>
                 NEW PASSWORDS — share them once (one activation each)
               </span>
-              <button onClick={copyCodes} className="btn" style={{ fontSize: 12, padding: '6px 12px' }}>📋 Copy all</button>
+              <button onClick={copyCodes} className="btn" style={{ fontSize: 13, padding: '6px 12px' }}>📋 Copy all</button>
             </div>
             <div className="mt-3" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))' }}>
               {freshCodes.map((c) => (
@@ -141,8 +141,8 @@ export default function ResellersPage() {
                       : <span className="tag">UNUSED</span>}
                     </td>
                     <td data-label="Activated by" className="mono">{r.activated_by || '—'}</td>
-                    <td data-label="Activated" className="mono" style={{ fontSize: 12 }}>{r.activated_at ? new Date(r.activated_at).toLocaleString() : '—'}</td>
-                    <td data-label="Created" className="mono" style={{ fontSize: 12 }}>{new Date(r.created_at).toLocaleString()}</td>
+                    <td data-label="Activated" className="mono" style={{ fontSize: 13 }}>{r.activated_at ? new Date(r.activated_at).toLocaleString() : '—'}</td>
+                    <td data-label="Created" className="mono" style={{ fontSize: 13 }}>{new Date(r.created_at).toLocaleString()}</td>
                     <td data-label="Panels made" className="mono" style={{ color: r.panels_created > 0 ? 'var(--good)' : 'var(--dim)' }}>{r.panels_created || 0}</td>
                   </tr>
                 ))}

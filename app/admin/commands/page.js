@@ -327,7 +327,7 @@ export default function CommandsPage() {
               <tr key={cmd.id}>
                 <td data-label="Command">
                   <div className="mono" style={{ color: 'var(--ink)', fontWeight: 600 }}>.{cmd.name}</div>
-                  <div className="mono" style={{ fontSize: 11, color: 'var(--dim)', marginTop: 2 }}>
+                  <div className="mono" style={{ fontSize: 12.5, color: 'var(--dim)', marginTop: 2 }}>
                     {cmd.category}{cmd.aliases.length ? ` · ${cmd.aliases.join(', ')}` : ''}
                     {ENGINE_LOCKED.has(cmd.name) && <span title={ENGINE_TIP} style={{ color: 'var(--blue)' }}> · engine</span>}
                   </div>

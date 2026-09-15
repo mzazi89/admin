@@ -138,7 +138,7 @@ export default function AdminSessions() {
                   </td>
                   <td data-label="User">
                     <div style={{ color: 'var(--ink-2)' }}>{s.email || `User #${s.userId ?? '?'}`}</div>
-                    {s.firstname && <div className="mono" style={{ fontSize: 11.5, color: 'var(--dim)' }}>{s.firstname} {s.lastname || ''}</div>}
+                    {s.firstname && <div className="mono" style={{ fontSize: 12.5, color: 'var(--dim)' }}>{s.firstname} {s.lastname || ''}</div>}
                   </td>
                   <td data-label="Bot" className="mono" style={{ fontSize: 12.5, color: s.bot ? 'var(--brand)' : 'var(--dim)' }}>
                     {s.bot ? botName(s.bot) : '—'}
@@ -159,10 +159,10 @@ export default function AdminSessions() {
 
           {/* Technical detail is admin-only and collapsed by default. */}
           <details style={{ borderTop: '1px solid var(--line)', padding: '14px 16px' }}>
-            <summary style={{ cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--muted)' }}>
+            <summary style={{ cursor: 'pointer', fontSize: 13.5, fontWeight: 600, color: 'var(--muted)' }}>
               Technical session details
             </summary>
-            <div className="mono scroll-x" style={{ marginTop: 12, fontSize: 12, lineHeight: 1.7, color: 'var(--dim)' }}>
+            <div className="mono scroll-x" style={{ marginTop: 12, fontSize: 13, lineHeight: 1.7, color: 'var(--dim)' }}>
               {sessions.map((s) => (
                 <div key={s.id} style={{ padding: '6px 0', borderTop: '1px solid var(--line-soft)' }}>
                   id={s.id} · user={s.userId ?? '—'} · raw_status={String(s.status ?? '—')} · bot={s.bot || '—'} ·

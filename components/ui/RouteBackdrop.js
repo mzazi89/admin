@@ -90,7 +90,9 @@ function backdropFor(pathname) {
   return { image: '/images/dashboard-bg.webp', opacity: 0.45 };
 }
 
-export default function RouteBackdrop({ scrim = 0.55 }) {
+// `scrim` is kept for call-site compatibility but is no longer used:
+// the strength now comes from --backdrop-scrim so it can differ per theme.
+export default function RouteBackdrop({ scrim }) {
   const pathname = usePathname();
   const [failedFor, setFailedFor] = useState(null);
   const spec = backdropFor(pathname);
@@ -112,17 +114,11 @@ export default function RouteBackdrop({ scrim = 0.55 }) {
       }}
     >
       <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `url("${spec.image}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: spec.opacity,
-        }}
+        className="backdrop-img"
+        style={{ backgroundImage: `url("${spec.image}")` }}
       />
       {/* Contrast guarantee — the reason any photo is safe behind text. */}
-      <div style={{ position: 'absolute', inset: 0, background: 'var(--bg)', opacity: scrim }} />
+      <div className="backdrop-scrim" />
       {/* Decoded off-screen purely to detect a broken URL. */}
       <img
         src={spec.image}

@@ -227,7 +227,7 @@ export default function AdminUsers() {
                     <Avatar name={u.fullname || u.email || 'U'} size={32} />
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{u.fullname || `${u.firstname || ''} ${u.lastname || ''}`.trim() || 'Unknown'}</div>
-                      <div className="mono truncate-1" style={{ fontSize: 11.5, color: 'var(--dim)' }}>{u.email}</div>
+                      <div className="mono truncate-1" style={{ fontSize: 12.5, color: 'var(--dim)' }}>{u.email}</div>
                     </div>
                   </div>
                 </td>

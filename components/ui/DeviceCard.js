@@ -81,7 +81,7 @@ export default function DeviceCard({
         <dt style={{ color: 'var(--muted)' }}>Bot</dt>
         <dd style={{ margin: 0, justifySelf: 'end' }}>
           {resolving ? (
-            <span style={{ color: 'var(--dim)', fontSize: 13 }}>Checking…</span>
+            <span style={{ color: 'var(--dim)', fontSize: 13.5 }}>Checking…</span>
           ) : (
             <BotMark name={botName} image={botImage} compact />
           )}

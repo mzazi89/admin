@@ -149,7 +149,7 @@ export function ErrorState({
           <pre
             className="mono"
             style={{
-              marginTop: 8, padding: 12, fontSize: 12, lineHeight: 1.5,
+              marginTop: 8, padding: 12, fontSize: 13, lineHeight: 1.5,
               background: 'var(--surface-2)', border: '1px solid var(--line)',
               borderRadius: 'var(--r-sm)', overflowX: 'auto', color: 'var(--muted)', whiteSpace: 'pre-wrap',
             }}

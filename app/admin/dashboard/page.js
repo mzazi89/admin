@@ -121,7 +121,7 @@ export default function AdminDashboard() {
               <CardHeader
                 title="Recent sign-ups"
                 icon={<Icons.Users size={17} />}
-                action={<Link href="/admin/users" className="link" style={{ fontSize: 13 }}>View all</Link>}
+                action={<Link href="/admin/users" className="link" style={{ fontSize: 13.5 }}>View all</Link>}
                 style={{ marginBottom: 8 }}
               />
               {loading ? (
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
                     <div key={u.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '11px 0', borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
                       <div style={{ minWidth: 0 }}>
                         <p className="truncate-1" style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{uName(u)}</p>
-                        <p className="mono truncate-1" style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--dim)' }}>{u.email}</p>
+                        <p className="mono truncate-1" style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>{u.email}</p>
                       </div>
                       <span style={{ flex: '0 0 auto', fontSize: 12.5, fontWeight: 600, color: 'var(--good)' }}>{fmtKes(u.wallet_balance || 0)}</span>
                     </div>
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
               <CardHeader
                 title="Recent payments"
                 icon={<Icons.CreditCard size={17} />}
-                action={<Link href="/admin/transactions" className="link" style={{ fontSize: 13 }}>View all</Link>}
+                action={<Link href="/admin/transactions" className="link" style={{ fontSize: 13.5 }}>View all</Link>}
                 style={{ marginBottom: 8 }}
               />
               {loading ? (
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                     <div key={o.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '11px 0', borderTop: i === 0 ? 'none' : '1px solid var(--line-soft)' }}>
                       <div style={{ minWidth: 0 }}>
                         <p className="truncate-1" style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: 'var(--ink)' }}>{o.package_name || 'Payment'}</p>
-                        <p className="mono truncate-1" style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--dim)' }}>{o.user_email}</p>
+                        <p className="mono truncate-1" style={{ margin: '2px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>{o.user_email}</p>
                       </div>
                       <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', gap: 10 }}>
                         <Badge tone={o.status === 'completed' ? 'good' : o.status === 'pending' ? 'warn' : 'bad'}>{o.status}</Badge>

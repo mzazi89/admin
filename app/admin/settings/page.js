@@ -272,7 +272,7 @@ function SettingField({ f, values, setValues }) {
             type={reveal ? 'text' : 'password'}
             autoComplete="off"
             className="mono"
-            style={{ fontSize: 13, flex: '1 1 auto', minWidth: 0 }}
+            style={{ fontSize: 13.5, flex: '1 1 auto', minWidth: 0 }}
           />
           <Button
             variant="ghost"
@@ -285,7 +285,7 @@ function SettingField({ f, values, setValues }) {
           </Button>
         </div>
       ) : (
-        <Input {...shared} type={f.type} className="mono" style={{ fontSize: 13 }} />
+        <Input {...shared} type={f.type} className="mono" style={{ fontSize: 13.5 }} />
       )}
     </Field>
   );

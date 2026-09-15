@@ -15,7 +15,7 @@ export default function NotFound() {
           <Link href="/admin/dashboard" className="btn btn-primary">Go to dashboard</Link>
           <Link href="/" className="btn btn-ghost">Back to site</Link>
         </div>
-        <div className="mono mt-16" style={{ fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--dim)' }}>
+        <div className="mono mt-16" style={{ fontSize: 12.5, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--dim)' }}>
           Mzazi Tech Inc · Admin console
         </div>
       </div>

@@ -111,7 +111,7 @@ export default function AdminLogin() {
               </form>
             </Card>
 
-            <p className="mono" style={{ textAlign: 'center', marginTop: 20, fontSize: 10.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--dim)' }}>
+            <p className="mono" style={{ textAlign: 'center', marginTop: 20, fontSize: 12.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--dim)' }}>
               Mzazi Tech Inc · 2026
             </p>
           </div>

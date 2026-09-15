@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 function Stars({ value }) {
   return (
-    <span className="mono" style={{ color: 'var(--brand)', letterSpacing: '3px', fontSize: 12 }} aria-label={`${value} out of 5 stars`}>
+    <span className="mono" style={{ color: 'var(--brand)', letterSpacing: '3px', fontSize: 13 }} aria-label={`${value} out of 5 stars`}>
       {'★'.repeat(value)}{'☆'.repeat(5 - value)}
     </span>
   );
@@ -68,7 +68,7 @@ export default function AdminTestimonials() {
           <button key={v} onClick={() => setTab(v)}
             className="mono btn"
             style={{
-              fontSize: 11, padding: '8px 16px',
+              fontSize: 12.5, padding: '8px 16px',
               backgroundColor: tab === v ? 'var(--brand)' : 'transparent',
               color: tab === v ? 'var(--on-brand)' : 'var(--muted)',
               border: `1px solid ${tab === v ? 'var(--brand)' : 'var(--line)'}`,
@@ -100,20 +100,20 @@ export default function AdminTestimonials() {
               </div>
               <p className="lede mb-2" style={{ fontSize: '0.92rem', maxWidth: 640 }}>{t.message}</p>
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <p className="mono" style={{ fontSize: 10.5, color: 'var(--dim)', margin: 0 }}>
+                <p className="mono" style={{ fontSize: 12.5, color: 'var(--dim)', margin: 0 }}>
                   {new Date(t.created_at).toLocaleString()}
                 </p>
                 <div className="flex gap-2">
                   {!t.approved && (
                     <button onClick={() => approve(t.id)} disabled={busy} className="btn btn-primary"
-                      style={{ fontSize: 10, padding: '7px 14px' }}>Approve</button>
+                      style={{ fontSize: 12, padding: '7px 14px' }}>Approve</button>
                   )}
                   {t.approved && (
                     <button onClick={() => hide(t.id)} disabled={busy} className="btn btn-ghost"
-                      style={{ fontSize: 10, padding: '7px 14px' }}>Hide</button>
+                      style={{ fontSize: 12, padding: '7px 14px' }}>Hide</button>
                   )}
                   <button onClick={() => del(t.id)} disabled={busy} className="btn btn-danger"
-                    style={{ fontSize: 10, padding: '7px 14px' }}>Delete</button>
+                    style={{ fontSize: 12, padding: '7px 14px' }}>Delete</button>
                 </div>
               </div>
             </div>

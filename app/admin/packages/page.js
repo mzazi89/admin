@@ -174,7 +174,7 @@ export default function AdminPackages() {
 
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, letterSpacing: '-0.03em' }}>{fmtKes(pkg.price)}</span>
-                <span style={{ fontSize: 13, color: 'var(--muted)' }}>/mo</span>
+                <span style={{ fontSize: 13.5, color: 'var(--muted)' }}>/mo</span>
               </div>
 
               {pkg.description && <p style={{ margin: 0, fontSize: 13.5, color: 'var(--muted)', lineHeight: 1.55 }}>{pkg.description}</p>}

@@ -101,74 +101,74 @@ export default function PanelHost() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 18px' }}>
           <div className="mb-4">
             <label className="label" htmlFor="p-host">VPS IP / hostname *</label>
-            <input id="p-host" className="input mono" value={form.host} onChange={set('host')} placeholder="1.2.3.4" style={{ fontSize: 13 }} />
+            <input id="p-host" className="input mono" value={form.host} onChange={set('host')} placeholder="1.2.3.4" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-port">SSH port</label>
-            <input id="p-port" className="input mono" value={form.port} onChange={set('port')} placeholder="22" style={{ fontSize: 13 }} />
+            <input id="p-port" className="input mono" value={form.port} onChange={set('port')} placeholder="22" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-user">SSH user</label>
-            <input id="p-user" className="input mono" value={form.username} onChange={set('username')} placeholder="root" style={{ fontSize: 13 }} />
+            <input id="p-user" className="input mono" value={form.username} onChange={set('username')} placeholder="root" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-panelurl">Panel URL (optional — empty = VPS IP)</label>
-            <input id="p-panelurl" className="input mono" value={form.panelUrl} onChange={set('panelUrl')} placeholder="panel.yourdomain.com" style={{ fontSize: 13 }} />
+            <input id="p-panelurl" className="input mono" value={form.panelUrl} onChange={set('panelUrl')} placeholder="panel.yourdomain.com" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
             <label className="label" htmlFor="p-pass">SSH password (or paste a private key below)</label>
-            <input id="p-pass" type="password" className="input mono" value={form.password} onChange={set('password')} placeholder="root password" style={{ fontSize: 13 }} />
+            <input id="p-pass" type="password" className="input mono" value={form.password} onChange={set('password')} placeholder="root password" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
             <label className="label" htmlFor="p-key">SSH private key (optional)</label>
-            <textarea id="p-key" className="input mono" value={form.privateKey} onChange={set('privateKey')} placeholder="-----BEGIN OPENSSH PRIVATE KEY-----…" rows={3} style={{ fontSize: 11, resize: 'vertical' }} />
+            <textarea id="p-key" className="input mono" value={form.privateKey} onChange={set('privateKey')} placeholder="-----BEGIN OPENSSH PRIVATE KEY-----…" rows={3} style={{ fontSize: 12.5, resize: 'vertical' }} />
           </div>
 
           <div style={{ borderTop: '1px solid var(--line-soft)', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
 
           <div className="mb-4">
             <label className="label" htmlFor="p-admin">Panel admin username</label>
-            <input id="p-admin" className="input mono" value={form.adminUser} onChange={set('adminUser')} style={{ fontSize: 13 }} />
+            <input id="p-admin" className="input mono" value={form.adminUser} onChange={set('adminUser')} style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-adminpass">Panel admin password <span style={{ color: 'var(--dim)' }}>(empty = random)</span></label>
-            <input id="p-adminpass" className="input mono" value={form.adminPass} onChange={set('adminPass')} placeholder="generated if empty" style={{ fontSize: 13 }} />
+            <input id="p-adminpass" className="input mono" value={form.adminPass} onChange={set('adminPass')} placeholder="generated if empty" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
             <label className="label" htmlFor="p-email">Panel admin email</label>
-            <input id="p-email" className="input mono" value={form.adminEmail} onChange={set('adminEmail')} style={{ fontSize: 13 }} />
+            <input id="p-email" className="input mono" value={form.adminEmail} onChange={set('adminEmail')} style={{ fontSize: 13.5 }} />
           </div>
 
           <div style={{ borderTop: '1px solid var(--line-soft)', gridColumn: '1 / -1', margin: '6px 0 16px' }} />
 
           <div className="mb-4">
             <label className="label" htmlFor="p-node">Node name</label>
-            <input id="p-node" className="input mono" value={form.nodeName} onChange={set('nodeName')} style={{ fontSize: 13 }} />
+            <input id="p-node" className="input mono" value={form.nodeName} onChange={set('nodeName')} style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-loc">Location code</label>
-            <input id="p-loc" className="input mono" value={form.locationShort} onChange={set('locationShort')} placeholder="US" style={{ fontSize: 13 }} />
+            <input id="p-loc" className="input mono" value={form.locationShort} onChange={set('locationShort')} placeholder="US" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-mem">Node memory (MB)</label>
-            <input id="p-mem" className="input mono" value={form.nodeMemory} onChange={set('nodeMemory')} placeholder="2048" style={{ fontSize: 13 }} />
+            <input id="p-mem" className="input mono" value={form.nodeMemory} onChange={set('nodeMemory')} placeholder="2048" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="p-disk">Node disk (MB)</label>
-            <input id="p-disk" className="input mono" value={form.nodeDisk} onChange={set('nodeDisk')} placeholder="20480" style={{ fontSize: 13 }} />
+            <input id="p-disk" className="input mono" value={form.nodeDisk} onChange={set('nodeDisk')} placeholder="20480" style={{ fontSize: 13.5 }} />
           </div>
           <div className="mb-4" style={{ gridColumn: '1 / -1' }}>
             <label className="label" htmlFor="p-egg">Egg JSON URL <span style={{ color: 'var(--dim)' }}>(optional — default: Minecraft Paper)</span></label>
-            <input id="p-egg" className="input mono" value={form.eggUrl} onChange={set('eggUrl')} placeholder="https://raw.githubusercontent.com/parkervcp/eggs/master/…" style={{ fontSize: 13 }} />
+            <input id="p-egg" className="input mono" value={form.eggUrl} onChange={set('eggUrl')} placeholder="https://raw.githubusercontent.com/parkervcp/eggs/master/…" style={{ fontSize: 13.5 }} />
           </div>
         </div>
 
         <div className="flex" style={{ gap: 10, marginTop: 6 }}>
-          <button className="btn btn-primary" onClick={deploy} disabled={busy || !form.host || !authValid} style={{ fontSize: 12, padding: '10px 18px' }}>
+          <button className="btn btn-primary" onClick={deploy} disabled={busy || !form.host || !authValid} style={{ fontSize: 13, padding: '10px 18px' }}>
             {busy ? 'Working…' : '🚀 Deploy Panel'}
           </button>
           {(phase === 'polling' || phase === 'deploying') && (
-            <button className="btn btn-danger" onClick={stop} disabled={busy} style={{ fontSize: 12, padding: '10px 14px' }}>🛑 Stop</button>
+            <button className="btn btn-danger" onClick={stop} disabled={busy} style={{ fontSize: 13, padding: '10px 14px' }}>🛑 Stop</button>
           )}
         </div>
       </div>
@@ -176,19 +176,19 @@ export default function PanelHost() {
       {(phase === 'polling' || phase === 'done' || phase === 'failed' || log.length > 0) && (
         <div className="card card-pad mt-6" style={{ padding: '18px' }}>
           <div className="flex justify-between items-center mb-3">
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+            <span className="mono" style={{ fontSize: 12.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               {phase === 'done' ? '✅ Deployment complete' : phase === 'failed' ? '❌ Deployment failed' : '⏳ Deploying — log refreshes every 5s'}
             </span>
           </div>
 
           {(phase === 'done' || Object.keys(summary).length > 0) && (
             <div className="mb-4" style={{ border: '1px solid rgba(62,207,142,0.35)', borderRadius: 8, padding: '12px 14px', backgroundColor: 'rgba(62,207,142,0.05)' }}>
-              <div className="mono" style={{ fontSize: 10.5, color: 'var(--good)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
-              {summary.PANEL_URL && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🔗 Panel: <span style={{ color: 'var(--brand)' }}>{summary.PANEL_URL}</span></div>}
-              {summary.ADMIN_USER && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>👤 User: {summary.ADMIN_USER}</div>}
-              {summary.ADMIN_PASS && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🔑 Pass: <span style={{ color: 'var(--brand)' }}>{summary.ADMIN_PASS}</span></div>}
-              {summary.NODE_ID && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)', marginBottom: 4 }}>🖥 Node id: {summary.NODE_ID}</div>}
-              {summary.EGG_ID && <div className="mono" style={{ fontSize: 12, color: 'var(--ink)' }}>🥚 Egg id: {summary.EGG_ID}</div>}
+              <div className="mono" style={{ fontSize: 12.5, color: 'var(--good)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Summary</div>
+              {summary.PANEL_URL && <div className="mono" style={{ fontSize: 13, color: 'var(--ink)', marginBottom: 4 }}>🔗 Panel: <span style={{ color: 'var(--brand)' }}>{summary.PANEL_URL}</span></div>}
+              {summary.ADMIN_USER && <div className="mono" style={{ fontSize: 13, color: 'var(--ink)', marginBottom: 4 }}>👤 User: {summary.ADMIN_USER}</div>}
+              {summary.ADMIN_PASS && <div className="mono" style={{ fontSize: 13, color: 'var(--ink)', marginBottom: 4 }}>🔑 Pass: <span style={{ color: 'var(--brand)' }}>{summary.ADMIN_PASS}</span></div>}
+              {summary.NODE_ID && <div className="mono" style={{ fontSize: 13, color: 'var(--ink)', marginBottom: 4 }}>🖥 Node id: {summary.NODE_ID}</div>}
+              {summary.EGG_ID && <div className="mono" style={{ fontSize: 13, color: 'var(--ink)' }}>🥚 Egg id: {summary.EGG_ID}</div>}
             </div>
           )}
 
@@ -198,7 +198,7 @@ export default function PanelHost() {
             style={{
               maxHeight: 320, overflow: 'auto', margin: 0, padding: '12px 14px',
               backgroundColor: 'var(--bg)', border: '1px solid var(--line-soft)', borderRadius: 8,
-              fontSize: 11, lineHeight: 1.55, color: 'var(--ink-2)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+              fontSize: 12.5, lineHeight: 1.55, color: 'var(--ink-2)', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
             }}
           >
             {log.length ? log.join('\n') : 'Waiting for the installer to write its log…'}

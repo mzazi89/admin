@@ -170,10 +170,10 @@ export default function AdminLayout({ children }) {
         </div>
 
         <div style={{ padding: 16, borderTop: '1px solid var(--line-soft)', display: 'grid', gap: 8 }}>
-          <Link href="/" className="btn btn-ghost btn-block" style={{ textDecoration: 'none', fontSize: 13 }}>
+          <Link href="/" className="btn btn-ghost btn-block" style={{ textDecoration: 'none', fontSize: 13.5 }}>
             <span>Back to site</span>
           </Link>
-          <button type="button" onClick={logout} className="btn btn-ghost btn-block" style={{ color: 'var(--bad)', fontSize: 13 }}>
+          <button type="button" onClick={logout} className="btn btn-ghost btn-block" style={{ color: 'var(--bad)', fontSize: 13.5 }}>
             <span><Icons.LogOut size={15} style={{ verticalAlign: '-3px', marginRight: 7 }} />Sign out</span>
           </button>
         </div>
@@ -225,10 +225,10 @@ export default function AdminLayout({ children }) {
             />
 
             <div style={{ padding: 16, borderTop: '1px solid var(--line-soft)', display: 'grid', gap: 8 }}>
-              <Link href="/" className="btn btn-ghost btn-block" style={{ textDecoration: 'none', fontSize: 13 }}>
+              <Link href="/" className="btn btn-ghost btn-block" style={{ textDecoration: 'none', fontSize: 13.5 }}>
                 <span>Back to site</span>
               </Link>
-              <button type="button" onClick={logout} className="btn btn-ghost btn-block" style={{ color: 'var(--bad)', fontSize: 13 }}>
+              <button type="button" onClick={logout} className="btn btn-ghost btn-block" style={{ color: 'var(--bad)', fontSize: 13.5 }}>
                 <span><Icons.LogOut size={15} style={{ verticalAlign: '-3px', marginRight: 7 }} />Sign out</span>
               </button>
             </div>

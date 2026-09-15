@@ -153,10 +153,10 @@ export default function AdminPanel() {
       ) : (
         <div className="card card-pad" style={{ padding: '22px' }}>
           <div className="flex justify-between items-center mb-4">
-            <span className="mono" style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+            <span className="mono" style={{ fontSize: 12.5, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)' }}>
               {users.length} user{users.length === 1 ? '' : 's'}
             </span>
-            <button onClick={load} disabled={busy === 'del'} className="btn" style={{ fontSize: 11, padding: '6px 12px' }}>🔄 Refresh</button>
+            <button onClick={load} disabled={busy === 'del'} className="btn" style={{ fontSize: 12.5, padding: '6px 12px' }}>🔄 Refresh</button>
           </div>
 
           <div className="space-y-3">
@@ -170,19 +170,19 @@ export default function AdminPanel() {
                   {/* user row */}
                   <div className="flex justify-between items-center" style={{ padding: '14px 16px' }}>
                     <div style={{ minWidth: 0 }}>
-                      <div className="mono" style={{ fontSize: 13, color: 'var(--ink)' }}>
+                      <div className="mono" style={{ fontSize: 13.5, color: 'var(--ink)' }}>
                         {u.username}
-                        {u.root_admin && <span className="tag" style={{ marginLeft: 8, fontSize: 9, padding: '1px 6px', color: 'var(--brand)' }}>ADMIN</span>}
+                        {u.root_admin && <span className="tag" style={{ marginLeft: 8, fontSize: 12, padding: '1px 6px', color: 'var(--brand)' }}>ADMIN</span>}
                       </div>
-                      <div className="mono" style={{ fontSize: 10.5, color: 'var(--muted)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div className="mono" style={{ fontSize: 12.5, color: 'var(--muted)', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {u.first_name || ''} {u.last_name || ''} · {u.email}
                       </div>
                     </div>
                     <div className="flex" style={{ gap: 8, flexShrink: 0 }}>
-                      <button onClick={() => toggleUser(u)} disabled={busy === `s:${u.id}`} className="btn" style={{ fontSize: 10, padding: '6px 10px' }}>
+                      <button onClick={() => toggleUser(u)} disabled={busy === `s:${u.id}`} className="btn" style={{ fontSize: 12, padding: '6px 10px' }}>
                         {busy === `s:${u.id}` ? '…' : isOpen ? '▴ Servers' : `▾ Servers${servers.length ? ` (${servers.length})` : ''}`}
                       </button>
-                      <button onClick={() => deleteUser(u)} disabled={busy === 'del'} className="btn btn-danger" style={{ fontSize: 10, padding: '6px 10px' }}>
+                      <button onClick={() => deleteUser(u)} disabled={busy === 'del'} className="btn btn-danger" style={{ fontSize: 12, padding: '6px 10px' }}>
                         Delete user
                       </button>
                     </div>
@@ -192,7 +192,7 @@ export default function AdminPanel() {
                   {isOpen && (
                     <div style={{ borderTop: '1px solid var(--line-soft)', padding: '12px 16px' }}>
                       {servers.length === 0 ? (
-                        <div className="mono" style={{ fontSize: 11, color: 'var(--muted)', padding: '6px 0' }}>No servers on this user.</div>
+                        <div className="mono" style={{ fontSize: 12.5, color: 'var(--muted)', padding: '6px 0' }}>No servers on this user.</div>
                       ) : (
                         <div className="space-y-2">
                           {servers.map((s) => (
@@ -205,15 +205,15 @@ export default function AdminPanel() {
                                   style={{ accentColor: 'var(--brand)' }}
                                 />
                                 <span style={{ minWidth: 0 }}>
-                                  <span className="mono" style={{ fontSize: 12, color: 'var(--ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span className="mono" style={{ fontSize: 13, color: 'var(--ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {s.name}
                                   </span>
-                                  <span className="mono" style={{ fontSize: 10, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+                                  <span className="mono" style={{ fontSize: 12, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
                                     #{s.id}{s.node ? ` · node: ${s.node}` : ''} · {fmtLimit(s.limits, 'cpu')} CPU · {fmtLimit(s.limits, 'memory')} RAM · {fmtLimit(s.limits, 'disk')} disk
                                   </span>
                                 </span>
                               </label>
-                              <button onClick={() => deleteServer(u.id, s)} disabled={busy === 'del'} className="btn btn-danger" style={{ fontSize: 9, padding: '4px 8px', flexShrink: 0 }}>
+                              <button onClick={() => deleteServer(u.id, s)} disabled={busy === 'del'} className="btn btn-danger" style={{ fontSize: 12, padding: '4px 8px', flexShrink: 0 }}>
                                 Delete
                               </button>
                             </div>
@@ -223,7 +223,7 @@ export default function AdminPanel() {
                             <button
                               onClick={() => setSelectedByUser((prev) => ({ ...prev, [u.id]: allSelected ? new Set() : new Set(servers.map((s) => s.id)) }))}
                               className="btn"
-                              style={{ fontSize: 10, padding: '6px 10px' }}
+                              style={{ fontSize: 12, padding: '6px 10px' }}
                             >
                               {allSelected ? 'Unselect all' : 'Select all'}
                             </button>
@@ -231,7 +231,7 @@ export default function AdminPanel() {
                               onClick={() => deleteUser(u)}
                               disabled={busy === 'del'}
                               className="btn btn-danger"
-                              style={{ fontSize: 10, padding: '6px 12px' }}
+                              style={{ fontSize: 12, padding: '6px 12px' }}
                             >
                               🗑 Delete selected servers & user
                             </button>
