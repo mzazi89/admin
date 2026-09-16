@@ -58,6 +58,10 @@
   --code-fg: #1E2433;
   --code-caret: #6D28D9;
   --code-select: rgba(109, 40, 217, 0.18);
+  /* Search hits. Background only — see the note on .code-hit for why nothing else
+     may be set here. */
+  --code-hit: rgba(109, 40, 217, 0.2);
+  --code-hit-current: rgba(109, 40, 217, 0.45);
 
   --code-comment: #5A6478;
   --code-string: #047857;
@@ -72,7 +76,11 @@
   /* Square, like a terminal — the rounded .input treatment is what this field
      is deliberately moving away from. */
   position: relative;
+  /* A column so a find bar can sit above the gutter/viewport row. Both children
+     are flex items with a definite height available, which is what the row needs
+     to keep filling the editor. */
   display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -165,6 +173,150 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
+}
+
+/* The gutter and the viewport keep their row, and take whatever height the find
+   bar above them leaves. min-height:0 is what lets the row shrink instead of
+   overflowing the editor when the bar appears. */
+.code-editor-body {
+  flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Find / replace bar ──────────────────────────────────────────────────────
+   Square and flat, like the editor it sits in. It is a real form control, so it
+   uses the panel colours rather than the mono metrics — but its input must stay
+   at 16px on touch or the dialog zooms when it is focused. */
+.code-find {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--code-panel-border);
+  background: var(--code-gutter-bg);
+}
+.code-find-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px;
+}
+.code-find-lead {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 18px;
+  color: var(--code-gutter-fg);
+}
+.code-find-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--code-panel-border);
+  border-radius: 0;
+  background: var(--code-panel);
+  color: var(--code-fg);
+  font-size: 13px;
+}
+.code-find-input:focus {
+  outline: none;
+  border-color: var(--code-caret);
+}
+.code-find-input::placeholder {
+  color: var(--code-gutter-fg);
+}
+.code-find-count {
+  flex: 0 0 auto;
+  min-width: 46px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--code-gutter-fg);
+}
+.code-find-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border: 1px solid var(--code-panel-border);
+  border-radius: 0;
+  background: var(--code-panel);
+  color: var(--code-fg);
+  font-size: 12px;
+  cursor: pointer;
+}
+.code-find-btn:hover:not(:disabled) {
+  border-color: var(--code-caret);
+}
+.code-find-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+/* aria-pressed carries the on/off state of Match case and the replace row, so the
+   two toggles read as toggles rather than as momentary buttons. */
+.code-find-btn[aria-pressed='true'] {
+  border-color: var(--code-caret);
+  color: var(--code-caret);
+}
+.code-find-action {
+  padding: 0 10px;
+}
+.code-find-close {
+  color: var(--code-gutter-fg);
+}
+/* The same chevron, turned around, rather than a second icon. */
+.code-find-flip {
+  display: inline-flex;
+  transform: rotate(180deg);
+}
+.code-find-note {
+  padding: 0 8px 6px;
+  font-size: 11.5px;
+  color: var(--code-gutter-fg);
+}
+.code-find-open {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 5px 6px 0;
+  padding: 3px 9px;
+  border: 1px solid var(--code-panel-border);
+  border-radius: 0;
+  background: var(--code-panel);
+  color: var(--code-gutter-fg);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.code-find-open:hover {
+  border-color: var(--code-caret);
+  color: var(--code-caret);
+}
+
+/* ── Search hits ─────────────────────────────────────────────────────────────
+   BACKGROUND AND COLOUR ONLY.
+
+   A hit is drawn in the coloured layer — the one that has to break every line at
+   exactly the same column as the textarea sitting behind it. Padding, a border, a
+   different font, a display change: any of those could shift a character and slide
+   the caret off the glyph it is meant to be between. Background and colour cannot.
+   Keep it that way.
+
+   `color: inherit` also overrides the browser's own <mark> styling, so the
+   character keeps the colour its token gave it and still reads as code. */
+.code-hit {
+  background: var(--code-hit);
+  color: inherit;
+  border-radius: 0;
+}
+.code-hit-current {
+  background: var(--code-hit-current);
 }
 
 /* Shared text metrics AND wrap rules. These three selectors must stay in step —
@@ -291,10 +443,14 @@
     --code-pad-x: 14px;
     --code-pad-y: 12px;
   }
+  /* 16px on touch or focusing the find field zooms the whole dialog. The buttons
+     do not need it — only text inputs trigger that. */
+  .code-find-input { font-size: 16px; }
 }
-/* Phones: give the editor real room instead of a couple of lines. */
 @media (max-width: 639px) {
+  /* Phones: give the editor real room instead of a couple of lines. */
   .code-editor { height: min(58dvh, 480px); }
+  .code-find-input { font-size: 16px; }
 }
 
 /* ── Dark theme ── */
@@ -306,6 +462,8 @@
   --code-fg: #E6E6F0;
   --code-caret: #C4B5FD;
   --code-select: rgba(167, 139, 250, 0.26);
+  --code-hit: rgba(167, 139, 250, 0.24);
+  --code-hit-current: rgba(167, 139, 250, 0.55);
 
   --code-comment: #8B93A8;
   --code-string: #6EE7B7;
@@ -328,6 +486,8 @@
     --code-fg: #E6E6F0;
     --code-caret: #C4B5FD;
     --code-select: rgba(167, 139, 250, 0.26);
+    --code-hit: rgba(167, 139, 250, 0.24);
+    --code-hit-current: rgba(167, 139, 250, 0.55);
 
     --code-comment: #8B93A8;
     --code-string: #6EE7B7;

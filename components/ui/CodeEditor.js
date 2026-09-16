@@ -33,9 +33,11 @@
 // Nothing here re-implements the line-breaking rules; the browser's own layout is
 // what keeps the two in agreement.
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { tokenize } from './codeHighlight';
 import { measureWrapWidth } from './codeMetrics';
+import { findMatches, tokenPieces, replaceAll, countMatches, stepIndex, MAX_MATCHES } from './codeFind';
+import { Search, ChevronDown, X } from './Icons';
 
 const INDENT = '  ';
 
@@ -81,10 +83,46 @@ export default function CodeEditor({
   // Last published wrap width, so the observer-driven re-measure below cannot
   // rewrite an unchanged value (see syncScroll).
   const lastWrapW = useRef(0);
+  const viewportRef = useRef(null);
+  const findInputRef = useRef(null);
+  const noteTimer = useRef(null);
 
   const code = value == null ? '' : String(value);
   const lines = useMemo(() => code.split('\n'), [code]);
   const tokens = useMemo(() => tokenize(code), [code]);
+
+  // Every token's offset in the document. The tokenizer returns tokens with no
+  // positions, but they tile the source exactly (see codeHighlight.js), so a
+  // running total is all it takes to place a token — which is what lets a search
+  // hit be drawn inside a token that is already being coloured.
+  const tokenOffsets = useMemo(() => {
+    let at = 0;
+    return tokens.map((tk) => {
+      const start = at;
+      at += tk.v.length;
+      return start;
+    });
+  }, [tokens]);
+
+  // ─── find / replace ────────────────────────────────────────────────────────
+  const [findOpen, setFindOpen] = useState(false);
+  const [replaceOpen, setReplaceOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [replacement, setReplacement] = useState('');
+  const [caseSensitive, setCaseSensitive] = useState(false);
+  const [hitIndex, setHitIndex] = useState(0);
+  const [note, setNote] = useState('');
+
+  const matches = useMemo(
+    () => (findOpen && query ? findMatches(code, query, caseSensitive) : []),
+    [findOpen, query, caseSensitive, code]
+  );
+  // findMatches caps its result so one letter in a large command cannot build
+  // tens of thousands of nodes on a phone; the cap is surfaced in the counter.
+  const capped = matches.length === MAX_MATCHES;
+  // Clamped rather than trusted: editing the code can remove the match the index
+  // was pointing at, and every consumer needs a valid index all the same.
+  const current = matches.length ? Math.min(Math.max(hitIndex, 0), matches.length - 1) : -1;
 
   // ─── scroll / wrap-width sync ──────────────────────────────────────────────
   const syncScroll = useCallback(() => {
@@ -316,6 +354,116 @@ export default function CodeEditor({
     [dedent, indent, readOnly, replaceRange]
   );
 
+  // ─── find / replace behaviour ───────────────────────────────────────────────
+  const flash = useCallback((message) => {
+    setNote(message);
+    if (noteTimer.current) clearTimeout(noteTimer.current);
+    noteTimer.current = setTimeout(() => setNote(''), 2600);
+  }, []);
+  useEffect(() => () => { if (noteTimer.current) clearTimeout(noteTimer.current); }, []);
+
+  // Bring the current match into view.
+  //
+  // NOT scrollIntoView(). The viewport clips with overflow:hidden, so
+  // scrollIntoView would walk past it and scroll the DIALOG instead — the code
+  // would stay exactly where it was while the whole form jumped. Measuring the
+  // match against the viewport and moving the textarea's own scrollTop keeps the
+  // movement inside the editor, and the scroll event syncs the layers.
+  const revealHit = useCallback(
+    (index) => {
+      const ta = taRef.current;
+      const pre = preRef.current;
+      const vp = viewportRef.current;
+      if (!ta || !pre || !vp || index < 0) return;
+
+      const match = matches[index];
+      // Put the caret on the match so Replace acts on this one, without taking
+      // focus from the search field the user is still typing in.
+      if (match && typeof ta.setSelectionRange === 'function') ta.setSelectionRange(match.start, match.end);
+
+      const el = pre.querySelector(`[data-hit="${index}"]`);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const v = vp.getBoundingClientRect();
+      const lh = parseFloat(getComputedStyle(ta).lineHeight) || 21;
+      if (r.top < v.top) ta.scrollTop -= v.top - r.top + lh;
+      else if (r.bottom > v.bottom) ta.scrollTop += r.bottom - v.bottom + lh;
+      syncScroll();
+    },
+    [matches, syncScroll]
+  );
+
+  const goTo = useCallback(
+    (delta) => {
+      const next = stepIndex(current, matches.length, delta);
+      if (next < 0) return;
+      setHitIndex(next);
+    },
+    [current, matches.length]
+  );
+
+  // Reveal whenever the thing being searched for, or the position in the results,
+  // changes. Deliberately not keyed on `matches`: that identity changes on every
+  // keystroke in the code itself, and re-revealing then would yank the view back
+  // to the match while the user is editing somewhere else.
+  useLayoutEffect(() => {
+    if (!findOpen || !query || !matches.length) return;
+    revealHit(current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [findOpen, query, caseSensitive, hitIndex]);
+
+  const replaceCurrent = useCallback(() => {
+    if (current < 0) return;
+    const match = matches[current];
+    if (!match) return;
+    // Going through replaceRange keeps the write on the DOM and the caret sane.
+    replaceRange(match.start, match.end, replacement, match.start + replacement.length);
+    // The replaced text usually stops matching, so the next hit slides into this
+    // index — staying put is what people expect from Replace.
+  }, [current, matches, replacement, replaceRange]);
+
+  const replaceEvery = useCallback(() => {
+    if (!query) return;
+    const n = countMatches(code, query, caseSensitive);
+    if (!n) {
+      flash('Nothing to replace');
+      return;
+    }
+    // Replace-all is not capped: the counter is bounded, the work is not.
+    onChange(replaceAll(code, query, replacement, caseSensitive));
+    setHitIndex(0);
+    flash(`Replaced ${n} ${n === 1 ? 'match' : 'matches'}`);
+  }, [code, query, caseSensitive, replacement, onChange, flash]);
+
+  const closeFind = useCallback(() => {
+    setFindOpen(false);
+    setReplaceOpen(false);
+  }, []);
+
+  // Ctrl/Cmd+F opens it, Escape closes the bar — and must not reach the dialog,
+  // whose own document-level Escape listener would close the whole form while the
+  // user was only putting the find bar away.
+  const onRootKeyDown = useCallback(
+    (event) => {
+      if ((event.ctrlKey || event.metaKey) && (event.key === 'f' || event.key === 'F')) {
+        event.preventDefault();
+        setFindOpen(true);
+        requestAnimationFrame(() => {
+          findInputRef.current?.focus();
+          findInputRef.current?.select();
+        });
+        return;
+      }
+      if (event.key === 'Escape' && findOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (replaceOpen) setReplaceOpen(false);
+        else closeFind();
+      }
+    },
+    [findOpen, replaceOpen, closeFind]
+  );
+
   // ─── render ────────────────────────────────────────────────────────────────
   const gutterCh = Math.max(2, String(lines.length).length);
   const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
@@ -335,7 +483,135 @@ export default function CodeEditor({
       data-invalid={error ? 'true' : undefined}
       data-readonly={readOnly ? 'true' : undefined}
       data-lines={rows}
+      onKeyDown={onRootKeyDown}
     >
+      {/* ── Find / replace ──
+          Reachable by a visible control rather than only by Ctrl+F: this field is
+          edited from a phone as often as from a desktop, and a shortcut nobody can
+          see is no shortcut at all. Collapses to a small Find button so it costs
+          nothing once it is not wanted. */}
+      {findOpen ? (
+        <div className="code-find" role="search">
+          <div className="code-find-row">
+            <span className="code-find-lead" aria-hidden="true"><Search size={14} /></span>
+            <input
+              ref={findInputRef}
+              className="code-find-input"
+              type="text"
+              value={query}
+              placeholder="Find"
+              aria-label="Find in code"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              onChange={(ev) => {
+                setQuery(ev.target.value);
+                setHitIndex(0);
+              }}
+              onKeyDown={(ev) => {
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  goTo(ev.shiftKey ? -1 : 1);
+                }
+              }}
+            />
+            <span className="code-find-count" aria-live="polite">
+              {query ? `${matches.length ? current + 1 : 0}/${matches.length}${capped ? '+' : ''}` : ''}
+            </span>
+            <button
+              type="button"
+              className="code-find-btn"
+              onClick={() => setCaseSensitive((v) => !v)}
+              aria-pressed={caseSensitive}
+              title="Match case"
+            >
+              Aa
+            </button>
+            <button
+              type="button"
+              className="code-find-btn"
+              onClick={() => goTo(-1)}
+              disabled={!matches.length}
+              aria-label="Previous match"
+            >
+              <span className="code-find-flip"><ChevronDown size={14} /></span>
+            </button>
+            <button
+              type="button"
+              className="code-find-btn"
+              onClick={() => goTo(1)}
+              disabled={!matches.length}
+              aria-label="Next match"
+            >
+              <ChevronDown size={14} />
+            </button>
+            <button
+              type="button"
+              className="code-find-btn"
+              onClick={() => setReplaceOpen((v) => !v)}
+              aria-pressed={replaceOpen}
+              aria-label="Show replace"
+              title="Replace"
+            >
+              ⇄
+            </button>
+            <button type="button" className="code-find-btn code-find-close" onClick={closeFind} aria-label="Close find">
+              <X size={14} />
+            </button>
+          </div>
+
+          {replaceOpen ? (
+            <div className="code-find-row">
+              <span className="code-find-lead" aria-hidden="true">⇄</span>
+              <input
+                className="code-find-input"
+                type="text"
+                value={replacement}
+                placeholder="Replace with"
+                aria-label="Replace with"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                readOnly={readOnly}
+                onChange={(ev) => setReplacement(ev.target.value)}
+              />
+              <button
+                type="button"
+                className="code-find-btn code-find-action"
+                onClick={replaceCurrent}
+                disabled={readOnly || current < 0}
+              >
+                Replace
+              </button>
+              <button
+                type="button"
+                className="code-find-btn code-find-action"
+                onClick={replaceEvery}
+                disabled={readOnly || !query}
+              >
+                All
+              </button>
+            </div>
+          ) : null}
+
+          {note ? <div className="code-find-note" role="status">{note}</div> : null}
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="code-find-open"
+          onClick={() => setFindOpen(true)}
+          aria-label="Find and replace in the code"
+        >
+          <Search size={13} /> Find
+        </button>
+      )}
+
+      {/* The gutter and the code viewport keep their own row; the find bar above
+          them is why the editor is a column now. */}
+      <div className="code-editor-body">
       {/* aria-hidden: these are decorative duplicates of the real value, and
           exposing them would make a screen reader read the code twice. */}
       <div className="code-editor-gutter" aria-hidden="true">
@@ -356,13 +632,39 @@ export default function CodeEditor({
         </div>
       </div>
 
-      <div className="code-editor-viewport">
+      <div className="code-editor-viewport" ref={viewportRef}>
         <pre className="code-editor-pre" ref={preRef} aria-hidden="true">
-          {tokens.map((tk, i) =>
-            PLAIN_TYPES.has(tk.t)
-              ? tk.v
-              : <span className={CLASS_FOR[tk.t] || 'tok-plain'} key={i}>{tk.v}</span>
-          )}
+          {tokens.map((tk, i) => {
+            const cls = CLASS_FOR[tk.t] || 'tok-plain';
+            // No search running: render exactly as before, with bare strings for
+            // the plain runs, so the DOM stays as small as it has always been.
+            if (!matches.length) {
+              return PLAIN_TYPES.has(tk.t) ? tk.v : <span className={cls} key={i}>{tk.v}</span>;
+            }
+            const pieces = tokenPieces(tk.v, tokenOffsets[i], matches);
+            // A token no match touches is left alone as well — only the tokens a
+            // hit actually runs through get taken apart.
+            if (pieces.length === 1 && pieces[0].hit === null) {
+              return PLAIN_TYPES.has(tk.t) ? tk.v : <span className={cls} key={i}>{tk.v}</span>;
+            }
+            return (
+              <span className={cls} key={i}>
+                {pieces.map((p, j) =>
+                  p.hit === null ? (
+                    p.text
+                  ) : (
+                    <mark
+                      key={j}
+                      data-hit={p.hit}
+                      className={p.hit === current ? 'code-hit code-hit-current' : 'code-hit'}
+                    >
+                      {p.text}
+                    </mark>
+                  )
+                )}
+              </span>
+            );
+          })}
         </pre>
 
         <textarea
@@ -393,6 +695,7 @@ export default function CodeEditor({
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={describedBy}
         />
+      </div>
       </div>
     </div>
   );
