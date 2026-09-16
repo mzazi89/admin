@@ -1,5 +1,4 @@
 import TechBackground from '@/components/TechBackground';
-import ClickLoader from '@/components/ClickLoader';
 import { THEME_BOOT_SCRIPT } from '@/components/ui/ThemeProvider';
 import './globals.css';
 // The code editor's own stylesheet. Split out because it is a self-contained
@@ -33,7 +32,6 @@ export default function RootLayout({ children }) {
         {/* Ambient background — sits behind everything */}
         <TechBackground />
         <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>{children}</main>
-        <ClickLoader />
       </body>
     </html>
   );

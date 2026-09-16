@@ -1049,15 +1049,13 @@ select.input {
 .skeleton-title { height: 20px; width: 45%; margin-bottom: 14px; }
 .skeleton-card { height: 92px; border-radius: var(--r-md); }
 
-@keyframes loader-rotate     { to { transform: rotate(360deg); } }
-@keyframes loader-rotate-rev { to { transform: rotate(-360deg); } }
-@keyframes loader-bar        { from { width: 0%; } to { width: 100%; } }
-@keyframes loader-pulse      { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-.loader-ring { position: absolute; border-style: solid; border-radius: 50%; animation: loader-rotate 1.1s linear infinite; }
-.loader-ring-rev { animation-name: loader-rotate-rev; }
-.loader-bar { animation: loader-bar 1.6s linear forwards; }
-.loader-pulse { animation: loader-pulse 1.2s ease-in-out infinite; }
+/* The loader-ring / loader-bar / loader-pulse animations used to live here. They
+   existed only for the full-screen click overlay (components/ClickLoader.js) and
+   the branded route splash (app/loading.js), both of which have been removed —
+   the overlay covered the whole screen for two seconds on every click.
+   Do not bring the overlay back. `.spinner` / `.spinner-sm` above are a DIFFERENT
+   thing: they mark real data loading inside a page or a button, and many pages
+   depend on them. */
 
 /* ───────────────── 15. COMPONENT LAYER (modal · sheet · toast) ───────────── */
 
