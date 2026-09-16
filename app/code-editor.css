@@ -3,18 +3,23 @@
 
    Two things about this file are deliberate and worth knowing before editing it.
 
-   1. THE METRICS ARE DECLARED ONCE.
-   The editor draws the code twice: a coloured <pre> behind a real <textarea>.
-   The user's caret lives in the textarea while their eyes read the <pre>, so if
-   the two disagree about font, size, line-height, letter-spacing, tab width or
-   padding by even a fraction of a pixel, the caret creeps away from the
-   character it is sitting in front of. Every metric therefore lives in a
-   variable below and both layers consume the same variable — never hard-code a
-   font-size or padding on one layer only.
+   1. THE METRICS AND THE WRAP RULES ARE DECLARED ONCE.
+   The editor draws the code three times: a coloured <pre> and an invisible copy
+   in the line-number gutter, both behind a real <textarea>. The user's caret
+   lives in the textarea while their eyes read the <pre>, so all three must agree
+   on font, size, line-height, letter-spacing, tab width, padding AND on where
+   every line breaks — if one of them wraps a word later than another, every
+   glyph below that point slides out of alignment. The metrics and the wrap rules
+   therefore live in one shared rule and all three layers consume them; never
+   hard-code a font-size, a padding or a wrap property on a single layer.
 
    line-height is an absolute px value rather than a multiple on purpose: a
    unitless 1.6 would be resolved independently against each layer's font-size,
    and a fractional result rounds differently in the two boxes.
+
+   The wrap width is not a constant. It is measured from the textarea's content
+   box at runtime and published as --code-wrap-w, because a desktop scrollbar
+   takes width out of that box — see syncScroll in CodeEditor.js.
 
    2. THE PALETTE IS DUPLICATED FOR THE THEME FALLBACK.
    The panel defines colours three times, matching how the rest of this
@@ -29,12 +34,15 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .code-editor {
-  /* ── Metrics shared by the gutter, the highlight layer and the textarea ── */
+  /* ── Metrics shared by all three text layers ── */
   --code-fs: 13.5px;
   --code-lh: 21px;
   --code-pad-x: 12px;
   --code-pad-y: 10px;
   --code-gutter-pad: 10px;
+  /* Overwritten with the measured textarea width on mount and on every change;
+     the fallback is only what the first paint uses. */
+  --code-wrap-w: 100%;
 
   /* ── Light palette ── */
   --code-panel: #F7F8FA;
@@ -87,33 +95,66 @@
 .code-editor[data-invalid='true']:focus-within { box-shadow: 0 0 0 3px var(--bad-tint); }
 
 /* ── Line-number gutter ── */
+/* The mono font here is not cosmetic: the gutter's width is expressed in `ch`
+   (--code-gutter-ch, set from the line count), and `ch` is only the character
+   advance you want if the measure is taken in the font the numbers are set in. */
 .code-editor-gutter {
   flex: 0 0 auto;
+  width: calc(var(--code-gutter-ch, 3) * 1ch + 2 * var(--code-gutter-pad));
   overflow: hidden;
   background: var(--code-gutter-bg);
   border-right: 1px solid var(--code-panel-border);
   user-select: none;
+  font-family: var(--font-mono);
+  font-size: var(--code-fs);
 }
 .code-editor-gutter-inner {
   will-change: transform;
   padding: var(--code-pad-y) 0;
 }
-.code-editor-gutter-track { min-width: 100%; }
-.code-ln {
-  height: var(--code-lh);
-  line-height: var(--code-lh);
+
+/* One cell per logical line. It is deliberately as wide as the CODE, not as wide
+   as the gutter: the invisible copy inside it has to wrap at exactly the width
+   the real line wraps at, and the gutter's overflow:hidden is what keeps the
+   consequence — a cell much wider than the column — out of sight. */
+.code-ln-cell {
+  position: relative;
+  width: var(--code-wrap-w);
+  min-height: var(--code-lh);
+}
+
+/* The number, pinned to the first row of its cell and sitting over the gutter
+   strip at the left of that (much wider) cell. Absolute so it stays out of the
+   copy's layout. */
+.code-ln-num {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--code-gutter-ch, 3) * 1ch + 2 * var(--code-gutter-pad));
   padding: 0 var(--code-gutter-pad);
+  box-sizing: border-box;
   text-align: right;
-  font-family: var(--font-mono);
-  font-size: var(--code-fs);
+  line-height: var(--code-lh);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
+  white-space: nowrap;
   color: var(--code-gutter-fg);
-  white-space: pre;
 }
-.code-ln-active { color: var(--code-gutter-active); font-weight: 600; }
+.code-ln-cell.code-ln-active .code-ln-num { color: var(--code-gutter-active); font-weight: 600; }
 
-/* ── The two code layers ── */
+/* The invisible copy of the line. Not display:none and not hidden by height — it
+   has to take up layout, because its wrapped height is the whole point: it is
+   what makes the cell match the code's wrapped rows without this file (or any
+   script) re-implementing the browser's line-breaking rules.
+   overflow:hidden keeps a very long unbreakable token from widening the cell. */
+.code-ln-mirror {
+  display: block;
+  visibility: hidden;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── The code layers ── */
 .code-editor-viewport {
   position: relative;
   flex: 1 1 auto;
@@ -121,12 +162,13 @@
   overflow: hidden;
 }
 
-/* Shared metrics. Both selectors must stay in step — see the note at the top. */
+/* Shared text metrics AND wrap rules. These three selectors must stay in step —
+   see the note at the top of this file. */
 .code-editor-pre,
-.code-editor-input {
+.code-editor-input,
+.code-ln-mirror {
   margin: 0;
   border: 0;
-  padding: var(--code-pad-y) var(--code-pad-x);
   box-sizing: border-box;
   font-family: var(--font-mono);
   font-size: var(--code-fs);
@@ -136,15 +178,33 @@
   font-feature-settings: normal;
   -moz-tab-size: 2;
   tab-size: 2;
-  white-space: pre;
-  overflow-wrap: normal;
+  /* Wrap rather than scroll sideways. pre-wrap preserves the code's own
+     indentation and blank lines; break-word is what a textarea does with a token
+     too long to fit (a URL, a base64 blob) and is set here so the copy breaks it
+     in the same place the control does. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   word-break: normal;
   text-align: left;
 }
+.code-editor-pre,
+.code-editor-input {
+  padding: var(--code-pad-y) var(--code-pad-x);
+}
+.code-ln-mirror {
+  /* No vertical padding: the gutter already offsets the first row by --code-pad-y
+     so that numbers line up with the code's first line. */
+  padding: 0 var(--code-pad-x);
+}
 
+/* Sized to the measured width of the textarea's content box, so both break lines
+   at the same column even when a scrollbar has taken width off the control. */
 .code-editor-pre {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--code-wrap-w);
   overflow: hidden;
   pointer-events: none;
   color: var(--code-fg);
@@ -166,7 +226,10 @@
   caret-color: var(--code-caret);
   resize: none;
   outline: none;
-  overflow: auto;
+  /* Vertical scrolling only — lines wrap, so there is never anything to reach by
+     scrolling sideways. */
+  overflow-x: hidden;
+  overflow-y: auto;
   border-radius: 0;
 }
 .code-editor-input::placeholder {
@@ -195,7 +258,7 @@
 /* A touch device gets a 16px code size: iOS Safari zooms the whole page when a
    focused control renders text below 16px, which on a code field is worse than
    the larger type. Keyed on the pointer, not just width, so a tablet is covered
-   too. Both layers move together or the overlay would misalign. */
+   too. All three layers move together or the overlay would misalign. */
 @media (hover: none) {
   .code-editor {
     --code-fs: 16px;

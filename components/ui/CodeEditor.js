@@ -8,17 +8,30 @@
 // whose text is transparent but whose caret is not. The user edits the real
 // textarea; they see the <pre>.
 //
-// That only works if the two layers agree on their text metrics down to the
-// pixel — same font, same size, same line-height, same padding, no wrapping.
-// A single discrepancy and the caret drifts away from the glyphs it is supposed
-// to be sitting between. So the metrics are declared ONCE as CSS variables on
-// .code-editor and consumed by both layers, and no wrapping is allowed at all
-// (wrap="off"): with soft wrapping the two layers would have to agree on where
-// every line broke, which they cannot be relied upon to do.
+// That only works if the layers agree on where every line BREAKS as well as on
+// their text metrics — same font, same size, same line-height, same padding, and
+// the same wrap width. A single discrepancy and the caret drifts away from the
+// glyphs it is supposed to be sitting between. So the metrics and the wrap rules
+// are declared ONCE and applied to every layer, and the wrap width is published
+// as a CSS variable measured from the textarea's own content box (see
+// syncScroll): a desktop scrollbar takes width out of that box, and without the
+// measurement the <pre> would break its lines at a different column than the
+// control it sits behind.
+//
+// Lines soft-wrap, so code is never pushed off the right edge.
 //
 // The textarea is the scroll container. The <pre> and the gutter are moved with
 // a transform on each scroll event rather than being scrolled themselves, so
 // there is exactly one set of scrollbars and nothing can get out of step.
+//
+// ── THE GUTTER, AND WHY WRAPPING IS THE HARD PART ──────────────────────────
+// One logical line can occupy several visual rows, but it must still get exactly
+// one number. So each gutter cell holds an invisible copy of its own line as well
+// as the number, laid out at the same wrap width as the code — the browser wraps
+// that copy exactly as it wraps the real line, so the cell grows to the same
+// height and the numbers stay in step with the code no matter how it spills.
+// Nothing here re-implements the line-breaking rules; the browser's own layout is
+// what keeps the two in agreement.
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { tokenize } from './codeHighlight';
@@ -59,6 +72,7 @@ export default function CodeEditor({
   className = '',
   minHeight,
 }) {
+  const containerRef = useRef(null);
   const taRef = useRef(null);
   const preRef = useRef(null);
   const gutterRef = useRef(null);
@@ -68,12 +82,23 @@ export default function CodeEditor({
   const lines = useMemo(() => code.split('\n'), [code]);
   const tokens = useMemo(() => tokenize(code), [code]);
 
-  // ─── scroll / caret sync ───────────────────────────────────────────────────
+  // ─── scroll / wrap-width sync ──────────────────────────────────────────────
   const syncScroll = useCallback(() => {
     const ta = taRef.current;
     if (!ta) return;
+
+    // Publish the width every layer must wrap at. Taken from the textarea's
+    // CONTENT box rather than from the container, because a vertical scrollbar
+    // shrinks that box on desktop — and if the <pre> wrapped at the container's
+    // width instead, a long line would break one word later there than in the
+    // control, and every glyph below it would slide out of alignment.
+    const box = containerRef.current;
+    if (box) box.style.setProperty('--code-wrap-w', `${ta.clientWidth}px`);
+
     // Written straight to the DOM: this fires on every scroll frame, and a
-    // React state update per frame would re-render the whole token list.
+    // React state update per frame would re-render the whole token list. The
+    // horizontal term is always 0 now that lines wrap, and is kept so that
+    // going back to horizontal scrolling would need no change here.
     if (preRef.current) {
       preRef.current.style.transform = `translate(${-ta.scrollLeft}px, ${-ta.scrollTop}px)`;
     }
@@ -246,7 +271,15 @@ export default function CodeEditor({
   return (
     <div
       className={`code-editor ${className}`}
-      style={minHeight ? { height: minHeight } : undefined}
+      ref={containerRef}
+      style={{
+        // How wide the number column is, in mono characters. The numbers are
+        // what set it, so the measure has to be taken in the mono font — which
+        // is why .code-editor-gutter declares it. A command with 4-digit line
+        // counts gets a wider column than one with 2.
+        '--code-gutter-ch': gutterCh,
+        ...(minHeight ? { height: minHeight } : null),
+      }}
       data-invalid={error ? 'true' : undefined}
       data-readonly={readOnly ? 'true' : undefined}
       data-lines={rows}
@@ -256,8 +289,16 @@ export default function CodeEditor({
       <div className="code-editor-gutter" aria-hidden="true">
         <div className="code-editor-gutter-inner" ref={gutterRef}>
           <div className="code-editor-gutter-track" ref={gutterInnerRef}>
-            {lines.map((_, i) => (
-              <div className="code-ln" key={i}>{i + 1}</div>
+            {/* One cell per LOGICAL line: the number, plus an invisible copy of
+                that line. The copy is what gives the cell the height of the
+                line's wrapped rows, which is what keeps the numbers beside the
+                right code when a line spills onto several rows. An empty line
+                needs a zero-width space or its cell would have no height. */}
+            {lines.map((line, i) => (
+              <div className="code-ln-cell" key={i}>
+                <span className="code-ln-num">{i + 1}</span>
+                <span className="code-ln-mirror">{line || '\u200b'}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -289,7 +330,11 @@ export default function CodeEditor({
           autoCapitalize="off"
           autoCorrect="off"
           autoComplete="off"
-          wrap="off"
+          // Soft wrap: a long line continues on the next row instead of
+          // scrolling sideways. The <pre> behind this control wraps identically
+          // — same width, same rules — which is what keeps the caret on the
+          // right glyph. See the note at the top of this file.
+          wrap="soft"
           rows={rows}
           placeholder={placeholder}
           aria-label={ariaLabel}
