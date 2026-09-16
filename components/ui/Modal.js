@@ -27,14 +27,18 @@ export default function Modal({
   const panelRef = useRef(null);
   const restoreRef = useRef(null);
 
+  // The current onClose, reachable without making the effect below depend on it.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; });
+
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
 
     restoreRef.current = document.activeElement;
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
 
-    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
+    const onKey = (e) => { if (e.key === 'Escape') onCloseRef.current?.(); };
     document.addEventListener('keydown', onKey);
 
     // Focus the first meaningful control, not the heading.
@@ -51,7 +55,25 @@ export default function Modal({
       clearTimeout(t);
       restoreRef.current?.focus?.();
     };
-  }, [open, onClose]);
+
+    // DEPENDENCIES: `open` ONLY. This is deliberate — do not add onClose back.
+    //
+    // It used to be [open, onClose], and that one extra dependency made a field
+    // impossible to type into from a phone: one character, then the keyboard
+    // closed. Every dialog in this app is handed an inline
+    // `onClose={() => setX(null)}` — there are ten of them — so onClose is a
+    // brand new function on every render. A controlled field calls setState on
+    // each keystroke, which re-renders the dialog, which changed that
+    // dependency, which re-ran this effect; and the first thing the cleanup
+    // above does is put focus back on whatever was focused BEFORE the dialog
+    // opened. So the field blurred itself on the first character typed into it,
+    // taking the on-screen keyboard with it, and the 30ms timeout above then
+    // moved focus to the first control in the panel instead.
+    //
+    // Restoring focus belongs to CLOSING a dialog, not to re-rendering one, so
+    // onClose is read through a ref and this effect now runs only when the
+    // dialog actually opens or closes.
+  }, [open]);
 
   if (!open) return null;
 
