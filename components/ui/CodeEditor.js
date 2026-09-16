@@ -35,6 +35,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { tokenize } from './codeHighlight';
+import { measureWrapWidth } from './codeMetrics';
 
 const INDENT = '  ';
 
@@ -91,24 +92,11 @@ export default function CodeEditor({
     if (!ta) return;
 
     // ── Publish the width every layer must wrap at ──────────────────────────
-    // Measured from the textarea's CONTENT box, not from the container: a
-    // vertical scrollbar comes out of that box on desktop, and a <pre> sized
-    // from the container would break a long line one word later than the control
-    // behind it — sliding every glyph below that point out of alignment.
-    //
-    // Deliberately NOT ta.clientWidth. That is a WebIDL long, so it is rounded
-    // to whole pixels; on a fractional layout the other layers would then be up
-    // to half a pixel wider than the control's true content box, which is enough
-    // to move a wrap point on a line that lands near the boundary. The
-    // fractional border-box width is used instead, with the scrollbar taken as
-    // the integer difference between the border box and the padding box.
+    // A padding-box width, measured fractionally — see codeMetrics.js for why it
+    // is the padding box and why it is not clientWidth.
     const box = containerRef.current;
     if (box) {
-      const cs = getComputedStyle(ta);
-      const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-      const border = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
-      const scrollbar = ta.offsetWidth - ta.clientWidth;
-      const width = ta.getBoundingClientRect().width - border - pad - scrollbar;
+      const width = measureWrapWidth(ta);
       // Only written when it actually changed: this also runs from a
       // ResizeObserver, and rewriting an unchanged value would invite a
       // measure → write → measure loop.

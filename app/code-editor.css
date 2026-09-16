@@ -202,15 +202,25 @@
   padding: 0 var(--code-pad-x);
 }
 
-/* Sized to the measured width of the textarea's content box, so both break lines
-   at the same column even when a scrollbar has taken width off the control. */
+/* Sized to the measured width of the textarea's padding box, so both break lines
+   at the same column even when a scrollbar has taken width off the control.
+   `box-sizing: border-box` is inherited from the shared rule, so the padding of
+   its own that this element applies lands inside that width — which is exactly
+   what makes its content box match the control's. */
 .code-editor-pre {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   width: var(--code-wrap-w);
-  overflow: hidden;
+  /* MUST stay visible. This element is the one that gets translated on scroll,
+     and an overflow clip is applied in the element's own coordinate space — so
+     clipping here would clip BEFORE the transform, and moving the box up would
+     reveal nothing: the code lower down the file would never appear, leaving the
+     bottom of the editor blank. Clipping belongs to .code-editor-viewport, which
+     does not move. (That was a real bug: the editor showed its first few rows and
+     then nothing.) */
+  overflow: visible;
   pointer-events: none;
   color: var(--code-fg);
   will-change: transform;
