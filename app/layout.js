@@ -2,6 +2,11 @@ import TechBackground from '@/components/TechBackground';
 import ClickLoader from '@/components/ClickLoader';
 import { THEME_BOOT_SCRIPT } from '@/components/ui/ThemeProvider';
 import './globals.css';
+// The code editor's own stylesheet. Split out because it is a self-contained
+// widget whose two code layers have to agree on every text metric to the pixel;
+// keeping those declarations in one short file makes that invariant visible
+// instead of hidden among 1400 lines of unrelated rules.
+import './code-editor.css';
 
 export const metadata = {
   title: 'MZAZI TECH — Admin',

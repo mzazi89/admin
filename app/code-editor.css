@@ -1,0 +1,280 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   CODE EDITOR — the handler-code field on the Commands page.
+
+   Two things about this file are deliberate and worth knowing before editing it.
+
+   1. THE METRICS ARE DECLARED ONCE.
+   The editor draws the code twice: a coloured <pre> behind a real <textarea>.
+   The user's caret lives in the textarea while their eyes read the <pre>, so if
+   the two disagree about font, size, line-height, letter-spacing, tab width or
+   padding by even a fraction of a pixel, the caret creeps away from the
+   character it is sitting in front of. Every metric therefore lives in a
+   variable below and both layers consume the same variable — never hard-code a
+   font-size or padding on one layer only.
+
+   line-height is an absolute px value rather than a multiple on purpose: a
+   unitless 1.6 would be resolved independently against each layer's font-size,
+   and a fractional result rounds differently in the two boxes.
+
+   2. THE PALETTE IS DUPLICATED FOR THE THEME FALLBACK.
+   The panel defines colours three times, matching how the rest of this
+   stylesheet handles them: light defaults, an explicit [data-theme='dark']
+   override, and a prefers-color-scheme:dark block for people who never chose a
+   theme. Adding a colour to only one of the three leaves it undefined in the
+   others, so add every token to all three blocks.
+
+   Contrast: every foreground below is at least 4.5:1 against its own panel
+   background, in both themes — the light theme uses the darker 700-weight shades
+   rather than the brighter accents, which would fail AA at this text size.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.code-editor {
+  /* ── Metrics shared by the gutter, the highlight layer and the textarea ── */
+  --code-fs: 13.5px;
+  --code-lh: 21px;
+  --code-pad-x: 12px;
+  --code-pad-y: 10px;
+  --code-gutter-pad: 10px;
+
+  /* ── Light palette ── */
+  --code-panel: #F7F8FA;
+  --code-panel-border: var(--line);
+  --code-gutter-bg: #F1F2F6;
+  --code-gutter-fg: #646E82;
+  --code-gutter-active: #1E2433;
+  --code-fg: #1E2433;
+  --code-caret: #6D28D9;
+  --code-select: rgba(109, 40, 217, 0.18);
+
+  --code-comment: #5A6478;
+  --code-string: #047857;
+  --code-number: #B45309;
+  --code-keyword: #6D28D9;
+  --code-literal: #1D4ED8;
+  --code-builtin: #0E7490;
+  --code-fn: #A21CAF;
+  --code-prop: #0F766E;
+  --code-punct: #475569;
+
+  /* Square, like a terminal — the rounded .input treatment is what this field
+     is deliberately moving away from. */
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  /* Cannot be squeezed by a parent that turns into a grid. The command form has
+     used single- and multi-column grids around this field before, and a field
+     that silently collapses to one narrow column is exactly the bug this
+     prevents. */
+  grid-column: 1 / -1;
+
+  height: clamp(240px, 40vh, 460px);
+  border: 1px solid var(--code-panel-border);
+  border-radius: 0;
+  background: var(--code-panel);
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.code-editor:focus-within {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+.code-editor[data-invalid='true'] { border-color: var(--bad); }
+.code-editor[data-invalid='true']:focus-within { box-shadow: 0 0 0 3px var(--bad-tint); }
+
+/* ── Line-number gutter ── */
+.code-editor-gutter {
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: var(--code-gutter-bg);
+  border-right: 1px solid var(--code-panel-border);
+  user-select: none;
+}
+.code-editor-gutter-inner {
+  will-change: transform;
+  padding: var(--code-pad-y) 0;
+}
+.code-editor-gutter-track { min-width: 100%; }
+.code-ln {
+  height: var(--code-lh);
+  line-height: var(--code-lh);
+  padding: 0 var(--code-gutter-pad);
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--code-fs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  color: var(--code-gutter-fg);
+  white-space: pre;
+}
+.code-ln-active { color: var(--code-gutter-active); font-weight: 600; }
+
+/* ── The two code layers ── */
+.code-editor-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Shared metrics. Both selectors must stay in step — see the note at the top. */
+.code-editor-pre,
+.code-editor-input {
+  margin: 0;
+  border: 0;
+  padding: var(--code-pad-y) var(--code-pad-x);
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: var(--code-fs);
+  line-height: var(--code-lh);
+  letter-spacing: 0;
+  font-variant-ligatures: none;
+  font-feature-settings: normal;
+  -moz-tab-size: 2;
+  tab-size: 2;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-align: left;
+}
+
+.code-editor-pre {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--code-fg);
+  will-change: transform;
+  background: transparent;
+}
+
+/* The real control. Its text is invisible but its caret is not: the glyphs the
+   user reads are the <pre> underneath. -webkit-text-fill-color is required in
+   addition to `color` because WebKit otherwise still paints the glyphs. */
+.code-editor-input {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: var(--code-caret);
+  resize: none;
+  outline: none;
+  overflow: auto;
+  border-radius: 0;
+}
+.code-editor-input::placeholder {
+  color: var(--code-comment);
+  -webkit-text-fill-color: var(--code-comment);
+  opacity: 1;
+}
+/* A translucent selection, so the coloured glyphs behind stay readable through
+   it rather than being blanked out by an opaque highlight. */
+.code-editor-input::selection { background: var(--code-select); }
+.code-editor[data-readonly='true'] .code-editor-input { cursor: default; }
+
+/* ── Syntax colours ── */
+.tok-comment  { color: var(--code-comment); font-style: italic; }
+.tok-string   { color: var(--code-string); }
+.tok-number   { color: var(--code-number); }
+.tok-keyword  { color: var(--code-keyword); font-weight: 600; }
+.tok-literal  { color: var(--code-literal); }
+.tok-builtin  { color: var(--code-builtin); }
+.tok-fn       { color: var(--code-fn); }
+.tok-prop     { color: var(--code-prop); }
+.tok-punct    { color: var(--code-punct); }
+.tok-plain    { color: var(--code-fg); }
+
+/* ── Fit the device ── */
+/* A touch device gets a 16px code size: iOS Safari zooms the whole page when a
+   focused control renders text below 16px, which on a code field is worse than
+   the larger type. Keyed on the pointer, not just width, so a tablet is covered
+   too. Both layers move together or the overlay would misalign. */
+@media (hover: none) {
+  .code-editor {
+    --code-fs: 16px;
+    --code-lh: 25px;
+    --code-pad-x: 14px;
+    --code-pad-y: 12px;
+  }
+}
+/* Phones: give the editor real room instead of a couple of lines. */
+@media (max-width: 639px) {
+  .code-editor { height: min(58dvh, 480px); }
+}
+
+/* ── Dark theme ── */
+[data-theme='dark'] .code-editor {
+  --code-panel: #0B0B12;
+  --code-gutter-bg: #101018;
+  --code-gutter-fg: #7C86A0;
+  --code-gutter-active: #E6E6F0;
+  --code-fg: #E6E6F0;
+  --code-caret: #C4B5FD;
+  --code-select: rgba(167, 139, 250, 0.26);
+
+  --code-comment: #8B93A8;
+  --code-string: #6EE7B7;
+  --code-number: #FCD34D;
+  --code-keyword: #C4B5FD;
+  --code-literal: #93C5FD;
+  --code-builtin: #67E8F9;
+  --code-fn: #F9A8D4;
+  --code-prop: #7DD3FC;
+  --code-punct: #94A3B8;
+}
+
+/* System-dark for anyone who never picked a theme explicitly. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .code-editor {
+    --code-panel: #0B0B12;
+    --code-gutter-bg: #101018;
+    --code-gutter-fg: #7C86A0;
+    --code-gutter-active: #E6E6F0;
+    --code-fg: #E6E6F0;
+    --code-caret: #C4B5FD;
+    --code-select: rgba(167, 139, 250, 0.26);
+
+    --code-comment: #8B93A8;
+    --code-string: #6EE7B7;
+    --code-number: #FCD34D;
+    --code-keyword: #C4B5FD;
+    --code-literal: #93C5FD;
+    --code-builtin: #67E8F9;
+    --code-fn: #F9A8D4;
+    --code-prop: #7DD3FC;
+    --code-punct: #94A3B8;
+  }
+}
+
+/* ── Command dialog: use the whole phone screen ── */
+/* The handler editor is the tallest thing in this form, and on a phone the
+   default sheet height left it a few hundred pixels tall and scrolling badly.
+   The dialog now fills the viewport, so the editor gets a real code panel and
+   the form body scrolls between the header and the footer. */
+@media (max-width: 639px) {
+  .modal-code {
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-code .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .modal-code .modal-foot {
+    flex: 0 0 auto;
+    background: var(--surface);
+    border-radius: 0;
+  }
+}

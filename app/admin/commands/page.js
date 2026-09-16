@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  Badge, Button, Card, ConfirmDialog, DataTable, EmptyState, ErrorState, Field, Input,
-  Modal, PageHeader, SearchInput, Select, Skeleton, StatusIndicator, Textarea, Toggle,
+  Badge, Button, Card, CodeEditor, ConfirmDialog, DataTable, EmptyState, ErrorState, Field, Input,
+  Modal, PageHeader, SearchInput, Select, Skeleton, StatusIndicator, Toggle,
   humaniseError, useToast,
   Icons,
 } from '@/components/ui';
@@ -396,6 +396,9 @@ export default function CommandsPage() {
         title={modal?.mode === 'edit' ? `Edit .${modal.name}` : 'Add command'}
         description="Handler code is JavaScript run by the bot. Saves reach the bot within ~15 seconds."
         size="xl"
+        // On a phone this dialog takes the whole screen: the code field is the
+        // tallest control here and a part-height sheet left it barely usable.
+        className="modal-code"
         footer={
           <>
             <Button variant="ghost" onClick={() => setModal(null)}>Cancel</Button>
@@ -437,15 +440,21 @@ export default function CommandsPage() {
             </div>
 
             <Field label="Handler code" id="cmd-code" hint={modal.mode === 'edit' ? 'The current code is loaded — edit as needed.' : undefined}>
-              <Textarea
+              {/* A code editor rather than a textarea: line numbers, syntax
+                  colours, and no soft wrapping so indentation reads the way it
+                  will run. Square corners and a fixed-fit height — see
+                  app/code-editor.css. While the current code is being fetched
+                  the field is read-only and shows the loading state as its
+                  placeholder rather than as a fake value, so the "loading" text
+                  can never be mistaken for the command's actual code. */}
+              <CodeEditor
                 id="cmd-code"
-                className="mono"
-                value={modal.loadingCode ? 'Loading current code…' : form.code}
-                onChange={(e) => setForm({ ...form, code: e.target.value })}
-                rows={10}
+                value={modal.loadingCode ? '' : form.code}
+                onChange={(next) => setForm({ ...form, code: next })}
                 readOnly={!!modal.loadingCode}
-                placeholder="await mzazireply('Hello from the website!');"
-                style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5, lineHeight: 1.6 }}
+                rows={18}
+                placeholder={modal.loadingCode ? 'Loading current code…' : "await mzazireply('Hello from the website!');"}
+                ariaLabel="Handler code"
               />
             </Field>
           </div>
