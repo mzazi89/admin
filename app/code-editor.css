@@ -40,8 +40,13 @@
   --code-pad-x: 12px;
   --code-pad-y: 10px;
   --code-gutter-pad: 10px;
-  /* Overwritten with the measured textarea width on mount and on every change;
-     the fallback is only what the first paint uses. */
+  /* Overwritten by syncScroll with the textarea's measured content width, before
+     the first paint (useLayoutEffect) and again whenever the box or the font
+     changes. The fallback below is therefore only ever used if that script never
+     runs — for the <pre> it resolves against the viewport, which is close, but
+     for a .code-ln-cell it resolves against the narrow gutter. That is a
+     degraded state, not a supported one: without the script the editor's caret
+     and gutter are not driven at all. */
   --code-wrap-w: 100%;
 
   /* ── Light palette ── */
@@ -243,6 +248,16 @@
 .code-editor[data-readonly='true'] .code-editor-input { cursor: default; }
 
 /* ── Syntax colours ── */
+/* These styles land on the <pre> ONLY — the textarea renders the same characters
+   at weight 400 roman, because it cannot be coloured. So any weight or style
+   added here is a claim that the face does not change the character advance:
+   IBM Plex Mono is a true monospace family across the weights this app loads
+   (400/500/600), and the stack ends in the `monospace` generic, which is
+   fixed-pitch by definition. Adding a weight the family does not ship would
+   trigger synthetic bolding, and a font whose bold face has a wider advance
+   would misalign every line containing a keyword. Colour alone is always safe.
+   The italic is synthetic (no italic face is loaded) and a synthetic oblique
+   skews without changing advances. */
 .tok-comment  { color: var(--code-comment); font-style: italic; }
 .tok-string   { color: var(--code-string); }
 .tok-number   { color: var(--code-number); }

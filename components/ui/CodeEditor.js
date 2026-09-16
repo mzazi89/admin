@@ -77,6 +77,9 @@ export default function CodeEditor({
   const preRef = useRef(null);
   const gutterRef = useRef(null);
   const gutterInnerRef = useRef(null);
+  // Last published wrap width, so the observer-driven re-measure below cannot
+  // rewrite an unchanged value (see syncScroll).
+  const lastWrapW = useRef(0);
 
   const code = value == null ? '' : String(value);
   const lines = useMemo(() => code.split('\n'), [code]);
@@ -87,13 +90,33 @@ export default function CodeEditor({
     const ta = taRef.current;
     if (!ta) return;
 
-    // Publish the width every layer must wrap at. Taken from the textarea's
-    // CONTENT box rather than from the container, because a vertical scrollbar
-    // shrinks that box on desktop — and if the <pre> wrapped at the container's
-    // width instead, a long line would break one word later there than in the
-    // control, and every glyph below it would slide out of alignment.
+    // ── Publish the width every layer must wrap at ──────────────────────────
+    // Measured from the textarea's CONTENT box, not from the container: a
+    // vertical scrollbar comes out of that box on desktop, and a <pre> sized
+    // from the container would break a long line one word later than the control
+    // behind it — sliding every glyph below that point out of alignment.
+    //
+    // Deliberately NOT ta.clientWidth. That is a WebIDL long, so it is rounded
+    // to whole pixels; on a fractional layout the other layers would then be up
+    // to half a pixel wider than the control's true content box, which is enough
+    // to move a wrap point on a line that lands near the boundary. The
+    // fractional border-box width is used instead, with the scrollbar taken as
+    // the integer difference between the border box and the padding box.
     const box = containerRef.current;
-    if (box) box.style.setProperty('--code-wrap-w', `${ta.clientWidth}px`);
+    if (box) {
+      const cs = getComputedStyle(ta);
+      const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const border = parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+      const scrollbar = ta.offsetWidth - ta.clientWidth;
+      const width = ta.getBoundingClientRect().width - border - pad - scrollbar;
+      // Only written when it actually changed: this also runs from a
+      // ResizeObserver, and rewriting an unchanged value would invite a
+      // measure → write → measure loop.
+      if (width > 0 && Math.abs(width - lastWrapW.current) > 0.01) {
+        lastWrapW.current = width;
+        box.style.setProperty('--code-wrap-w', `${width}px`);
+      }
+    }
 
     // Written straight to the DOM: this fires on every scroll frame, and a
     // React state update per frame would re-render the whole token list. The
@@ -130,13 +153,54 @@ export default function CodeEditor({
     markActiveLine();
   }, [code, syncScroll, markActiveLine]);
 
+  // Everything that can move the wrap width without the code changing.
   useEffect(() => {
     const ta = taRef.current;
+    const box = containerRef.current;
     if (!ta) return undefined;
     syncScroll();
-    // window resize can change wrapping-independent scroll extents
+
     window.addEventListener('resize', syncScroll);
-    return () => window.removeEventListener('resize', syncScroll);
+
+    // A window resize is NOT the only way this box changes width. The gutter is
+    // sized in `ch`, so when the mono webfont arrives the gutter gets wider,
+    // the viewport gets narrower, and the wrap width moves with it — after the
+    // one measurement useLayoutEffect already did. Anything that resizes the
+    // dialog without resizing the window (a modal, an inspector panel, a
+    // rotate) has the same effect. Both are covered here rather than left to a
+    // stale value, which would leave the layers consistent with each other but
+    // both wrapping at the wrong column.
+    let observer;
+    if (box && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(syncScroll);
+      observer.observe(box);
+    }
+
+    const fonts = typeof document !== 'undefined' ? document.fonts : null;
+    let alive = true;
+    if (fonts) {
+      const onFontsLoaded = () => { if (alive) syncScroll(); };
+      if (fonts.ready && typeof fonts.ready.then === 'function') {
+        fonts.ready.then(onFontsLoaded).catch(() => {});
+      }
+      if (typeof fonts.addEventListener === 'function') {
+        fonts.addEventListener('loadingdone', onFontsLoaded);
+      }
+      return () => {
+        alive = false;
+        window.removeEventListener('resize', syncScroll);
+        if (observer) observer.disconnect();
+        if (typeof fonts.removeEventListener === 'function') {
+          fonts.removeEventListener('loadingdone', onFontsLoaded);
+        }
+      };
+    }
+
+    return () => {
+      alive = false;
+      window.removeEventListener('resize', syncScroll);
+      if (observer) observer.disconnect();
+    };
   }, [syncScroll]);
 
   // ─── editing ───────────────────────────────────────────────────────────────
