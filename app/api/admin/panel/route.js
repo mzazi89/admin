@@ -10,12 +10,12 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
+import { parseWantedId } from '@/lib/panelSelection';
+import { resolvePanel } from '@/lib/pterodactylPanels';
 
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
 
 async function verifyAdmin() {
@@ -30,22 +30,20 @@ async function verifyAdmin() {
   }
 }
 
-async function pteroConfig() {
-  let url = process.env.PTERODACTYL_URL || 'https://public.mzazi.shop';
-  let key = process.env.PTERODACTYL_API_KEY || '';
-  try {
-    const rows = await sql`SELECT key, value FROM settings WHERE key = ANY(${['pterodactyl_url', 'pterodactyl_api_key']})`;
-    for (const r of rows) {
-      if (r.key === 'pterodactyl_url' && r.value) url = r.value;
-      if (r.key === 'pterodactyl_api_key' && r.value) key = r.value;
-    }
-  } catch {}
-  return { url: String(url).replace(/\/+$/, ''), key };
+// Which panel this request acts on.
+//
+// No panel_id means the default panel; a panel_id that does not exist is an error
+// and never a quiet fallback to another one. This route deletes users and servers,
+// so acting on a different host than the admin was looking at is the one mistake
+// with no undo — see admin/lib/panelSelection.js.
+async function pteroConfig(panelId = null) {
+  const panel = await resolvePanel(panelId);
+  return { url: panel.url, key: panel.key, panel };
 }
 
-async function pteroFetch(path, method = 'GET', body = null) {
-  const { url, key } = await pteroConfig();
-  if (!key) throw new Error('Pterodactyl API key not configured — add it on the Settings page');
+async function pteroFetch(path, method = 'GET', body = null, panelId = null) {
+  const { url, key, panel } = await pteroConfig(panelId);
+  if (!key) throw new Error('Pterodactyl API key not configured — add a panel on the Settings page');
   const res = await fetch(`${url}/api/application${path}`, {
     method,
     headers: {
@@ -59,7 +57,10 @@ async function pteroFetch(path, method = 'GET', body = null) {
   try {
     data = await res.json();
   } catch {}
-  return { status: res.status, data };
+  // `panel` travels back with every response so the page can show which panel the
+  // answer came from — with several configured, the same username can exist on two
+  // of them and the reply would otherwise be ambiguous.
+  return { status: res.status, data, panel };
 }
 
 function pteroErr(data) {
@@ -73,11 +74,20 @@ export async function GET(request) {
   await ensureDatabase();
   const { searchParams } = new URL(request.url);
   const action = searchParams.get('action');
+
+  // A panel_id that is present but unusable must be refused outright: guessing here
+  // would mean listing — and then deleting — on a panel nobody asked for.
+  const wanted = parseWantedId(searchParams.get('panel_id'));
+  if (!wanted.ok) {
+    return NextResponse.json({ error: 'panel_id must be a positive whole number.' }, { status: 400 });
+  }
+
   try {
     if (action === 'users') {
-      const r = await pteroFetch('/users?per_page=100');
+      const r = await pteroFetch('/users?per_page=100', 'GET', null, wanted.id);
       if (r.status !== 200) return NextResponse.json({ error: pteroErr(r.data) }, { status: 502 });
       return NextResponse.json({
+        panel: r.panel,
         users: (r.data?.data || []).map((u) => {
           const a = u.attributes || {};
           return {
@@ -103,8 +113,10 @@ export async function GET(request) {
       const servers = [];
       let page = 1;
       let totalPages = 1;
+      let panelInfo = null;
       while (page <= totalPages && page <= 50) {
-        const r = await pteroFetch(`/servers?per_page=100&page=${page}`);
+        const r = await pteroFetch(`/servers?per_page=100&page=${page}`, 'GET', null, wanted.id);
+        panelInfo = r.panel;
         if (r.status !== 200) return NextResponse.json({ error: pteroErr(r.data) }, { status: 502 });
         for (const s of r.data?.data || []) {
           const a = s.attributes || {};
@@ -121,11 +133,13 @@ export async function GET(request) {
         totalPages = r.data?.meta?.pagination?.total_pages || 1;
         page += 1;
       }
-      return NextResponse.json({ servers });
+      return NextResponse.json({ servers, panel: panelInfo });
     }
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (e) {
-    return NextResponse.json({ error: e.message || 'Panel API error' }, { status: 500 });
+    // resolvePanel marks a missing panel as 404 so a stale page reads as "reload",
+    // not as "the panel is broken".
+    return NextResponse.json({ error: e.message || 'Panel API error' }, { status: e.status || 500 });
   }
 }
 
@@ -143,11 +157,18 @@ export async function POST(request) {
       .filter((n) => Number.isInteger(n) && n > 0);
     const deleteUser = body.delete_user !== false;
 
+    // Deletes go to the panel the admin was looking at. A malformed or unknown id
+    // is refused rather than defaulted: the wrong panel here is unrecoverable.
+    const wanted = parseWantedId(body.panel_id);
+    if (!wanted.ok) {
+      return NextResponse.json({ error: 'panel_id must be a positive whole number.' }, { status: 400 });
+    }
+
     // 1) Delete the selected servers first.
     const deletedServers = [];
     const failedServers = [];
     for (const sid of serverIds) {
-      const r = await pteroFetch(`/servers/${sid}`, 'DELETE');
+      const r = await pteroFetch(`/servers/${sid}`, 'DELETE', null, wanted.id);
       if (r.status === 204 || r.status === 200) deletedServers.push(sid);
       else failedServers.push({ id: sid, error: pteroErr(r.data) });
     }
@@ -156,7 +177,7 @@ export async function POST(request) {
     //    the panel rejects deleting a user who still has servers).
     let userDeleted = false;
     if (deleteUser && failedServers.length === 0) {
-      const r = await pteroFetch(`/users/${userId}`, 'DELETE');
+      const r = await pteroFetch(`/users/${userId}`, 'DELETE', null, wanted.id);
       if (r.status === 204 || r.status === 200) userDeleted = true;
       else {
         return NextResponse.json(
@@ -168,6 +189,6 @@ export async function POST(request) {
 
     return NextResponse.json({ ok: true, deletedServers, failedServers, userDeleted });
   } catch (e) {
-    return NextResponse.json({ error: e.message || 'Failed to delete' }, { status: 500 });
+    return NextResponse.json({ error: e.message || 'Failed to delete' }, { status: e.status || 500 });
   }
 }

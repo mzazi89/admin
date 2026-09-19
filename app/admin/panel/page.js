@@ -7,6 +7,12 @@ import { useRouter } from 'next/navigation';
 // select which to delete → "Delete selected servers & user" removes the
 // servers first, then the user (Pterodactyl refuses to delete a user who
 // still has servers).
+//
+// More than one panel can be configured (Settings → Pterodactyl panels). The
+// chosen panel is threaded through every request as panel_id, so a user is always
+// listed, and deleted, on the panel the admin was actually looking at. With no
+// panels configured the server falls back to the legacy Settings pair, which is
+// why panel_id is simply omitted in that case rather than invented.
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [serversByUser, setServersByUser] = useState({});
@@ -15,35 +21,71 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState('');
   const [notice, setNotice] = useState('');
+  const [panels, setPanels] = useState([]);
+  const [panelId, setPanelId] = useState('');
+  const [activePanel, setActivePanel] = useState(null);
   const router = useRouter();
 
-  const load = () => {
-    fetch('/api/admin/panel?action=users').then(async (r) => {
+  // Appended to every request. Empty when nothing is selected — which the server
+  // reads as "the default panel".
+  const panelQuery = () => (panelId ? `&panel_id=${encodeURIComponent(panelId)}` : '');
+
+  const load = (forPanel = panelId) => {
+    const q = forPanel ? `&panel_id=${encodeURIComponent(forPanel)}` : '';
+    setLoading(true);
+    fetch(`/api/admin/panel?action=users${q}`).then(async (r) => {
+      const d = await r.json().catch(() => ({}));
       if (!r.ok) {
-        const d = await r.json().catch(() => ({}));
         setNotice(d.error || 'Failed to load users');
+        setUsers([]);
         setLoading(false);
         return;
       }
-      const d = await r.json();
       setUsers(d.users || []);
+      if (d.panel) setActivePanel(d.panel);
       setLoading(false);
     });
   };
 
   useEffect(() => {
-    fetch('/api/admin/me').then((r) => {
+    fetch('/api/admin/me').then(async (r) => {
       if (!r.ok) { router.replace('/admin/login'); return; }
-      load();
+      // The panel list first: which panel to show is decided before any user is
+      // fetched, otherwise the first request would always be against the default.
+      let initial = '';
+      try {
+        const res = await fetch('/api/admin/pterodactyl/panels');
+        const d = await res.json().catch(() => ({}));
+        if (res.ok) {
+          const list = d.panels || [];
+          setPanels(list);
+          const def = list.find((p) => p.is_default) || list[0];
+          initial = def ? String(def.id) : '';
+          setPanelId(initial);
+        }
+      } catch {}
+      load(initial);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const switchPanel = (value) => {
+    setPanelId(value);
+    // Everything on screen belonged to the other panel.
+    setUsers([]);
+    setServersByUser({});
+    setSelectedByUser({});
+    setOpenUser(null);
+    setNotice('');
+    setActivePanel(null);
+    load(value);
+  };
 
   const loadServers = async (userId) => {
     if (serversByUser[userId]) return serversByUser[userId];
     setBusy(`s:${userId}`);
     setNotice('');
-    const res = await fetch(`/api/admin/panel?action=servers&user_id=${userId}`);
+    const res = await fetch(`/api/admin/panel?action=servers&user_id=${userId}${panelQuery()}`);
     const d = await res.json().catch(() => ({}));
     setBusy('');
     if (!res.ok) { setNotice(d.error || 'Failed to load servers'); return []; }
@@ -71,10 +113,15 @@ export default function AdminPanel() {
   const apiDelete = async (payload, successMsg) => {
     setBusy('del');
     setNotice('');
+    // The panel travels with the delete. Without it the server would act on the
+    // default panel, which with several configured could be a different host than
+    // the one whose users are on screen. When no panels are configured there is
+    // nothing to send — the legacy Settings pair is the only panel there is.
+    const body = panelId ? { ...payload, panel_id: panelId } : payload;
     const res = await fetch('/api/admin/panel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(body),
     });
     const d = await res.json().catch(() => ({}));
     setBusy('');
@@ -133,6 +180,43 @@ export default function AdminPanel() {
         </p>
       </div>
 
+      {panels.length > 1 && (
+        <div className="card card-pad mb-6" style={{ padding: '16px 18px' }}>
+          <label className="label" htmlFor="panel-picker" style={{ display: 'block', marginBottom: 6 }}>
+            Panel
+          </label>
+          <select
+            id="panel-picker"
+            className="input"
+            value={panelId}
+            onChange={(e) => switchPanel(e.target.value)}
+            disabled={busy === 'del'}
+          >
+            {panels.map((p) => (
+              <option key={p.id} value={String(p.id)}>
+                {p.name}{p.is_default ? ' (default)' : ''}
+              </option>
+            ))}
+          </select>
+          <p style={{ margin: '8px 0 0', fontSize: 12.5, color: 'var(--dim)' }}>
+            You are managing the users of this panel only. Switch here to reach another.
+          </p>
+        </div>
+      )}
+
+      {panels.length === 0 && (
+        <div className="tag mb-6" style={{ padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em', color: 'var(--muted)' }}>
+          Using the panel from <a href="/admin/settings" style={{ color: 'var(--brand)' }}>Settings</a>.
+          To manage more than one panel from here, add them under Settings → Pterodactyl panels.
+        </div>
+      )}
+
+      {panels.length === 1 && activePanel && (
+        <div className="mono mb-6" style={{ fontSize: 12.5, color: 'var(--muted)' }}>
+          Panel: {activePanel.name}{activePanel.url ? ` · ${activePanel.url}` : ''}
+        </div>
+      )}
+
       {notice && (
         <div className="tag mb-6" style={{
           padding: '10px 14px', width: '100%', textTransform: 'none', letterSpacing: '0.02em',
@@ -148,7 +232,7 @@ export default function AdminPanel() {
         <div className="flex justify-center py-16"><div className="spinner" /></div>
       ) : users.length === 0 ? (
         <div className="card card-pad" style={{ padding: '26px', textAlign: 'center', color: 'var(--muted)' }}>
-          No panel users found. (Configure the panel URL + API key on the <a href="/admin/settings" style={{ color: 'var(--brand)' }}>Settings</a> page.)
+          No panel users found{activePanel?.name ? ` on ${activePanel.name}` : ''}. (Add a panel, or check its URL and API key, under <a href="/admin/settings" style={{ color: 'var(--brand)' }}>Settings</a>.)
         </div>
       ) : (
         <div className="card card-pad" style={{ padding: '22px' }}>

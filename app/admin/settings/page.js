@@ -7,6 +7,9 @@ import {
   ThemeToggle, humaniseError, useToast,
   Icons,
 } from '@/components/ui';
+// Owns its own load/save: panels live in their own table, not in the settings
+// form, so an unrelated "Save settings" can never overwrite them.
+import PterodactylPanels from '@/components/PterodactylPanels';
 
 // Bot settings stored in the shared Neon `settings` table. The bot reads these
 // (with env fallback). DATABASE_URL is deliberately absent — it stays in env.
@@ -87,9 +90,13 @@ const GROUPS = [
   {
     title: 'System',
     icon: <Icons.Settings size={17} />,
+    // Renders the panel manager above these fields — see the 'pterodactyl' branch
+    // in the render below. The two fields that follow are now only the fallback,
+    // used when no panel has been added to the list.
+    special: 'pterodactyl',
     fields: [
-      { key: 'pterodactyl_url', label: 'Pterodactyl URL', placeholder: 'https://panel.example.com', type: 'text' },
-      { key: 'pterodactyl_api_key', label: 'Pterodactyl API key', placeholder: 'ptla_…', type: 'password' },
+      { key: 'pterodactyl_url', label: 'Fallback panel URL', placeholder: 'https://panel.example.com', type: 'text', hint: 'Used only when no panel is configured above.' },
+      { key: 'pterodactyl_api_key', label: 'Fallback panel API key', placeholder: 'ptla_…', type: 'password', hint: 'Used only when no panel is configured above.' },
       { key: 'webhook_port', label: 'Webhook port', placeholder: '3000', type: 'text' },
       { key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://bot.example.com/webhook', type: 'text' },
       { key: 'remote_api_url', label: 'Remote command API URL', placeholder: 'https://mzazi.shop/api/bot-command', type: 'text' },
@@ -204,6 +211,8 @@ export default function AdminSettings() {
           {GROUPS.map((group) => (
             <Card key={group.title} style={{ padding: '22px 22px 8px', marginBottom: 18 }}>
               <CardHeader title={group.title} description={group.description} icon={group.icon} />
+
+              {group.special === 'pterodactyl' && <PterodactylPanels />}
 
               {group.special === 'account' && (
                 <div>
