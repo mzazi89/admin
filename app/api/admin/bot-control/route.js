@@ -12,6 +12,40 @@ const sql = neon(process.env.DATABASE_URL);
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
 const ACTIONS = ['sync', 'broadcast', 'botname'];
 
+// ── Broadcast buttons ────────────────────────────────────────────────────────
+// The bot puts a photo and two buttons on a broadcast of its own accord (see
+// lib/botTelemetry.js in the bot repos), so what the admin sends here is an
+// OVERRIDE, not a requirement. Anything unusable is dropped rather than rejected:
+// a broadcast is a one-way message the operator has already written, and failing
+// it over an over-long button label would be the wrong trade.
+//
+// The limits are WhatsApp's, and they are hard limits — a label of 21 characters
+// or a fourth button does not get trimmed by the client, it fails to send.
+const MAX_BUTTONS = 3;
+const MAX_LABEL = 20;
+const MAX_COMMAND = 60;
+
+function normaliseButtons(input) {
+  if (!Array.isArray(input)) return undefined;
+  const buttons = input
+    .map((b) => ({
+      id: String((b && (b.id || b.command)) || '').trim().slice(0, MAX_COMMAND),
+      text: String((b && (b.text || b.label)) || '').trim().slice(0, MAX_LABEL),
+    }))
+    .filter((b) => b.id && b.text)
+    .slice(0, MAX_BUTTONS);
+  return buttons.length ? buttons : undefined;
+}
+
+/** Only an http(s) URL, and only one short enough to be one. */
+function normaliseImage(input) {
+  if (typeof input !== 'string') return undefined;
+  const url = input.trim();
+  if (!url || url.length > 2048) return undefined;
+  if (!/^https?:\/\//i.test(url)) return undefined;
+  return url;
+}
+
 async function verifyAdmin() {
   const cookieStore = await cookies();
   const token = cookieStore.get('admin_token');
@@ -65,9 +99,20 @@ export async function POST(request) {
       return NextResponse.json({ error: 'botname requires payload.name' }, { status: 400 });
     }
 
+    // The broadcast payload is rebuilt rather than passed through, so the row the
+    // bot will read holds only what was validated here.
+    let payload = body.payload || {};
+    if (body.action === 'broadcast') {
+      payload = {
+        message: String(payload.message).slice(0, 4096),
+        ...(normaliseImage(payload.image) ? { image: normaliseImage(payload.image) } : {}),
+        ...(normaliseButtons(payload.buttons) ? { buttons: normaliseButtons(payload.buttons) } : {}),
+      };
+    }
+
     const ins = await sql`
       INSERT INTO bot_control (action, payload)
-      VALUES (${body.action}, ${body.payload || {}})
+      VALUES (${body.action}, ${payload})
       RETURNING id, action, status
     `;
 

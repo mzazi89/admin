@@ -3,13 +3,28 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Alert, Badge, Button, Card, ConfirmDialog, ErrorState, PageHeader,
+  Alert, Badge, Button, Card, ConfirmDialog, ErrorState, Field, Input, PageHeader,
   Textarea, WizardSteps, humaniseError, useToast,
   Icons,
 } from '@/components/ui';
 
 const STEPS = ['Audience', 'Message', 'Preview', 'Confirm'];
 const MAX_LEN = 4096;
+
+// WhatsApp's own limits, and hard ones: a label of 21 characters or a fourth
+// button is not trimmed by the receiving client, it fails to deliver.
+const MAX_BUTTON_LABEL = 20;
+const MAX_BUTTON_COMMAND = 60;
+
+// What the bot attaches when the operator chooses nothing. Shown in the preview
+// so the operator can see the whole message, not just the words they typed — the
+// empty field would otherwise look like the broadcast arrives with no buttons.
+const DEFAULT_BUTTONS = [
+  { text: '📜 Menu', id: '.menu' },
+  { text: '💳 Plans', id: '.plans' },
+];
+
+const IMAGE_PATTERN = /^https?:\/\//i;
 
 // The ONLY delivery target the bot implements today. The other options are
 // shown for transparency but are disabled: nothing in the API filters by plan.
@@ -41,6 +56,10 @@ export default function AdminBroadcast() {
   const [step, setStep] = useState(0);
   const [audience, setAudience] = useState('groups');
   const [message, setMessage] = useState('');
+  // Both optional. Empty means "whatever the bot attaches by itself".
+  const [buttonLabel, setButtonLabel] = useState('');
+  const [buttonCommand, setButtonCommand] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -73,19 +92,36 @@ export default function AdminBroadcast() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Only sent when BOTH halves are filled in: half a button is not a button, and
+  // the bot's own two are a better outcome than one that does nothing when tapped.
+  const customButton = buttonLabel.trim() && buttonCommand.trim()
+    ? { text: buttonLabel.trim().slice(0, MAX_BUTTON_LABEL), id: buttonCommand.trim().slice(0, MAX_BUTTON_COMMAND) }
+    : null;
+  const imageIsUrl = IMAGE_PATTERN.test(imageUrl.trim());
+
   const send = async () => {
     setSending(true);
     try {
       const res = await fetch('/api/admin/bot-control', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'broadcast', payload: { message } }),
+        body: JSON.stringify({
+          action: 'broadcast',
+          payload: {
+            message,
+            ...(customButton ? { buttons: [customButton] } : {}),
+            ...(imageIsUrl ? { image: imageUrl.trim() } : {}),
+          },
+        }),
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error || 'Failed to queue the broadcast');
       toast.success('Broadcast queued — the bot picks it up within ~15 seconds.');
       setConfirmOpen(false);
       setMessage('');
+      setButtonLabel('');
+      setButtonCommand('');
+      setImageUrl('');
       setStep(0);
       load();
     } catch (e) {
@@ -175,6 +211,68 @@ export default function AdminBroadcast() {
                   <span className="mono">{message.length} / {MAX_LEN} characters</span>
                   {message.length > MAX_LEN && <span style={{ color: 'var(--bad)' }}>Too long</span>}
                 </div>
+
+                {/* ── Optional: your own button, and your own picture ── */}
+                <div style={{ marginTop: 20, paddingTop: 18, borderTop: '1px solid var(--line)' }}>
+                  <h3 style={{ margin: '0 0 4px', fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700 }}>
+                    Button &amp; picture <span style={{ color: 'var(--dim)', fontWeight: 400, fontSize: 13.5 }}>(optional)</span>
+                  </h3>
+                  <p style={{ margin: '0 0 14px', color: 'var(--muted)', fontSize: 13.5, lineHeight: 1.5 }}>
+                    By default the bot adds its own picture and the buttons{' '}
+                    {DEFAULT_BUTTONS.map((b, i) => (
+                      <span key={b.id}>
+                        {i > 0 && ' and '}
+                        <strong>{b.text}</strong>
+                      </span>
+                    ))}
+                    . Fill in both boxes below to send one of your own <em>instead of</em> those two.
+                  </p>
+
+                  <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+                    <Field label="Button label" id="broadcast-button-label" hint={`${MAX_BUTTON_LABEL} characters maximum — WhatsApp refuses longer.`}>
+                      <Input
+                        id="broadcast-button-label"
+                        value={buttonLabel}
+                        maxLength={MAX_BUTTON_LABEL}
+                        onChange={(e) => setButtonLabel(e.target.value)}
+                        placeholder="📢 Join our channel"
+                      />
+                    </Field>
+                    <Field label="Command it sends" id="broadcast-button-command" hint="Exactly as it is typed in WhatsApp, prefix included.">
+                      <Input
+                        id="broadcast-button-command"
+                        value={buttonCommand}
+                        maxLength={MAX_BUTTON_COMMAND}
+                        onChange={(e) => setButtonCommand(e.target.value)}
+                        placeholder=".channel"
+                      />
+                    </Field>
+                  </div>
+
+                  {(buttonLabel.trim() || buttonCommand.trim()) && !customButton && (
+                    <p style={{ margin: '-4px 0 12px', fontSize: 13, color: 'var(--warn)' }}>
+                      A button needs both a label and a command — fill in the other box, or clear this one.
+                    </p>
+                  )}
+
+                  <Field
+                    label="Image URL"
+                    id="broadcast-image"
+                    hint="Leave empty to use the bot's own menu picture."
+                  >
+                    <Input
+                      id="broadcast-image"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://example.com/poster.jpg"
+                    />
+                  </Field>
+                  {imageUrl.trim() && !imageIsUrl && (
+                    <p style={{ margin: '-4px 0 0', fontSize: 13, color: 'var(--warn)' }}>
+                      That is not a link, so the bot's own picture will be used instead.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -182,7 +280,9 @@ export default function AdminBroadcast() {
             {step === 2 && (
               <div className="anim-fade-up">
                 <h2 style={{ margin: '0 0 4px', fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700 }}>Preview</h2>
-                <p style={{ margin: '0 0 14px', color: 'var(--muted)', fontSize: 14 }}>How the message will look in a WhatsApp group.</p>
+                <p style={{ margin: '0 0 14px', color: 'var(--muted)', fontSize: 14 }}>
+                  How the message will look in a WhatsApp group — picture, text and buttons.
+                </p>
                 <div style={{ background: 'var(--surface-2)', borderRadius: 'var(--r-lg)', padding: 20, border: '1px solid var(--line)' }}>
                   <div
                     style={{
@@ -192,8 +292,46 @@ export default function AdminBroadcast() {
                       whiteSpace: 'pre-wrap', overflowWrap: 'anywhere',
                     }}
                   >
+                    {/* The picture the bot actually attaches: the operator's URL, or
+                        the bot's own menu image, which is not in this bundle — hence
+                        the stand-in rather than a broken <img>. */}
+                    {imageIsUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={imageUrl.trim()}
+                        alt=""
+                        style={{ width: '100%', borderRadius: 10, marginBottom: 10, display: 'block' }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          borderRadius: 10, marginBottom: 10, padding: '22px 12px', textAlign: 'center',
+                          border: '1px dashed var(--line)', color: 'var(--dim)', fontSize: 13,
+                        }}
+                      >
+                        🖼 The bot&rsquo;s own menu picture
+                      </div>
+                    )}
+
                     {message || <span style={{ color: 'var(--dim)' }}>Your message will appear here…</span>}
-                    <div className="mono" style={{ textAlign: 'right', fontSize: 12.5, color: 'var(--dim)', marginTop: 6 }}>
+
+                    <div style={{ display: 'grid', gap: 6, marginTop: 12 }}>
+                      {(customButton ? [customButton] : DEFAULT_BUTTONS).map((b) => (
+                        <div
+                          key={b.id}
+                          style={{
+                            textAlign: 'center', padding: '9px 10px', borderRadius: 8,
+                            border: '1px solid var(--line)', background: 'var(--surface)',
+                            color: 'var(--brand)', fontSize: 13.5, fontWeight: 600,
+                            overflowWrap: 'anywhere',
+                          }}
+                        >
+                          {b.text}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mono" style={{ textAlign: 'right', fontSize: 12.5, color: 'var(--dim)', marginTop: 8 }}>
                       {new Date().toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} ✓✓
                     </div>
                   </div>
