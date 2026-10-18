@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/api/web-auth';
 import { safeInt } from '@/lib/api/utils';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/admin/testimonials — ?status=pending|approved|all
 export async function GET(request) {

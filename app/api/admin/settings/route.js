@@ -11,7 +11,7 @@ import { ensureDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
 // Every bot config value editable from the admin Settings page. The bot
 // (quartz/settings.js) maps these onto its config with env/static fallbacks.

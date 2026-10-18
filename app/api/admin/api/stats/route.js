@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/api/web-auth';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/admin/api/stats — platform-wide MZAZI API statistics
 export async function GET() {

@@ -5,7 +5,7 @@ import { safeInt } from '@/lib/api/utils';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/admin/api/keys — all API keys (hashes never returned)
 export async function GET(request) {

@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/api/web-auth';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // PUT /api/admin/api/users/[id] — actions: suspend | ban | restore | set_plan
 export async function PUT(request, { params }) {

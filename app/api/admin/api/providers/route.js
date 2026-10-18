@@ -6,7 +6,7 @@ import { getProvider } from '@/lib/providers';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
 
 // GET /api/admin/api/providers — provider registry + latest health checks
 export async function GET() {
