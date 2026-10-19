@@ -11865,14 +11865,14 @@
   {
    "name": "test",
    "aliases": [],
-   "description": "Phone menu — AIRich rich menu with every command and submenu",
+   "description": "Phone menu — HTML phone UI via AIRich (lock screen, apps = submenus)",
    "category": "General",
-   "usage": "test | test <category> [page] | test all | test <word>",
+   "usage": "test",
    "ownerOnly": false,
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "// .test — MZAZI XMD phone menu, rendered with AIRich (mzazibaileys).\n// .test | .test 3 | .test ai | .test ai 2 | .test all | .test <word>\n//\n// The menu itself lives in lib/mzaziMenu.js so it can be edited, versioned and\n// tested on its own; this body only adapts the command context to it.\nlet menu;\ntry {\n  menu = require(\"./lib/mzaziMenu\");\n} catch (e) {\n  return mzazireply(\"❌ Menu module missing: \" + e.message);\n}\n\nconst res = await menu.handle({\n  client: mzazi,\n  jid: sender,\n  args: Array.isArray(args) ? args : [],\n  prefix: typeof prefix === \"string\" && prefix ? prefix : \".\",\n  botName: (config && config.botName) || \"MZAZI XMD\",\n  name: (m && (m.pushName || (m.key && m.key.participant))) || \"\",\n  isGroup: !!isGroup,\n  isOwner: !!isOwner,\n});\n\nif (!res || !res.ok) {\n  return mzazireply(\"❌ Menu failed: \" + ((res && res.error) || \"unknown error\"));\n}\n",
+   "code": "// .test — MZAZI XMD phone menu.\n// Sends an HTML phone UI through AIRich (GenAIaeacdsnwHtmlPrimitive): it unlocks,\n// shows the submenus as apps, and each app lists its commands.\n// lib/mzaziPhoneMenu.js falls back to the native AIRich menu, then to text.\nlet menu;\ntry {\n  menu = require(\"./lib/mzaziPhoneMenu\");\n} catch (e) {\n  try {\n    menu = require(\"./lib/mzaziMenu\");\n  } catch (e2) {\n    return mzazireply(\"❌ Menu module missing: \" + e.message);\n  }\n}\n\nconst res = await menu.handle({\n  client: mzazi,\n  jid: sender,\n  prefix: typeof prefix === \"string\" && prefix ? prefix : \".\",\n  botName: (config && config.botName) || \"MZAZI XMD\",\n});\n\nif (!res || !res.ok) {\n  return mzazireply(\"❌ Menu failed: \" + ((res && res.error) || \"unknown error\"));\n}\n",
    "profile": ""
   },
   {
@@ -25734,14 +25734,14 @@
   {
    "name": "test",
    "aliases": [],
-   "description": "Phone menu — AIRich rich menu with every command and submenu",
+   "description": "Phone menu — HTML phone UI via AIRich (lock screen, apps = submenus)",
    "category": "General",
-   "usage": "test | test <category> [page] | test all | test <word>",
+   "usage": "test",
    "ownerOnly": false,
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "// .test — MZAZI XMD phone menu, rendered with AIRich (mzazibaileys).\n// .test | .test 3 | .test ai | .test ai 2 | .test all | .test <word>\n//\n// The menu itself lives in lib/mzaziMenu.js so it can be edited, versioned and\n// tested on its own; this body only adapts the command context to it.\nlet menu;\ntry {\n  menu = require(\"./lib/mzaziMenu\");\n} catch (e) {\n  return mzazireply(\"❌ Menu module missing: \" + e.message);\n}\n\nconst res = await menu.handle({\n  client: mzazi,\n  jid: sender,\n  args: Array.isArray(args) ? args : [],\n  prefix: typeof prefix === \"string\" && prefix ? prefix : \".\",\n  botName: (config && config.botName) || \"MZAZI XMD\",\n  name: (m && (m.pushName || (m.key && m.key.participant))) || \"\",\n  isGroup: !!isGroup,\n  isOwner: !!isOwner,\n});\n\nif (!res || !res.ok) {\n  return mzazireply(\"❌ Menu failed: \" + ((res && res.error) || \"unknown error\"));\n}\n",
+   "code": "// .test — MZAZI XMD phone menu.\n// Sends an HTML phone UI through AIRich (GenAIaeacdsnwHtmlPrimitive): it unlocks,\n// shows the submenus as apps, and each app lists its commands.\n// lib/mzaziPhoneMenu.js falls back to the native AIRich menu, then to text.\nlet menu;\ntry {\n  menu = require(\"./lib/mzaziPhoneMenu\");\n} catch (e) {\n  try {\n    menu = require(\"./lib/mzaziMenu\");\n  } catch (e2) {\n    return mzazireply(\"❌ Menu module missing: \" + e.message);\n  }\n}\n\nconst res = await menu.handle({\n  client: mzazi,\n  jid: sender,\n  prefix: typeof prefix === \"string\" && prefix ? prefix : \".\",\n  botName: (config && config.botName) || \"MZAZI XMD\",\n});\n\nif (!res || !res.ok) {\n  return mzazireply(\"❌ Menu failed: \" + ((res && res.error) || \"unknown error\"));\n}\n",
    "profile": "xmd"
   },
   {
