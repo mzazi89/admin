@@ -761,6 +761,11 @@ select.input {
   scrollbar-width: none;
 }
 .segmented::-webkit-scrollbar { display: none; }
+/* Phones: wrap the filters instead of scrolling them — with four bot tabs the
+   last one (and the state it shows) sat off-screen with no hint it existed. */
+@media (max-width: 639px) {
+  .segmented { flex-wrap: wrap; overflow-x: visible; }
+}
 .segmented > button, .segmented > a {
   border: 0;
   background: transparent;
