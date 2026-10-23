@@ -152,6 +152,14 @@ export default function AdminSessions() {
         online: bots.find((x) => x.id === b.id)?.online,
       });
     }
+    // A session can still name a profile that settings no longer lists — a bot
+    // that was renamed, or telemetry from before a profile change. Give those
+    // their own tab rather than stranding them in All where nobody looks.
+    const known = new Set(profiles.map((b) => b.id));
+    for (const [id, n] of Object.entries(counts.byBot || {})) {
+      if (id === UNASSIGNED || known.has(id) || !n) continue;
+      list.push({ key: id, label: id, count: n });
+    }
     if ((counts.byBot?.[UNASSIGNED] || 0) > 0) {
       list.push({ key: UNASSIGNED, label: 'Unassigned', count: counts.byBot[UNASSIGNED] });
     }
