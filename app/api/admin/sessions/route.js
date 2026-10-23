@@ -20,7 +20,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
-import { deviceBotMap, listBots, listBotsWithStatus } from '@/lib/bots';
+import { deviceBotMap, listBots, listBotsWithStatus, liveBotProfiles } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,13 +85,25 @@ export async function GET() {
       ORDER BY ws.id DESC
     `;
 
-    const [liveMap, history, profiles, status] = await Promise.all([
+    const [liveMap, history, configured, status, live] = await Promise.all([
       deviceBotMap(),
       pairHistory(),
       listBots(),
       listBotsWithStatus(),
+      liveBotProfiles(),
     ]);
-    const bots = status.bots;
+
+    // A bot that is heartbeating under an id no profile list describes — on this
+    // install the XMD bot, whose list lives under the namespaced
+    // `xmd_bot_profiles` — still holds sessions. Without this it appeared only as
+    // a raw id tab with no name and no live state. Appended, never inserted, so
+    // the configured order that `listBots()` defines is preserved.
+    const configuredIds = new Set(configured.map((b) => b.id));
+    const extra = live.filter((b) => !configuredIds.has(b.id));
+    const profiles = [...configured, ...extra.map(({ id, name }) => ({ id, name }))];
+
+    const statusIds = new Set(status.bots.map((b) => b.id));
+    const bots = [...status.bots, ...extra.filter((b) => !statusIds.has(b.id))];
     const botOnline = bots.some((b) => b.online);
     const nameOf = (id) => {
       const hit = profiles.find((b) => b.id === id);
