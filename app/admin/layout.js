@@ -31,6 +31,7 @@ const GROUPS = [
   {
     label: 'Messaging',
     items: [
+      { href: '/admin/community', label: 'Community', icon: Icons.Users },
       { href: '/admin/commands', label: 'Commands', icon: Icons.Command },
       { href: '/admin/broadcast', label: 'Broadcast', icon: Icons.Send },
     ],
