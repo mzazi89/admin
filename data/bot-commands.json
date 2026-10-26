@@ -1,7 +1,7 @@
 {
  "meta": {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-26T22:14:37.566Z",
+  "updatedAt": "2026-10-26T22:35:39.733Z",
   "reclassified": true,
   "submenusRebuilt": true,
   "allMenusRebuilt": true
@@ -9533,7 +9533,7 @@
    "adminOnly": false,
    "groupOnly": false,
    "enabled": true,
-   "code": "let targetJid = null;\n\n    // Check if a user is mentioned\n    const mentioned = m.message?.extendedTextMessage?.contextInfo?.mentionedJid;\n    if (mentioned && mentioned[0]) {\n        targetJid = mentioned[0];\n    }\n    // Check if a message is quoted\n    else if (m.message?.extendedTextMessage?.contextInfo?.participant) {\n        targetJid = m.message.extendedTextMessage.contextInfo.participant;\n    }\n    // If in group and no target, use sender\n    else if (isGroup) {\n        targetJid = msgSender;\n    }\n    // If in DM, use the other participant (the bot's own pp could be fetched, but sender is the user)\n    else {\n        targetJid = sender;\n    }\n\n    if (!targetJid) {\n        await mzazireply('❌ Could not identify the target user.');\n        return;\n    }\n\n    try {\n        // Get profile picture URL\n        const ppUrl = await mzazi.profilePictureUrl(await resolveJid(targetJid), 'image').catch(() => null);\n        if (!ppUrl) {\n            await mzazireply(`❌ No profile picture found for @${jidToNumber(await resolveJid(targetJid))}.`, { mentions: [targetJid] });\n           return;\n        }\n\n        // Download the image buffer\n        const { data: imageBuffer } = await axios.get(ppUrl, { responseType: 'arraybuffer' });\n\n        // Send the profile picture\n        await mzazi.sendMessage(sender, {\n            image: Buffer.from(imageBuffer),\n            caption: `📸 Profile picture of @${jidToNumber(await resolveJid(targetJid))}`,\n            mentions: [targetJid]\n        }, { quoted: m });\n    } catch (err) {\n        logger.error('GetPP error:', err);\n        await reply(`❌ Failed to get profile picture: ${err.message}`);\n    }\nreturn;",
+   "code": "{\n  if (\n    !args.length &&\n    !m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length &&\n    !m.message?.extendedTextMessage?.contextInfo?.participant\n  ) {\n    return mzazireply(\n      `👤 *GET PROFILE PHOTO*\\n\\n` +\n      `Usage:\\n` +\n      `• ${prefix}getpp @user\\n` +\n      `• ${prefix}getpp 254712345678\\n` +\n      `• Reply to a message with ${prefix}getpp`\n    );\n  }\n\n  try {\n    let targetJid = null;\n\n    const mentioned =\n      m.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];\n    const quoted = m.message?.extendedTextMessage?.contextInfo?.participant;\n\n    if (mentioned.length) {\n      targetJid = mentioned[0];\n    } else if (quoted) {\n      targetJid = quoted;\n    } else {\n      const digits = args[0].replace(/\\D/g, \"\");\n      if (!digits) return mzazireply(\"❌ Invalid number. Use international format: 254712345678\");\n      targetJid = `${digits}@s.whatsapp.net`;\n    }\n\n    targetJid = await resolveJid(targetJid);\n    const targetNumber = normalizeJid(targetJid);\n\n    let ppUrl = null;\n    try {\n      ppUrl = await mzazi.profilePictureUrl(targetJid, \"image\");\n    } catch (e) {}\n\n    if (!ppUrl) {\n      return mzazireply(\n        `❌ No profile picture found for *@${targetNumber}*`,\n        { mentions: [targetJid] }\n      );\n    }\n\n    const imgRes = await axios.get(ppUrl, {\n      responseType: \"arraybuffer\",\n      timeout: 30000,\n      headers: { \"User-Agent\": \"Mozilla/5.0\" },\n    });\n    const buffer = Buffer.from(imgRes.data);\n\n    if (!buffer.length) {\n      return mzazireply(\"❌ Failed to download the profile picture.\");\n    }\n\n    await mzazi.sendMessage(\n      sender,\n      {\n        image: buffer,\n        caption: `👤 Profile photo for @${targetNumber}`,\n        mentions: [targetJid],\n        contextInfo: { mentionedJid: [targetJid] },\n      },\n      { quoted: m }\n    );\n\n    logSystem(`.getpp sent dp for ${targetNumber}`, \"success\");\n    return;\n  } catch (err) {\n    logSystem(`.getpp error: ${err.message}`, \"error\");\n    return mzazireply(`❌ Failed: ${err.message}`);\n  }\n}",
    "profile": "xmd"
   },
   {
@@ -14394,6 +14394,19 @@
    "groupOnly": false,
    "enabled": true,
    "code": "if (!text) return mzazireply(`Example: ${prefix}${command} hello`);\n        const hash = crypto.createHash(\"md5\").update(text).digest(\"hex\");\n        mzazireply(`🔐 *MD5 HASH*\\n\\nInput: ${text}\\nHash: ${hash}`);\nreturn;",
+   "profile": "xmd"
+  },
+  {
+   "name": "mediafire",
+   "aliases": [],
+   "description": "",
+   "category": "General",
+   "usage": "",
+   "ownerOnly": false,
+   "adminOnly": false,
+   "groupOnly": false,
+   "enabled": true,
+   "code": "{\n  if (!args.length) {\n    return mzazireply(\n      `📁 *MEDIAFIRE — File Downloader*\\n\\n` +\n      `Usage:\\n` +\n      `• ${prefix}mediafire <mediafire link>\\n\\n` +\n      `Powered by Mzazi Tecg`\n    );\n  }\n\n  const query = args.join(\" \").trim();\n\n  // Must be a MediaFire link\n  if (!/^https?:\\/\\/(www\\.)?mediafire\\.com\\//i.test(query)) {\n    return mzazireply(\"❌ Please provide a valid MediaFire link.\");\n  }\n\n  try {\n    await mzazireply(\"⏳ Fetching file info...\");\n\n    // ── Call Keith API ────────────────────────────────────────────────\n    const apiUrl = `https://apis.keithsite.lol/download/mfire?url=${encodeURIComponent(query)}`;\n    const { data } = await axios.get(apiUrl, { timeout: 60000 });\n\n    if (!data || data.status !== true || !data.result) {\n      return mzazireply(\"❌ Download failed — API returned no file.\");\n    }\n\n    const {\n      fileName = \"file\",\n      fileType = \"application/octet-stream\",\n      size = \"Unknown\",\n      date = \"Unknown\",\n      dl_link,\n    } = data.result;\n\n    if (!dl_link) {\n      return mzazireply(\"❌ API did not return a download link.\");\n    }\n\n    // ── Fetch file buffer ─────────────────────────────────────────────\n    const fileRes = await axios.get(dl_link, {\n      responseType: \"arraybuffer\",\n      timeout: 300000,\n      maxContentLength: 300 * 1024 * 1024,\n      headers: { \"User-Agent\": \"Mozilla/5.0\" },\n    });\n\n    const buffer = Buffer.from(fileRes.data);\n    if (!buffer.length) {\n      return mzazireply(\"❌ Downloaded file is empty.\");\n    }\n\n    const safeName = fileName\n      .replace(/[\\\\/:*?\"<>|]/g, \"\")\n      .slice(0, 100);\n\n    // ── Send as document ──────────────────────────────────────────────\n    await mzazi.sendMessage(\n      sender,\n      {\n        document: buffer,\n        mimetype: fileType,\n        fileName: safeName,\n        caption:\n          `📁 *${safeName}*\\n\\n` +\n          `📦 *Size:* ${size}\\n` +\n          `📅 *Uploaded:* ${date}\\n` +\n          `📎 *Type:* ${fileType}\\n` +\n          `Courtesy of Mzazi Tech`,\n        contextInfo: { forwardingScore: 1, isForwarded: true },\n      },\n      { quoted: m }\n    );\n\n    logSystem(`.mediafire sent \"${safeName}\" (${formatBytes(buffer.length)})`, \"success\");\n    return;\n  } catch (err) {\n    logSystem(`.mediafire error: ${err.message}`, \"error\");\n    return mzazireply(`❌ MediaFire failed: ${err.message}`);\n  }\n}",
    "profile": "xmd"
   },
   {
