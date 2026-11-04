@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — POST /api/admin/bot-commands/sync-to-seed
 // One-click EXPORT of the live registry back into data/bot-commands.json —
 // the vice versa of /api/admin/bot-commands/sync (which imports seed → DB).
@@ -22,7 +23,7 @@ import path from 'path';
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'mzazi89/admin';

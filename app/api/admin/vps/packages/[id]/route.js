@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/vps/packages/[id]
 // Admin: update or delete a VPS package. Deleting is blocked while any sold
 // instance exists under it (that would wipe buyers' credentials).
@@ -8,7 +9,7 @@ import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — POST /api/admin/session-action
 // Admin: unlink (logout) / delete (logout + wipe) ANY paired WhatsApp session
 // (no ownership check — the bot skips ownership when no accountId is sent).
@@ -11,7 +12,7 @@ import { resolveBotForNumber } from '@/lib/bots';
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 const ACTIONS = ['unlink', 'delete'];
 
 async function verifyAdmin() {

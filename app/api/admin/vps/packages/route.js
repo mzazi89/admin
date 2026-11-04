@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/vps/packages
 // Admin: list all VPS packages (with stock/sold counts + buyer info) + create.
 import { NextResponse } from 'next/server';
@@ -8,7 +9,7 @@ import { initializeDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

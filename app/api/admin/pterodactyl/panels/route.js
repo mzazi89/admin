@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/pterodactyl/panels
 // Admin: the list of Pterodactyl panels the site can work with.
 //   GET  → every panel, with the API key masked
@@ -28,7 +29,7 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

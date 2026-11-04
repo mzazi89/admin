@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/resellers
 // Admin: the reseller passwords for the WhatsApp panel system.
 //   GET                              → every password with its status, plus panels made under it
@@ -19,7 +20,7 @@ import { validateResellerPassword, generateCode } from '@/lib/resellerCodes';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   try {

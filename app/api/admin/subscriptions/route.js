@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — GET /api/admin/subscriptions
 // Admin: READ-ONLY subscription data for the Subscriptions page and the Users
 // page's plan / expiry columns.
@@ -17,7 +18,7 @@ import { neon } from '@neondatabase/serverless';
 
 export const dynamic = 'force-dynamic';
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/bot-control
 // Admin: issue control actions to the bot + view recent control history.
 import { NextResponse } from 'next/server';
@@ -9,7 +10,7 @@ import { ensureDatabase } from '@/lib/database';
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 const ACTIONS = ['sync', 'broadcast', 'botname'];
 
 // ── Broadcast buttons ────────────────────────────────────────────────────────

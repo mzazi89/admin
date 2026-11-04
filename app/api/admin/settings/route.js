@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/settings
 // GET  → the bot's shared settings (every config the bot reads)
 // POST → upsert them into the Neon `settings` table — the bot picks them up
@@ -12,7 +13,7 @@ import { ensureDatabase } from '@/lib/database';
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 // Every bot config value editable from the admin Settings page. The bot
 // (quartz/settings.js) maps these onto its config with env/static fallbacks.
 const ALLOWED_KEYS = [

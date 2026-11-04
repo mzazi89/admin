@@ -2,16 +2,28 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { adminJwtSecret, adminAuthConfigured } from '@/lib/authSecret';
 
 export const dynamic = 'force-dynamic';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@mzazi.shop';
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
 const ADMIN_PASSWORD_PLAIN = process.env.ADMIN_PASSWORD || '';
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 export async function POST(request) {
   try {
+    // Refuse before checking the password: without a real signing secret a
+    // token cannot be trusted by any other instance, so "successful" login
+    // would bounce the operator straight back to the form. Say why instead.
+    if (process.env.NODE_ENV === 'production' && !adminAuthConfigured()) {
+      console.error('[admin] login refused: ADMIN_JWT_SECRET is not set (min 16 chars)');
+      return NextResponse.json(
+        { error: 'Admin authentication is not configured on this deployment.' },
+        { status: 503 }
+      );
+    }
+
     const { email, password } = await request.json();
     if (!email || !password) return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });

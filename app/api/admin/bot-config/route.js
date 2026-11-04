@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/bot-config
 // Admin: view or set the bot API key (stored in Neon, not Vercel env).
 import { NextResponse } from 'next/server';
@@ -10,7 +11,7 @@ import { getBotApiKey, setBotApiKey } from '@/lib/botKey';
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

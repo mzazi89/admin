@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — GET /api/admin/sessions
 //
 // Admin: every paired WhatsApp session on the platform, attributed to the bot
@@ -25,7 +26,7 @@ import { deviceBotMap, listBots, listBotsWithStatus, liveBotProfiles } from '@/l
 export const dynamic = 'force-dynamic';
 
 const sql = neon(process.env.DATABASE_URL, { fetchOptions: { cache: 'no-store' } });
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 const UNASSIGNED = '__unassigned';
 

@@ -1,3 +1,4 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 // MZAZI API — /api/admin/panel-host
 // Panel Hosting: deploy a full Pterodactyl panel (panel + node + egg) onto a
 // VPS over SSH, asynchronously, with a pollable progress log.
@@ -16,7 +17,7 @@ import { buildDeployScript } from '@/lib/panelDeploy';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 async function verifyAdmin() {
   const cookieStore = await cookies();

@@ -1,9 +1,10 @@
+import { adminJwtSecret } from '@/lib/authSecret';
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'mzazi-admin-secret-2024';
+const ADMIN_JWT_SECRET = adminJwtSecret();
 
 export async function GET() {
   try {
