@@ -30,14 +30,20 @@ export async function GET() {
   try {
     const rows = await sql`
       SELECT bot_id, online, version, uptime_seconds, telegram_online, whatsapp_sessions,
-             command_count, last_sync_at, last_sync_error, last_seen_at
+             command_count, last_sync_at, last_sync_error, last_seen_at,
+             -- Age is computed by Postgres, not by JavaScript. `last_seen_at` is a
+             -- timestamp WITHOUT time zone holding UTC, and the Neon driver turns
+             -- that into a Date using the Node process's zone; on a host set to
+             -- Asia/Shanghai every age came out 8h too large and a live bot was
+             -- reported offline. NOW() and the column are both UTC wall-clock, so
+             -- the difference is exact.
+             EXTRACT(EPOCH FROM (NOW() - last_seen_at))::bigint AS last_seen_ago
       FROM bot_status ORDER BY last_seen_at DESC
     `;
 
-    const now = Date.now();
     const statuses = rows.map((r) => {
-      const lastSeen = r.last_seen_at ? new Date(r.last_seen_at).getTime() : 0;
-      const online = !!r.online && now - lastSeen < 90000; // heartbeat every 30s, allow 90s grace
+      const ago = r.last_seen_ago == null ? null : Number(r.last_seen_ago);
+      const online = !!r.online && ago != null && ago < 90; // heartbeat every 30s, 90s grace
       return {
         botId: r.bot_id,
         online,
@@ -49,7 +55,7 @@ export async function GET() {
         lastSyncAt: r.last_sync_at,
         lastSyncError: r.last_sync_error,
         lastSeenAt: r.last_seen_at,
-        lastSeenAgoSeconds: lastSeen ? Math.floor((now - lastSeen) / 1000) : null,
+        lastSeenAgoSeconds: ago,
       };
     });
 
