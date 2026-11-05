@@ -15,22 +15,22 @@
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────── */
-  --brand: #7C3AED;   /* primary purple */
-  --brand-bright: #8B5CF6;
-  --brand-deep: #6D28D9;
-  --brand-soft: #A78BFA;
-  --brand-tint: rgba(124, 58, 237, 0.10);
+  --brand: #2563EB;   /* primary purple */
+  --brand-bright: #3B82F6;
+  --brand-deep: #1D4ED8;
+  --brand-soft: #93C5FD;
+  --brand-tint: rgba(37, 99, 235, 0.10);
 
-  --blue: #2563EB;   /* secondary soft blue */
-  --blue-bright: #3B82F6;
-  --blue-deep: #1D4ED8;
-  --blue-soft: #93C5FD;
-  --blue-tint: rgba(37, 99, 235, 0.10);
-  --pink: #DB2777;   /* pink accent */
-  --pink-bright: #EC4899;
-  --pink-deep: #BE185D;
-  --pink-soft: #F9A8D4;
-  --pink-tint: rgba(219, 39, 119, 0.10);
+  --blue: #0EA5E9;   /* secondary soft blue */
+  --blue-bright: #38BDF8;
+  --blue-deep: #0284C7;
+  --blue-soft: #BAE6FD;
+  --blue-tint: rgba(14, 165, 233, 0.10);
+  --pink: #7C3AED;   /* pink accent */
+  --pink-bright: #8B5CF6;
+  --pink-deep: #6D28D9;
+  --pink-soft: #C4B5FD;
+  --pink-tint: rgba(124, 58, 237, 0.10);
   --yellow: #A16207;   /* yellow attention (700 for AA text on white) */
   --yellow-bright: #FACC15;
   --yellow-deep: #854D0E;
@@ -38,19 +38,19 @@
   --yellow-tint: rgba(250, 204, 21, 0.18);
 
   /* ── Surfaces (light) ───────────────────────────────────────────────── */
-  --bg: #FBFBFD;
+  --bg: #F6F9FF;
   --bg-2: #FFFFFF;
   --surface: #FFFFFF;
-  --surface-2: #F4F5FA;
-  --surface-3: #EAECF5;
-  --line: #E3E5F0;
-  --line-soft: #EFF0F7;
+  --surface-2: #F1F5FD;
+  --surface-3: #E5EDFB;
+  --line: #DCE6F7;
+  --line-soft: #ECF2FC;
 
   /* ── Text (light) ───────────────────────────────────────────────────── */
-  --ink: #0A0A0F;
-  --ink-2: #3A3F52;
-  --muted: #4E5468;   /* AA on the washed backdrop (was #6B7186 = 1.7:1) */
-  --dim: #5A6076;     /* AA (was #9BA1B4 = 1.1:1) */
+  --ink: #0B1220;
+  --ink-2: #33415C;
+  --muted: #4B5973;   /* AA on the washed backdrop (was #6B7186 = 1.7:1) */
+  --dim: #5A6883;     /* AA (was #9BA1B4 = 1.1:1) */
 
   /* ── Status ─────────────────────────────────────────────────────────── */
   --good: #047857;
@@ -68,7 +68,7 @@
   --shadow-sm: 0 2px 8px rgba(18, 21, 42, 0.06);
   --shadow-md: 0 8px 24px rgba(18, 21, 42, 0.08);
   --shadow-lg: 0 18px 44px rgba(18, 21, 42, 0.12);
-  --shadow-brand: 0 8px 24px rgba(124, 58, 237, 0.24);
+  --shadow-brand: 0 10px 30px rgba(37, 99, 235, 0.26);
 
   /* ── Type ───────────────────────────────────────────────────────────── */
   --font-display: 'Space Grotesk', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -127,35 +127,35 @@
 
 /* ── Dark theme: dark slate / charcoal, never pure black ────────────────── */
 [data-theme='dark'] {
-  --bg: #0A0A0F;
-  --bg-2: #101018;
-  --surface: #1A1A28;
-  --surface-2: #232333;
-  --surface-3: #252533;
-  --line: #34344A;
-  --line-soft: #272738;
+  --bg: #060B16;
+  --bg-2: #0A1220;
+  --surface: #0F1A2E;
+  --surface-2: #142338;
+  --surface-3: #1A2C46;
+  --line: #1E2E4A;
+  --line-soft: #16243A;
 
-  --ink: #FFFFFF;
-  --ink-2: #C6C6D6;
-  --muted: #A8AAC2;   /* AA on dark surfaces */
-  --dim: #9A9CB6;     /* AA (was #5E5E75 = 2.9:1) */
+  --ink: #F2F7FF;
+  --ink-2: #C3D2E8;
+  --muted: #9FB0CC;   /* AA on dark surfaces */
+  --dim: #8E9FB9;     /* AA (was #5E5E75 = 2.9:1) */
 
-  --brand: #A78BFA;
-  --brand-bright: #C4B5FD;
-  --brand-deep: #8B5CF6;
-  --brand-soft: #C4B5FD;
-  --brand-tint: rgba(167, 139, 250, 0.16);
+  --brand: #60A5FA;
+  --brand-bright: #93C5FD;
+  --brand-deep: #3B82F6;
+  --brand-soft: #BFDBFE;
+  --brand-tint: rgba(96, 165, 250, 0.16);
 
-  --blue: #60A5FA;
-  --blue-bright: #93C5FD;
-  --blue-deep: #3B82F6;
-  --blue-soft: #BFDBFE;
-  --blue-tint: rgba(96, 165, 250, 0.16);
-  --pink: #F472B6;   /* pink accent */
-  --pink-bright: #F9A8D4;
-  --pink-deep: #EC4899;
-  --pink-soft: #FBCFE8;
-  --pink-tint: rgba(244, 114, 182, 0.16);
+  --blue: #22D3EE;
+  --blue-bright: #67E8F9;
+  --blue-deep: #06B6D4;
+  --blue-soft: #A5F3FC;
+  --blue-tint: rgba(34, 211, 238, 0.16);
+  --pink: #A78BFA;   /* pink accent */
+  --pink-bright: #C4B5FD;
+  --pink-deep: #8B5CF6;
+  --pink-soft: #DDD6FE;
+  --pink-tint: rgba(167, 139, 250, 0.16);
   --yellow: #FACC15;   /* yellow attention */
   --yellow-bright: #FDE047;
   --yellow-deep: #EAB308;
@@ -175,9 +175,9 @@
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
   --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
   --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
-  --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
+  --shadow-brand: 0 10px 32px rgba(37, 99, 235, 0.45);
 
-  --header-bg: rgba(12, 12, 18, 0.94);
+  --header-bg: rgba(6, 11, 22, 0.92);
   --backdrop-image: 0.42;
   --backdrop-scrim: 0.74;
 }
@@ -185,32 +185,32 @@
 /* Honour the OS preference when the user has not chosen explicitly. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0A0A0F;
-    --bg-2: #101018;
-    --surface: #1A1A28;
-    --surface-2: #232333;
-    --surface-3: #252533;
-    --line: #34344A;
-    --line-soft: #272738;
-    --ink: #FFFFFF;
-    --ink-2: #C6C6D6;
-    --muted: #A8AAC2;
-    --dim: #9A9CB6;
-    --brand: #A78BFA;
-    --brand-bright: #C4B5FD;
-    --brand-deep: #8B5CF6;
-    --brand-soft: #C4B5FD;
-    --brand-tint: rgba(167, 139, 250, 0.16);
-    --blue: #60A5FA;
-    --blue-bright: #93C5FD;
-    --blue-deep: #3B82F6;
-    --blue-soft: #BFDBFE;
-    --blue-tint: rgba(96, 165, 250, 0.16);
-    --pink: #F472B6;   /* pink accent */
-    --pink-bright: #F9A8D4;
-    --pink-deep: #EC4899;
-    --pink-soft: #FBCFE8;
-    --pink-tint: rgba(244, 114, 182, 0.16);
+    --bg: #060B16;
+    --bg-2: #0A1220;
+    --surface: #0F1A2E;
+    --surface-2: #142338;
+    --surface-3: #1A2C46;
+    --line: #1E2E4A;
+    --line-soft: #16243A;
+    --ink: #F2F7FF;
+    --ink-2: #C3D2E8;
+    --muted: #9FB0CC;
+    --dim: #8E9FB9;
+    --brand: #60A5FA;
+    --brand-bright: #93C5FD;
+    --brand-deep: #3B82F6;
+    --brand-soft: #BFDBFE;
+    --brand-tint: rgba(96, 165, 250, 0.16);
+    --blue: #22D3EE;
+    --blue-bright: #67E8F9;
+    --blue-deep: #06B6D4;
+    --blue-soft: #A5F3FC;
+    --blue-tint: rgba(34, 211, 238, 0.16);
+    --pink: #A78BFA;   /* pink accent */
+    --pink-bright: #C4B5FD;
+    --pink-deep: #8B5CF6;
+    --pink-soft: #DDD6FE;
+    --pink-tint: rgba(167, 139, 250, 0.16);
     --yellow: #FACC15;   /* yellow attention */
     --yellow-bright: #FDE047;
     --yellow-deep: #EAB308;
@@ -226,8 +226,8 @@
     --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.32);
     --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.40);
     --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.50);
-    --shadow-brand: 0 8px 26px rgba(124, 58, 237, 0.36);
-    --header-bg: rgba(12, 12, 18, 0.94);  
+    --shadow-brand: 0 10px 32px rgba(37, 99, 235, 0.45);
+    --header-bg: rgba(6, 11, 22, 0.92);  
     --backdrop-image: 0.42;
     --backdrop-scrim: 0.74;
   }
@@ -1369,4 +1369,116 @@ select.input {
 @media print {
   .no-print, .app-header, .skip-link { display: none !important; }
   body { background: #fff; color: #000; }
+}
+
+/* ─────────────────── 15. PREMIUM BLUE LAYER ─────────────────────────────────
+   Additive only: every rule below re-paints an existing class, so pages that
+   were never touched pick up the new finish without edits. Tokens do the work
+   for colour; this section adds the depth (gradient fills, inner highlights,
+   accent bars) that separates a "blue theme" from a designed one.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Text selection + scrollbars follow the brand instead of the OS default. */
+::selection { background: rgba(37, 99, 235, 0.22); color: var(--ink); }
+[data-theme='dark'] ::selection { background: rgba(96, 165, 250, 0.28); }
+
+* { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--dim); background-clip: content-box; }
+
+/* Cards: a hairline of light along the top edge and a blue-tinted shadow. */
+.card {
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+              transform 0.18s var(--ease);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.35), transparent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+.card { position: relative; }
+.card:hover { border-color: rgba(37, 99, 235, 0.28); box-shadow: var(--shadow-sm); }
+[data-theme='dark'] .card:hover { border-color: rgba(96, 165, 250, 0.32); }
+
+/* Primary action: royal blue into sky, with an inner top highlight so the fill
+   reads as a solid object rather than a flat rectangle. */
+.btn-primary {
+  background-image: linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #0EA5E9 100%);
+  background-size: 160% 160%;
+  background-position: 0% 50%;
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), var(--shadow-brand);
+  transition: background-position 0.35s var(--ease), box-shadow var(--dur) var(--ease),
+              transform 0.12s var(--ease);
+}
+.btn-primary:hover {
+  background-position: 100% 50%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 14px 34px rgba(37, 99, 235, 0.34);
+}
+
+.btn-blue {
+  background-image: linear-gradient(135deg, #0EA5E9, #38BDF8);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 8px 22px rgba(14, 165, 233, 0.26);
+}
+.btn-blue:hover { filter: brightness(1.05); }
+
+/* Active navigation carries an accent bar, so the current page is legible at a
+   glance without relying on a tint alone. */
+.side-link, .nav-link { position: relative; }
+.side-link.is-active, .nav-link.is-active {
+  background: linear-gradient(90deg, var(--brand-tint), transparent 85%);
+  color: var(--brand);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.10);
+}
+.side-link.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--brand), var(--blue));
+}
+[data-theme='dark'] .side-link.is-active,
+[data-theme='dark'] .nav-link.is-active {
+  box-shadow: inset 0 0 0 1px rgba(96, 165, 250, 0.16);
+}
+
+/* Header: a hint of the brand in the blur instead of plain charcoal. */
+.app-header {
+  background: var(--header-bg);
+  box-shadow: 0 1px 0 rgba(37, 99, 235, 0.08), 0 8px 24px rgba(8, 20, 45, 0.06);
+}
+
+/* Focus: one consistent ring everywhere. */
+.input:focus, .input:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint), inset 0 1px 2px rgba(8, 20, 45, 0.04);
+  outline: none;
+}
+.btn:focus-visible, .icon-btn:focus-visible, a:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Gradient wordmark used on the login card and page headings. */
+.gradient-text {
+  background: linear-gradient(100deg, var(--brand), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

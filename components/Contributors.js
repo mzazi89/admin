@@ -16,7 +16,7 @@ const contributors = [
     company: 'Blacklord Tech',
     initials: 'AO',
     color: 'linear-gradient(135deg, var(--brand), var(--brand-deep))',
-    glow: 'rgba(124,58,237,0.35)',
+    glow: 'rgba(37,99,235,0.35)',
     badge: '⚡',
   },
   {
