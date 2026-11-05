@@ -48,7 +48,7 @@ export function ThemeProvider({ children }) {
       meta.setAttribute('data-dynamic', 'true');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', next === 'dark' ? '#0A0A0F' : '#FBFBFD');
+    meta.setAttribute('content', next === 'dark' ? '#060B16' : '#F6F9FF');
     return next;
   }, [resolve]);
 
