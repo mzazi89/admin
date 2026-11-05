@@ -75,13 +75,16 @@ export default function AdminLogin() {
               )}
 
               <form onSubmit={handleSubmit} noValidate>
-                <Field label="Admin email" id="admin-email" required>
+                <Field label="Admin username" id="admin-email" required>
                   <Input
                     id="admin-email"
-                    type="email"
+                    // Not type="email": the configured operator name is not an
+                    // address, and an email input makes the browser refuse to
+                    // submit anything without an "@" in it.
+                    type="text"
                     required
                     autoComplete="username"
-                    placeholder="admin@mzazi.shop"
+                    placeholder="mzazi tech"
                     value={form.email}
                     onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   />

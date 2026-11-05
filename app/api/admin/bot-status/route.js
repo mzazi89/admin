@@ -31,7 +31,7 @@ export async function GET() {
     const rows = await sql`
       SELECT bot_id, online, version, uptime_seconds, telegram_online, whatsapp_sessions,
              command_count, last_sync_at, last_sync_error, last_seen_at,
-             -- Age is computed by Postgres, not by JavaScript. `last_seen_at` is a
+             -- Age is computed by Postgres, not by JavaScript. last_seen_at is a
              -- timestamp WITHOUT time zone holding UTC, and the Neon driver turns
              -- that into a Date using the Node process's zone; on a host set to
              -- Asia/Shanghai every age came out 8h too large and a live bot was

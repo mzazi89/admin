@@ -3,12 +3,13 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { adminJwtSecret, adminAuthConfigured } from '@/lib/authSecret';
+import { adminCredentials, sameUsername, verifyPassword } from '@/lib/credentials';
 
 export const dynamic = 'force-dynamic';
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@mzazi.shop';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
-const ADMIN_PASSWORD_PLAIN = process.env.ADMIN_PASSWORD || '';
+// Resolved per request from the settings table, then the environment — see
+// lib/credentials.js. Nothing is captured at module scope, so a credential
+// change applies to the next login without a redeploy.
 const ADMIN_JWT_SECRET = adminJwtSecret();
 
 export async function POST(request) {
@@ -24,21 +25,26 @@ export async function POST(request) {
       );
     }
 
-    const { email, password } = await request.json();
-    if (!email || !password) return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
-    if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+    // The field is labelled "Admin username" but the historical name is `email`;
+    // both keys are accepted so an older client keeps working.
+    const body = await request.json();
+    const email = body.email ?? body.username ?? '';
+    const password = body.password ?? '';
+    if (!email || !password) return NextResponse.json({ error: 'Username and password required' }, { status: 400 });
 
-    // Fail closed: without configured credentials no password is accepted.
-    let valid = false;
-    if (ADMIN_PASSWORD_HASH) {
-      valid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-    } else if (ADMIN_PASSWORD_PLAIN) {
-      valid = password === ADMIN_PASSWORD_PLAIN;
+    const creds = await adminCredentials();
+
+    // Evaluate both checks before replying: a wrong username and a wrong
+    // password must look identical and take the same time.
+    const nameOk = sameUsername(email, creds.username);
+    const passOk = await verifyPassword(password, creds);
+
+    if (!nameOk || !passOk) {
+      console.warn(`[admin] failed login for "${String(email).slice(0, 40)}"`);
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    if (!valid) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-
-    const token = jwt.sign({ role: 'admin', email: ADMIN_EMAIL }, ADMIN_JWT_SECRET, { expiresIn: '8h' });
+    const token = jwt.sign({ role: 'admin', email: creds.username }, ADMIN_JWT_SECRET, { expiresIn: '8h' });
     const cookieStore = await cookies();
     cookieStore.set('admin_token', token, {
       httpOnly: true,
