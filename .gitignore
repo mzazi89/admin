@@ -8,3 +8,11 @@ dist/
 *.log
 .DS_Store
 .env.local
+
+# Android build output (the APK is produced by GitHub Actions, not committed)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.iml
+.idea/

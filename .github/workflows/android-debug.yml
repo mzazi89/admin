@@ -1,0 +1,145 @@
+name: Android app (debug APK)
+
+# Two ways to build:
+#   • Actions → "Android app (debug APK)" → Run workflow  (the normal path)
+#   • automatically, when anything under android/ changes
+#
+# Either way the installable file lands in the run's Artifacts section as a zip.
+on:
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Address the app opens (https only)'
+        required: false
+        default: 'https://admin.mzazi.shop'
+      version_name:
+        description: 'Version label shown in Settings → Apps'
+        required: false
+        default: '1.0.0'
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-debug.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-debug-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: assembleDebug
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: android
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle (with build cache)
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Ensure Android SDK platform 34
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -d "$ANDROID_HOME/platforms/android-34" ]; then
+            echo "Installing platform 34 + build-tools 34.0.0"
+            yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+            "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0"
+          else
+            echo "android-34 already present"
+          fi
+
+      - name: Validate the configured address
+        env:
+          SITE_URL: ${{ inputs.site_url || 'https://admin.mzazi.shop' }}
+        run: |
+          case "$SITE_URL" in
+            https://*) ;;
+            *) echo "::error::site_url must start with https:// (cleartext is disabled in the app)"; exit 1 ;;
+          esac
+          echo "Building for $SITE_URL"
+
+      - name: Build debug APK
+        env:
+          SITE_URL: ${{ inputs.site_url || 'https://admin.mzazi.shop' }}
+          VERSION_NAME: ${{ inputs.version_name || '1.0.0' }}
+        run: |
+          ./gradlew --no-daemon --stacktrace assembleDebug \
+            -PappUrl="$SITE_URL" \
+            -PversionName="$VERSION_NAME"
+
+      - name: Collect APK
+        run: |
+          mkdir -p ../artifacts
+          cp app/build/outputs/apk/debug/app-debug.apk ../artifacts/mzazi-admin-debug.apk
+          ls -lh ../artifacts
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mzazi-admin-debug-apk
+          path: artifacts/mzazi-admin-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Job summary
+        if: always()
+        env:
+          SITE_URL: ${{ inputs.site_url || 'https://admin.mzazi.shop' }}
+        run: |
+          {
+            echo "### Android debug build"
+            echo ""
+            echo "| Field | Value |"
+            echo "| --- | --- |"
+            echo "| Address | \`$SITE_URL\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Status | ${{ job.status }} |"
+            echo ""
+            echo "**Download:** scroll to *Artifacts* at the bottom of this page →"
+            echo "**mzazi-admin-debug-apk**."
+            echo ""
+            echo "> The artifact is a **zip**. Unzip it and install \`mzazi-admin-debug.apk\`."
+            echo "> Android will warn that the app is unsigned-for-Play / from an unknown source —"
+            echo "> that is expected for a debug build."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: Attach APK to release (tags only)
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download built APK
+        uses: actions/download-artifact@v4
+        with:
+          name: mzazi-admin-debug-apk
+          path: artifacts
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/mzazi-admin-debug.apk
+          name: MZAZI Admin ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            Debug build of the MZAZI admin app (WebView shell around the panel).
+
+            Download `mzazi-admin-debug.apk` from Assets — a release asset is a
+            direct download, unlike the Actions artifact which is a zip.

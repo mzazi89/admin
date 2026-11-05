@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HTTPS only, with no exceptions. The admin session cookie is the only thing
+  standing between the panel and the open internet, so a cleartext fallback is
+  not offered even for a misconfigured build.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

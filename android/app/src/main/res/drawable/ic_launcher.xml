@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bolt in a rounded square: the same mark as the site, drawn as a vector so
+     the repository carries no binary assets. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#0B1220"
+        android:pathData="M0,0h48v48h-48z" />
+    <path
+        android:fillColor="#2563EB"
+        android:pathData="M6,6h36a4,4 0,0 1,4 4v28a4,4 0,0 1,-4 4h-36a4,4 0,0 1,-4 -4v-28a4,4 0,0 1,4 -4z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27.2,8.5 L15.5,26.5 L22.4,26.5 L20.4,39.5 L32.8,20.8 L25.6,20.8 Z" />
+</vector>

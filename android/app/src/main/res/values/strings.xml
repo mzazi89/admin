@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MZAZI Admin</string>
+    <string name="offline_title">Can\'t reach the panel</string>
+    <string name="offline_body">Check your connection and try again. If the panel moved, rebuild the app with the new address.</string>
+    <string name="retry">Try again</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same palette as the web panel, so launching the app does not flash a
+     white screen before the blue UI paints. -->
+<resources>
+    <color name="brand">#2563EB</color>
+    <color name="brand_dark">#1D4ED8</color>
+    <color name="bg">#060B16</color>
+    <color name="surface">#0F1A2E</color>
+    <color name="ink">#F2F7FF</color>
+    <color name="dim">#9FB0CC</color>
+</resources>
