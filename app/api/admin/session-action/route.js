@@ -62,15 +62,28 @@ export async function POST(request) {
       payload = { number };
     }
 
+    // A request only blocks a second one while it is still plausible that the
+    // bot will pick it up. The bot polls every 15s, so anything older than two
+    // minutes was never claimed — a bot that was down, or a row left behind by
+    // a restart. That stale row used to answer 409 forever: the number could not
+    // be removed from anywhere, permanently, with no way to clear it from the
+    // UI. Old rows are retired here and the new attempt goes through.
     const pending = await sql`
       SELECT id FROM bot_control
       WHERE action = ${controlAction} AND status IN ('pending', 'claimed')
         AND payload->>'number' = ${number}
+        AND created_at > NOW() - INTERVAL '2 minutes'
       ORDER BY id DESC LIMIT 1
     `;
     if (pending.length) {
       return NextResponse.json({ error: 'A request for this number is already in progress.' }, { status: 409 });
     }
+    await sql`
+      UPDATE bot_control
+      SET status = 'expired', result = 'Timed out — the bot never picked this up'
+      WHERE action = ${controlAction} AND status IN ('pending', 'claimed')
+        AND payload->>'number' = ${number}
+    `;
 
     // bot_id only when the target is known. Untargeted rows stay claimable by
     // any bot, which is how this endpoint behaved before bots were selectable.
