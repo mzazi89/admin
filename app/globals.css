@@ -1482,3 +1482,208 @@ select.input {
   background-clip: text;
   color: transparent;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MZAZI TECH — HACKER SKIN  ("Cursed Terminal")
+   Appended to globals.css. Redefines the design-system tokens for every
+   theme state (light, dark, auto) so no component markup has to change.
+   Palette: matrix green · cyan · glitch red on near-black.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root,
+:root:not([data-theme='light']),
+[data-theme='dark'],
+[data-theme='light'] {
+  color-scheme: dark;
+
+  /* ── surfaces ─────────────────────────────────────────────────────── */
+  --bg: #03070a;
+  --bg-2: #050d11;
+  --surface: #061014;
+  --surface-2: #08181e;
+  --surface-3: #0b2028;
+  --line: #123a30;
+  --line-soft: #0a2620;
+
+  /* ── text ─────────────────────────────────────────────────────────── */
+  --ink: #d8ffe9;
+  --ink-2: #a9e8c8;
+  --muted: #7cc9a6;
+  --dim: #5c9c82;
+
+  /* ── brand = matrix green ─────────────────────────────────────────── */
+  --brand: #00ff9c;
+  --brand-bright: #57ffbc;
+  --brand-deep: #00c978;
+  --brand-soft: #a6ffd6;
+  --brand-tint: rgba(0, 255, 156, 0.12);
+
+  /* ── secondary = terminal cyan ────────────────────────────────────── */
+  --blue: #00e5ff;
+  --blue-bright: #6df3ff;
+  --blue-deep: #00b8cc;
+  --blue-soft: #a9f5ff;
+  --blue-tint: rgba(0, 229, 255, 0.12);
+
+  /* ── accent = glitch red ──────────────────────────────────────────── */
+  --pink: #ff2e4d;
+  --pink-bright: #ff6f85;
+  --pink-deep: #d81b38;
+  --pink-soft: #ffb3bd;
+  --pink-tint: rgba(255, 46, 77, 0.12);
+
+  --yellow: #d8ff2e;
+  --yellow-bright: #e9ff7a;
+  --yellow-deep: #a8cc00;
+  --yellow-soft: #f2ffb8;
+  --yellow-tint: rgba(216, 255, 46, 0.14);
+
+  /* ── status ───────────────────────────────────────────────────────── */
+  --good: #00ff9c;
+  --good-tint: rgba(0, 255, 156, 0.14);
+  --bad: #ff2e4d;
+  --bad-tint: rgba(255, 46, 77, 0.14);
+  --warn: #d8ff2e;
+  --warn-tint: rgba(216, 255, 46, 0.14);
+
+  --on-brand: #001a10;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 20px 52px rgba(0, 0, 0, 0.8);
+  --shadow-brand: 0 0 0 1px rgba(0, 255, 156, 0.35), 0 0 28px rgba(0, 255, 156, 0.28);
+
+  --header-bg: rgba(3, 7, 10, 0.9);
+  --backdrop-image: 0.16;
+}
+
+/* ── the wall: grid + scanlines + vignette, painted behind everything ──── */
+html {
+  background: #03070a;
+}
+
+body {
+  background-image:
+    radial-gradient(1200px 700px at 50% -10%, rgba(0, 255, 156, 0.08), transparent 60%),
+    radial-gradient(900px 600px at 100% 100%, rgba(0, 229, 255, 0.06), transparent 60%),
+    linear-gradient(rgba(0, 255, 156, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 156, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, 48px 48px, 48px 48px;
+  background-attachment: fixed, fixed, fixed, fixed;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.22) 3px,
+    rgba(0, 0, 0, 0.22) 4px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+
+::selection {
+  background: rgba(0, 255, 156, 0.3);
+  color: #eafff5;
+}
+
+/* thin terminal scrollbars */
+* {
+  scrollbar-color: #0f5a41 #050d11;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: #050d11;
+}
+*::-webkit-scrollbar-thumb {
+  background: #0f5a41;
+  border-radius: 6px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #00ff9c;
+}
+
+/* headings get a faint terminal glow */
+h1,
+h2,
+h3 {
+  text-shadow: 0 0 14px rgba(0, 255, 156, 0.22);
+}
+
+/* links + focus ring */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #00ff9c;
+  outline-offset: 2px;
+}
+
+/* ── safety net: hard-coded light utilities inside components ──────────── */
+.bg-white,
+.bg-slate-50,
+.bg-gray-50,
+.bg-zinc-50 {
+  background-color: #061014 !important;
+}
+.bg-white\/80,
+.bg-white\/70,
+.bg-white\/60 {
+  background-color: rgba(6, 16, 20, 0.85) !important;
+}
+.text-black,
+.text-slate-900,
+.text-gray-900,
+.text-zinc-900 {
+  color: #d8ffe9 !important;
+}
+.text-slate-600,
+.text-gray-600 {
+  color: #7cc9a6 !important;
+}
+.border-slate-200,
+.border-gray-200 {
+  border-color: #123a30 !important;
+}
+
+/* code / terminal blocks */
+pre,
+code,
+kbd {
+  background: #04120c !important;
+  color: #7dffc0 !important;
+  border-color: #123a30 !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 9997;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 156, 0.05) 50%, transparent 100%);
+    animation: hz-sweep 9s linear infinite;
+    opacity: 0.5;
+  }
+  @keyframes hz-sweep {
+    0% {
+      transform: translateY(-35%);
+    }
+    100% {
+      transform: translateY(35%);
+    }
+  }
+}
