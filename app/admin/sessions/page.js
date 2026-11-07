@@ -16,8 +16,10 @@ import {
 // leaves the device linked while the panel reports success. Keeping the tabs
 // apart makes the target obvious before the button is pressed.
 //
-// Actions are unchanged and go through /api/admin/session-action, which queues
-// the unlink/delete row the bot applies within ~15s.
+// Actions go through /api/admin/session-action, which queues the unlink/delete
+// row the bot applies within ~15s AND clears the database row in the same
+// request. The table is therefore updated from the response, not from a timer —
+// the bot's poll only decides when the session folder/logout happens.
 
 const UNASSIGNED = '__unassigned';
 const ALL = '__all';
@@ -103,9 +105,27 @@ export default function AdminSessions() {
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error || 'Failed to run the action');
-      toast.success(`${action === 'delete' ? 'Delete' : 'Logout'} requested for ${formatPhone(session.phoneNumber)} — the bot applies it within ~15s.`);
+
+      // The row is deleted / marked INACTIVE before the endpoint answers, so the
+      // table is already stale. A delete takes the row away now; a logout turns
+      // it offline now and keeps it as the history line it is.
+      const number = String(session.phoneNumber);
+      setSessions((list) => (
+        action === 'delete'
+          ? list.filter((s) => String(s.phoneNumber) !== number)
+          : list.map((s) => (String(s.phoneNumber) === number ? { ...s, active: false } : s))
+      ));
+
+      toast.success(
+        action === 'delete'
+          ? `${formatPhone(number)} deleted — the bot wipes its session folder in the background.`
+          : `${formatPhone(number)} logged out — the bot disconnects it in the background.`
+      );
       setConfirm(null);
-      setTimeout(load, 15000);
+      // Re-read shortly after to pick up the counts and anything the bot has
+      // since reported; the list itself no longer waits for the bot.
+      load();
+      setTimeout(load, 4000);
     } catch (e) {
       toast.error(humaniseError(e, 'We could not complete that action. Please try again.'));
     } finally {

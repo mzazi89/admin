@@ -34,7 +34,7 @@ own domain (`admin.mzazi.shop`), and contains **zero customer-facing pages**. It
 | ✉️ **Inquiries** | View contact submissions |
 | 📜 **Bot Commands** | Full CRUD on the WhatsApp command registry — saves go live on the bot within ~15s |
 | 🤖 **Bot Control** | Heartbeat, sync, broadcast, bot name |
-| 📱 **Sessions** | **All paired numbers across all users** — Active = the session folders the bot holds on disk; **Unlink** logs the device out, **Delete** wipes the session folder + DB row |
+| 📱 **Sessions** | **All paired numbers across all users** — Active = the session folders the bot actually holds (a number that was just removed is not counted, even before the bot's next heartbeat); **Unlink** logs the device out, **Delete** wipes the session folder + DB row. The database row is cleared in the request itself, so the list is right immediately — the bot's ~15s poll only does the logout/wipe |
 
 ## 🔐 Security
 

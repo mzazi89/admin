@@ -21,7 +21,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { neon } from '@neondatabase/serverless';
 import { ensureDatabase } from '@/lib/database';
-import { deviceBotMap, listBots, listBotsWithStatus, liveBotProfiles } from '@/lib/bots';
+import { listBots, listBotsWithStatus, liveBotProfiles, liveDeviceMap } from '@/lib/bots';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,8 +86,12 @@ export async function GET() {
       ORDER BY ws.id DESC
     `;
 
+    // `liveDeviceMap`, not the raw telemetry: a number that was just deleted or
+    // unlinked is still in the bot's last heartbeat for up to ~30s (and after an
+    // unlink its folder never leaves the listing at all), so the raw map would
+    // re-add it here as a live row the operator had already removed.
     const [liveMap, history, configured, status, live] = await Promise.all([
-      deviceBotMap(),
+      liveDeviceMap(),
       pairHistory(),
       listBots(),
       listBotsWithStatus(),

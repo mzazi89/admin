@@ -79,7 +79,36 @@ export async function POST(request) {
       VALUES (${controlAction}, ${JSON.stringify(payload)}::jsonb, 'pending', ${resolved.named ? bot.id : ''})
       RETURNING id
     `;
-    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id });
+
+    // ── Clear the number here and now ───────────────────────────────────────
+    // The bot applies the queued request within ~15s and the panel used to wait
+    // for it, so a deleted number sat in this very table — and, worse, went on
+    // being listed as online from telemetry — long after the operator pressed
+    // Delete. The row written here is the row the bot writes when it applies the
+    // request, so it is written now, in the request that asked for it. The bot
+    // still logs the device out and wipes the session folder; if it is offline
+    // the panel is already truthful and the request waits for it in bot_control.
+    //
+    // Admin actions are unscoped on purpose — this endpoint is the one place a
+    // session may be removed without an ownership check (see the header).
+    let cleared = false;
+    try {
+      if (action === 'delete') {
+        await sql`DELETE FROM "WhatsAppSession" WHERE "phoneNumber" = ${number}`;
+      } else {
+        await sql`
+          UPDATE "WhatsAppSession"
+          SET status = 'INACTIVE', "updatedAt" = CURRENT_TIMESTAMP
+          WHERE "phoneNumber" = ${number}
+        `;
+      }
+      cleared = true;
+    } catch (e) {
+      // The queued request still runs; a cleanup failure must not fail the call.
+      console.warn('[admin][session-action] could not clear the session row:', e.message);
+    }
+
+    return NextResponse.json({ requestId: rows[0].id, number, action, bot: bot.id, cleared });
   } catch (e) {
     console.error('Session action error:', e.message);
     return NextResponse.json({ error: 'Failed to run the action. Try again.' }, { status: 500 });
