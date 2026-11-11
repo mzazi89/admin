@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import SupportInbox from '@/components/SupportInbox';
 import { useRouter } from 'next/navigation';
 
 const STATUS_TAG = { open: 'tag-amber', replied: 'tag-green', closed: '' };
 
-export default function AdminInquiries() {
+function InquiriesBody() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading]     = useState(true);
   const [selected, setSelected]   = useState(null);
@@ -342,6 +343,54 @@ function AdminChatWindow({ selected, messages, msgLoading, reply, setReply, repl
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// The page people actually open. Support conversations from the site and the app
+// live here as a tab, so a message can never sit in a different inbox from the
+// one being checked.
+export default function AdminInquiriesPage() {
+  const [tab, setTab] = useState('inquiries');
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    const tick = async () => {
+      try {
+        const r = await fetch('/api/admin/chat');
+        if (!r.ok) return;
+        const d = await r.json();
+        if (alive && Array.isArray(d.threads)) {
+          setUnread(d.threads.reduce((sum, t) => sum + Number(t.unread || 0), 0));
+        }
+      } catch { /* the badge is not worth an error state */ }
+    };
+    tick();
+    const id = setInterval(tick, 15000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+        <button
+          type="button"
+          className={tab === 'inquiries' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}
+          onClick={() => setTab('inquiries')}
+        >
+          Form inquiries
+        </button>
+        <button
+          type="button"
+          className={tab === 'chat' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}
+          onClick={() => setTab('chat')}
+        >
+          Support chat{unread > 0 ? ` · ${unread} new` : ''}
+        </button>
+      </div>
+
+      {tab === 'chat' ? <SupportInbox /> : <InquiriesBody />}
     </div>
   );
 }
