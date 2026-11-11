@@ -42,6 +42,7 @@ const GROUPS = [
       { href: '/admin/packages', label: 'Packages', icon: Icons.Sparkles },
       { href: '/admin/vps', label: 'VPS Store', icon: Icons.Zap },
       { href: '/admin/bot-files', label: 'Bot files', icon: Icons.Download },
+      { href: '/admin/announcements', label: 'Announcements', icon: Icons.Info },
       { href: '/admin/resellers', label: 'Resellers', icon: Icons.User },
     ],
   },
