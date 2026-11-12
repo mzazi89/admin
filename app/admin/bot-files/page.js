@@ -21,6 +21,7 @@ export default function AdminBotFiles() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null); // the file being edited, or null
   const [form, setForm] = useState(EMPTY);
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -62,13 +63,41 @@ export default function AdminBotFiles() {
     if (!form.name.trim()) setForm((f) => ({ ...f, name: file.name.replace(/\.[^.]+$/, '') }));
   };
 
+  const openCreate = () => {
+    setEditing(null);
+    setForm(EMPTY);
+    setPayload(null);
+    setMode('upload');
+    setFormError('');
+    setOpen(true);
+  };
+
+  const openEdit = (f) => {
+    setEditing(f);
+    setForm({
+      name: f.name || '',
+      variant: f.variant || 'normal',
+      version: f.version || '',
+      description: f.description || '',
+      price: f.price != null ? String(f.price) : '',
+      downloadUrl: f.download_url || '',
+      active: f.active !== false,
+    });
+    setPayload(null);
+    setMode(f.download_url ? 'link' : 'upload');
+    setFormError('');
+    setOpen(true);
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     setFormError('');
     if (!form.name.trim()) { setFormError('Give the file a product name.'); return; }
     const usingUpload = mode === 'upload';
     const link = form.downloadUrl.trim();
-    if (usingUpload && !payload) { setFormError('Choose the file to upload.'); return; }
+    // Editing keeps whatever is already stored unless a replacement is chosen,
+    // so "no file picked" is only an error when adding.
+    if (usingUpload && !payload && !editing) { setFormError('Choose the file to upload.'); return; }
     if (!usingUpload) {
       if (!link) { setFormError('Paste the download link.'); return; }
       if (!/^https?:\/\//i.test(link)) { setFormError('The download link must start with http:// or https://'); return; }
@@ -76,27 +105,30 @@ export default function AdminBotFiles() {
 
     setSaving(true);
     try {
+      const changes = {
+        name: form.name.trim(),
+        variant: form.variant,
+        version: form.version.trim() || null,
+        description: form.description.trim() || null,
+        price: Number(form.price) || 0,
+        ...(usingUpload
+          ? (payload ? { content: payload.content, file_name: payload.name, mime: payload.mime } : {})
+          : { downloadUrl: link, file_name: link.split('/').pop()?.slice(0, 120) || null }),
+        active: form.active,
+      };
+
       const res = await fetch('/api/admin/bot-files', {
-        method: 'POST',
+        method: editing ? 'PATCH' : 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name.trim(),
-          variant: form.variant,
-          version: form.version.trim() || null,
-          description: form.description.trim() || null,
-          price: Number(form.price) || 0,
-          ...(usingUpload
-            ? { content: payload.content, file_name: payload.name, mime: payload.mime }
-            : { downloadUrl: link, file_name: link.split('/').pop()?.slice(0, 120) || null }),
-          active: form.active,
-        }),
+        body: JSON.stringify(editing ? { id: editing.id, ...changes } : changes),
       });
       const d = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(d.error || 'Upload failed');
-      toast.success(`${form.name} is live in the catalogue.`);
+      if (!res.ok) throw new Error(d.error || 'Could not save the file');
+      toast.success(editing ? `${form.name} updated.` : `${form.name} is live in the catalogue.`);
       setOpen(false);
       setForm(EMPTY);
       setPayload(null);
+      setEditing(null);
       load();
     } catch (err) {
       setFormError(humaniseError(err, 'We could not save that file.'));
@@ -144,7 +176,7 @@ export default function AdminBotFiles() {
       <PageHeader
         title="Bot files"
         description="BugBot and standard bot packages sold on the catalogue — uploaded here, or linked if you host them elsewhere."
-        actions={<Button onClick={() => setOpen(true)} icon={<Icons.Plus size={16} />}>Add file</Button>}
+        actions={<Button onClick={openCreate} icon={<Icons.Plus size={16} />}>Add file</Button>}
       />
 
       {error ? (
@@ -156,7 +188,7 @@ export default function AdminBotFiles() {
           icon={<Icons.Bot size={24} />}
           title="No bot files yet"
           description="Upload a file or paste a download link, and it goes on sale in the catalogue immediately."
-          action={<Button onClick={() => setOpen(true)}>Add the first file</Button>}
+          action={<Button onClick={openCreate}>Add the first file</Button>}
         />
       ) : (
         <div className="grid gap-3">
@@ -195,7 +227,12 @@ export default function AdminBotFiles() {
                   style={{ flexShrink: 0, borderColor: 'var(--line-soft)' }}
                 >
                   <Toggle checked={f.active} onChange={() => toggle(f)} disabled={busyId === f.id} label="Published" />
-                  <Button variant="ghost" onClick={() => setTarget(f)} disabled={busyId === f.id}>Delete</Button>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" onClick={() => openEdit(f)} disabled={busyId === f.id} icon={<Icons.Pencil size={14} />}>
+                      Edit
+                    </Button>
+                    <Button variant="ghost" onClick={() => setTarget(f)} disabled={busyId === f.id}>Delete</Button>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -203,7 +240,7 @@ export default function AdminBotFiles() {
         </div>
       )}
 
-      <Modal open={open} onClose={() => { setOpen(false); setFormError(''); }} title="Upload bot file">
+      <Modal open={open} onClose={() => { setOpen(false); setFormError(''); }} title={editing ? "Edit bot file" : "Add bot file"}>
         <form onSubmit={submit} className="grid gap-3">
           <Field label="Product name" required>
             <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="BugBot Reporter" maxLength={80} />
@@ -299,7 +336,7 @@ export default function AdminBotFiles() {
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Publish file'}</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Publish file'}</Button>
           </div>
         </form>
       </Modal>

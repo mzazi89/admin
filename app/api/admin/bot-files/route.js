@@ -143,14 +143,38 @@ export async function PATCH(request) {
       return NextResponse.json({ ok: true });
     }
 
-    // Metadata edits never touch the stored bytes.
+    // Replacing the artefact: a new upload takes over, and the old link is
+    // cleared so the download route serves the new bytes instead of redirecting
+    // to whatever the file used to point at.
+    if (typeof patch.content === 'string' && patch.content) {
+      const bytes = Buffer.from(patch.content, 'base64');
+      if (!bytes.length) return NextResponse.json({ error: 'The uploaded file is empty' }, { status: 400 });
+      if (bytes.length > MAX_BYTES) {
+        return NextResponse.json({ error: 'File is larger than 5 MB — host it and use a link instead' }, { status: 413 });
+      }
+      await sql`
+        UPDATE bot_files SET
+          content = ${bytes.toString('base64')},
+          size_bytes = ${bytes.length},
+          file_name = ${patch.file_name ?? null},
+          mime = ${patch.mime ?? 'application/zip'},
+          download_url = NULL,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${id}
+      `;
+    }
+
+    // Metadata. Every field is optional: whatever is not sent keeps its value,
+    // so the form can save a single changed input without clobbering the rest.
+    const nextUrl = typeof patch.downloadUrl === 'string' ? (patch.downloadUrl.trim() || null) : undefined;
     await sql`
       UPDATE bot_files SET
         name = COALESCE(${patch.name ?? null}, name),
+        variant = COALESCE(${patch.variant ?? null}, variant),
         version = COALESCE(${patch.version ?? null}, version),
         description = COALESCE(${patch.description ?? null}, description),
         price = COALESCE(${patch.price != null ? Number(patch.price) : null}, price),
-        download_url = COALESCE(${patch.downloadUrl ?? null}, download_url),
+        download_url = COALESCE(${nextUrl === undefined ? null : nextUrl}, download_url),
         active = COALESCE(${typeof patch.active === 'boolean' ? patch.active : null}, active),
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${id}
