@@ -59,6 +59,7 @@ export async function POST(request) {
       targetUrl: String(body.targetUrl || '').trim(),
       objectUrl,
       dryRun,
+      replace: body.replace === true,
     });
     return NextResponse.json(result);
   } catch (e) {

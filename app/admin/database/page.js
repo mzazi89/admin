@@ -38,6 +38,7 @@ export default function AdminDatabase() {
   const [syncing, setSyncing] = useState(false);
   const [result, setResult] = useState(null);
   const [confirmSync, setConfirmSync] = useState(false);
+  const [replace, setReplace] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -86,7 +87,7 @@ export default function AdminDatabase() {
       const res = await fetch('/api/admin/backup/transfer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUrl, objectUrl, dryRun: false }),
+        body: JSON.stringify({ targetUrl, objectUrl, dryRun: false, replace }),
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error || 'Sync failed');
@@ -220,11 +221,21 @@ export default function AdminDatabase() {
           </p>
         )}
 
+        <label style={{ display: 'flex', gap: 9, alignItems: 'flex-start', margin: '0 0 14px', fontSize: 13, color: 'var(--text-2)' }}>
+          <input type="checkbox" checked={replace} onChange={(e) => { setReplace(e.target.checked); setConfirmSync(false); }} style={{ marginTop: 3 }} />
+          <span>
+            <strong>Clear the archived tables first (exact copy).</strong> Empties the{' '}
+            {snapshots.length ? '11' : '11'} tables in the target before writing, so the result matches the
+            archive exactly. Leave it off to merge into what is already there — rows that clash are skipped.
+          </span>
+        </label>
+
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
           {confirmSync ? (
             <>
               <Button variant="danger" onClick={runSync} loading={syncing}>
-                Yes — write {latest?.rowTotal?.toLocaleString() ?? ''} rows into that database
+                {replace ? 'Yes — clear those tables and write ' : 'Yes — write '}
+                {latest?.rowTotal?.toLocaleString() ?? ''} rows into that database
               </Button>
               <Button variant="ghost" onClick={() => setConfirmSync(false)} disabled={syncing}>Cancel</Button>
             </>
@@ -237,6 +248,13 @@ export default function AdminDatabase() {
 
         {result && (
           <div style={{ marginTop: 16 }}>
+            {Object.entries(result.tables || {}).some(([, v]) => v.error) && (
+              <Alert kind="warn" title="Some rows could not be written">
+                {(result.totals?.skipped ?? 0).toLocaleString()} rows were skipped. The reason per table is
+                in the last column below — a foreign key pointing at a row that did not restore, or a value
+                the target refused. Fix the cause and press Sync again: it is safe to re-run.
+              </Alert>
+            )}
             <Alert kind="success" title="Sync finished">
               <strong>{(result.totals?.inserted ?? 0).toLocaleString()}</strong> of{' '}
               {(result.totals?.rows ?? 0).toLocaleString()} rows written
