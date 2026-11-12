@@ -84,20 +84,31 @@ export async function POST(request) {
   try {
     await ensureTable();
     const body = await request.json();
-    const { name, variant, version, description, price, file_name, mime, downloadUrl, active } = body || {};
+    const { name, variant, version, description, price, file_name, mime, downloadUrl, content, active } = body || {};
 
     if (!name) return NextResponse.json({ error: 'A name is required' }, { status: 400 });
     if (!['bugbot', 'normal'].includes(variant)) return NextResponse.json({ error: 'Variant must be bugbot or normal' }, { status: 400 });
 
-    // The address is the deliverable, so it is the thing worth validating: an
-    // http(s) URL that a browser will actually follow. A typo here would only
-    // surface after somebody had paid, which is the worst possible time.
+    // Two ways to publish, because they suit different artefacts: a small file
+    // can live in this table (bytes in Postgres, no external host to keep alive),
+    // and a large one is better as an address the admin already hosts. Whichever
+    // is used, the buyer ends up on the same download route.
     const url = String(downloadUrl || '').trim();
-    if (!url) return NextResponse.json({ error: 'A download link is required' }, { status: 400 });
-    let parsed;
-    try { parsed = new URL(url); } catch { parsed = null; }
-    if (!parsed || !['http:', 'https:'].includes(parsed.protocol)) {
-      return NextResponse.json({ error: 'The download link must start with http:// or https://' }, { status: 400 });
+    const upload = typeof content === 'string' && content.length ? Buffer.from(content, 'base64') : null;
+
+    if (!upload && !url) {
+      return NextResponse.json({ error: 'Upload a file or paste a download link.' }, { status: 400 });
+    }
+    if (upload) {
+      if (!upload.length) return NextResponse.json({ error: 'The uploaded file is empty' }, { status: 400 });
+      if (upload.length > MAX_BYTES) return NextResponse.json({ error: 'File is larger than 5 MB — host it and paste the link instead' }, { status: 413 });
+    }
+    if (url) {
+      let parsed;
+      try { parsed = new URL(url); } catch { parsed = null; }
+      if (!parsed || !['http:', 'https:'].includes(parsed.protocol)) {
+        return NextResponse.json({ error: 'The download link must start with http:// or https://' }, { status: 400 });
+      }
     }
 
     let slug = slugify(`${name}-${version || ''}`);
@@ -105,13 +116,13 @@ export async function POST(request) {
     if (clash[0]) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
 
     const rows = await sql`
-      INSERT INTO bot_files (slug, name, variant, version, description, price, file_name, mime, size_bytes, download_url, active)
+      INSERT INTO bot_files (slug, name, variant, version, description, price, file_name, mime, size_bytes, download_url, content, active)
       VALUES (
         ${slug}, ${name}, ${variant}, ${version || null}, ${description || null},
         ${Number(price) || 0}, ${file_name || null}, ${mime || 'application/zip'},
-        0, ${url}, ${active !== false}
+        ${upload ? upload.length : 0}, ${url || null}, ${upload ? upload.toString('base64') : null}, ${active !== false}
       )
-      RETURNING id, slug, name, variant, version, price, download_url, active
+      RETURNING id, slug, name, variant, version, price, download_url, size_bytes, active
     `;
     return NextResponse.json({ file: rows[0] }, { status: 201 });
   } catch (error) {

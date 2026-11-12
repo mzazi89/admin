@@ -24,6 +24,8 @@ export default function AdminBotFiles() {
   const [form, setForm] = useState(EMPTY);
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [mode, setMode] = useState('upload'); // 'upload' | 'link'
+  const [payload, setPayload] = useState(null); // { name, mime, content, size }
   const [target, setTarget] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
@@ -44,13 +46,33 @@ export default function AdminBotFiles() {
 
   useEffect(() => { load(); }, [load]);
 
+  const pickFile = async (file) => {
+    if (!file) { setPayload(null); return; }
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError('That file is over 5 MB — host it and use the link instead.');
+      setPayload(null);
+      return;
+    }
+    const buf = await file.arrayBuffer();
+    let binary = '';
+    const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
+    setFormError('');
+    setPayload({ name: file.name, mime: file.type || 'application/octet-stream', content: btoa(binary), size: file.size });
+    if (!form.name.trim()) setForm((f) => ({ ...f, name: file.name.replace(/\.[^.]+$/, '') }));
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     setFormError('');
     if (!form.name.trim()) { setFormError('Give the file a product name.'); return; }
+    const usingUpload = mode === 'upload';
     const link = form.downloadUrl.trim();
-    if (!link) { setFormError('Paste the download link.'); return; }
-    if (!/^https?:\/\//i.test(link)) { setFormError('The download link must start with http:// or https://'); return; }
+    if (usingUpload && !payload) { setFormError('Choose the file to upload.'); return; }
+    if (!usingUpload) {
+      if (!link) { setFormError('Paste the download link.'); return; }
+      if (!/^https?:\/\//i.test(link)) { setFormError('The download link must start with http:// or https://'); return; }
+    }
 
     setSaving(true);
     try {
@@ -63,8 +85,9 @@ export default function AdminBotFiles() {
           version: form.version.trim() || null,
           description: form.description.trim() || null,
           price: Number(form.price) || 0,
-          downloadUrl: link,
-          file_name: link.split('/').pop()?.slice(0, 120) || null,
+          ...(usingUpload
+            ? { content: payload.content, file_name: payload.name, mime: payload.mime }
+            : { downloadUrl: link, file_name: link.split('/').pop()?.slice(0, 120) || null }),
           active: form.active,
         }),
       });
@@ -73,6 +96,7 @@ export default function AdminBotFiles() {
       toast.success(`${form.name} is live in the catalogue.`);
       setOpen(false);
       setForm(EMPTY);
+      setPayload(null);
       load();
     } catch (err) {
       setFormError(humaniseError(err, 'We could not save that file.'));
@@ -196,24 +220,67 @@ export default function AdminBotFiles() {
             <Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What the file does, what is included, requirements." />
           </Field>
 
-          <Field
-            label="Download link"
-            required
-            hint="Where the buyer gets the file — Drive, Dropbox, a GitHub release asset, your own host. Must start with https://"
-          >
-            <Input
-              type="url"
-              value={form.downloadUrl}
-              onChange={(e) => setForm({ ...form, downloadUrl: e.target.value })}
-              placeholder="https://drive.google.com/file/d/…"
-              autoComplete="off"
-              spellCheck={false}
-            />
-          </Field>
-          <p className="text-muted" style={{ margin: 0, fontSize: 12 }}>
-            Nothing is uploaded here. The site hands this link to whoever has paid — check it opens
-            without a sign-in, or buyers will not be able to collect what they bought.
-          </p>
+          <div style={{ display: 'flex', gap: 8, margin: '4px 0 12px' }}>
+            <Button
+              type="button"
+              variant={mode === 'upload' ? 'primary' : 'ghost'}
+              onClick={() => setMode('upload')}
+              size="sm"
+            >
+              Upload a file
+            </Button>
+            <Button
+              type="button"
+              variant={mode === 'link' ? 'primary' : 'ghost'}
+              onClick={() => setMode('link')}
+              size="sm"
+            >
+              Use a link
+            </Button>
+          </div>
+
+          {mode === 'upload' ? (
+            <>
+              <Field label="File (zip, js, json — max 5 MB)" required>
+                <input
+                  type="file"
+                  className="input"
+                  onChange={(e) => pickFile(e.target.files?.[0])}
+                  accept=".zip,.js,.json,.rar,.tar,.gz,.txt"
+                />
+              </Field>
+              <p className="text-muted" style={{ margin: 0, fontSize: 12 }}>
+                Stored in the database and served from this site, so there is no outside host to keep
+                alive. Buyers still go through the download route, which checks they paid.
+              </p>
+              {payload && (
+                <p className="text-muted" style={{ margin: '6px 0 0', fontSize: 12 }}>
+                  {payload.name} · {(payload.size / 1024).toFixed(0)} KB ready
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <Field
+                label="Download link"
+                required
+                hint="Where the buyer gets the file — Drive, Dropbox, a GitHub release asset, your own host. Must start with https://"
+              >
+                <Input
+                  type="url"
+                  value={form.downloadUrl}
+                  onChange={(e) => setForm({ ...form, downloadUrl: e.target.value })}
+                  placeholder="https://drive.google.com/file/d/…"
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </Field>
+              <p className="text-muted" style={{ margin: 0, fontSize: 12 }}>
+                Nothing is uploaded. Check the link opens without a sign-in, or buyers will not be able
+                to collect what they bought.
+              </p>
+            </>
+          )}
 
           <div className="flex items-center gap-2">
             <Toggle checked={form.active} onChange={(v) => setForm({ ...form, active: v })} label="Publish immediately" />
