@@ -2,16 +2,16 @@
 
 // MZAZI ADMIN — Backups.
 //
-// The archive fills itself; this page is where an operator looks at it and, when
-// the time comes, moves it into a new database. Nothing here runs on a timer that
-// the operator cannot see: the schedule is stated on the page, and the last
-// snapshot's age is the first number on it.
+// The archive fills itself; this page shows what is in it and how fresh it is.
+// Moving it into a new database lives on its own page (Database), because that is
+// a different decision with a different set of risks, and one screen that both
+// checks backups and writes to a database is how data ends up in the wrong place.
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
-  Alert, Badge, Button, Card, CardHeader, DataTable, EmptyState, Field, Input,
-  PageHeader, Select, Skeleton, StatCard, humaniseError, useToast,
-  Icons,
+  Alert, Badge, Button, Card, CardHeader, DataTable, EmptyState, PageHeader,
+  Skeleton, StatCard, humaniseError, useToast, Icons,
 } from '@/components/ui';
 
 const fmtBytes = (n) => {
@@ -37,17 +37,10 @@ const fmtWhen = (iso) => {
 
 export default function AdminBackups() {
   const toast = useToast();
-
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [running, setRunning] = useState(false);
-  const [targetUrl, setTargetUrl] = useState('');
-  const [objectUrl, setObjectUrl] = useState('latest');
-  const [transfer, setTransfer] = useState(null);
-  const [transferring, setTransferring] = useState(false);
-  const [confirmWrite, setConfirmWrite] = useState(false);
 
   const load = useCallback(async () => {
     setError('');
@@ -56,13 +49,12 @@ export default function AdminBackups() {
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error || 'Failed to load backup status');
       setStatus(d);
-      if (d.snapshots?.length && objectUrl === 'latest') setObjectUrl(d.snapshots[0].object);
     } catch (e) {
       setError(humaniseError(e));
     } finally {
       setLoading(false);
     }
-  }, [objectUrl]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
@@ -81,32 +73,10 @@ export default function AdminBackups() {
     }
   };
 
-  const runTransfer = async (dryRun) => {
-    setTransferring(true);
-    setTransfer(null);
-    try {
-      const res = await fetch('/api/admin/backup/transfer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUrl, objectUrl, dryRun }),
-      });
-      const d = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(d.error || 'Transfer failed');
-      setTransfer(d);
-      if (!dryRun) toast.success(`Transferred ${d.totals?.inserted ?? 0} rows`);
-      else setConfirmWrite(false);
-    } catch (e) {
-      toast.error(humaniseError(e));
-      setConfirmWrite(false);
-    } finally {
-      setTransferring(false);
-    }
-  };
-
   if (loading) {
     return (
       <>
-        <PageHeader title="Backups" description="Automatic archive of accounts, balances and payments." icon={<Icons.Refresh size={20} />} />
+        <PageHeader title="Backups" description="Automatic archive of accounts, balances and payments." icon={<Icons.Shield size={20} />} />
         <Skeleton h={120} />
       </>
     );
@@ -119,8 +89,8 @@ export default function AdminBackups() {
     <>
       <PageHeader
         title="Backups"
-        description="Money and people, archived automatically — and movable into a new database in one step."
-        icon={<Icons.Refresh size={20} />}
+        description="Money and people, archived automatically every night — and whenever you ask."
+        icon={<Icons.Shield size={20} />}
         actions={
           <Button onClick={snapshotNow} loading={running} icon={<Icons.Upload size={15} />}>
             Snapshot now
@@ -131,16 +101,11 @@ export default function AdminBackups() {
       {error && <Alert kind="error" title="Could not load status">{error}</Alert>}
 
       {!status?.storeReady && (
-        <Alert kind="warn" title="No backup store is connected">
-          <p style={{ margin: '0 0 8px' }}>
-            The archive needs somewhere to write. Set <code>BACKUP_REPO</code> to a private
-            repository (<code>owner/name</code>) — <code>GITHUB_TOKEN</code> is already available —
-            or connect a Vercel Blob store. Snapshots are encrypted either way, so what leaves this
-            deployment is ciphertext.
-          </p>
+        <Alert kind="warn" title="No archive store is configured">
           <p style={{ margin: 0 }}>
-            Encryption is already in place ({status?.keyReady ? `key from ${status.keySource}` : 'no key set'}),
-            so anything written to the store is unreadable without this deployment&apos;s secret.
+            Set <code>BACKUP_REPO</code> to a private repository (<code>owner/name</code>) —{' '}
+            <code>GITHUB_TOKEN</code> is already available — or connect a Vercel Blob store.
+            Snapshots are encrypted either way, so what leaves this deployment is ciphertext.
           </p>
         </Alert>
       )}
@@ -163,7 +128,7 @@ export default function AdminBackups() {
           {status.database.error}
           <br />
           <span style={{ opacity: 0.75 }}>
-            If it has hit its quota, the archive below is what you have — transfer it to a new database.
+            If it has hit its quota, the archive below is what you have — move it to a new database.
           </span>
         </Alert>
       )}
@@ -171,7 +136,7 @@ export default function AdminBackups() {
       <Card className="card" style={{ marginBottom: 16 }}>
         <CardHeader
           title="What is covered"
-          description="Live counts next to the newest archive. A row that exists live but not in the snapshot arrived after the last run."
+          description="Live counts beside the newest archive. A table that is larger live than in the archive gained rows after the last run."
         />
         <DataTable columns={['Table', 'Live rows', 'In archive', '']}>
           {(status?.tables || []).map((t) => {
@@ -193,12 +158,12 @@ export default function AdminBackups() {
       <Card className="card" style={{ marginBottom: 16 }}>
         <CardHeader
           title="Archive"
-          description={`The newest ${status?.keep || 12} snapshots are kept; older ones are deleted automatically so the store cannot fill up.`}
+          description={`The newest ${status?.keep || 12} snapshots stay in the working tree; older ones remain in the repository history.`}
         />
         {(status?.snapshots || []).length === 0 ? (
           <EmptyState
             title="Nothing archived yet"
-            description={status?.storeReady ? 'Take a snapshot, or wait for the nightly run.' : 'Connect a Blob store first.'}
+            description={status?.storeReady ? 'Take a snapshot, or wait for the nightly run at 02:00.' : 'Configure a store first.'}
             icon={<Icons.Clock size={22} />}
           />
         ) : (
@@ -210,13 +175,7 @@ export default function AdminBackups() {
                 <td>{(s.rowTotal ?? 0).toLocaleString()}</td>
                 <td>{fmtBytes(s.storedBytes)}</td>
                 <td>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setObjectUrl(s.object); setTransfer(null); }}
-                  >
-                    Select for transfer
-                  </Button>
+                  <Link href="/admin/database" style={{ fontSize: 13 }}>Restore in Database →</Link>
                 </td>
               </tr>
             ))}
@@ -227,77 +186,14 @@ export default function AdminBackups() {
       <Card className="card">
         <CardHeader
           title="Move the archive to a new database"
-          description="Creates the tables in the target, copies every row, and advances its id sequences. Safe to run twice — existing rows are left alone."
-          icon={<Icons.ArrowRight size={16} />}
+          description="Enter the new connection string, test it, then sync. Tables, rows and id sequences are handled in one step."
+          icon={<Icons.Copy size={16} />}
         />
-
-        <Field
-          label="Target database URL"
-          id="targetUrl"
-          hint="A fresh postgres:// connection string. The current database is refused on purpose."
-        >
-          <Input
-            id="targetUrl"
-            type="password"
-            autoComplete="off"
-            placeholder="postgresql://user:password@host/dbname?sslmode=require"
-            value={targetUrl}
-            onChange={(e) => { setTargetUrl(e.target.value); setConfirmWrite(false); }}
-          />
-        </Field>
-
-        <Field label="Snapshot" id="objectUrl" hint={`${(status?.snapshots || []).length} archived`}>
-          <Select id="objectUrl" value={objectUrl} onChange={(e) => { setObjectUrl(e.target.value); setTransfer(null); }}>
-            {(status?.snapshots || []).map((s) => (
-              <option key={s.object} value={s.object}>
-                {new Date(s.createdAt).toLocaleString()} — {(s.rowTotal ?? 0).toLocaleString()} rows
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <Button variant="ghost" onClick={() => runTransfer(true)} loading={transferring && transfer == null}>
-            Check first (no writes)
-          </Button>
-          {confirmWrite ? (
-            <Button variant="danger" onClick={() => runTransfer(false)} loading={transferring}>
-              Yes — write {transfer?.totals?.rows?.toLocaleString() ?? ''} rows to that database
-            </Button>
-          ) : (
-            <Button
-              onClick={() => setConfirmWrite(true)}
-              disabled={!targetUrl.trim() || !(status?.snapshots || []).length}
-            >
-              Transfer…
-            </Button>
-          )}
-          {confirmWrite && (
-            <Button variant="ghost" onClick={() => setConfirmWrite(false)}>Cancel</Button>
-          )}
-        </div>
-
-        {transfer && (
-          <div style={{ marginTop: 16 }}>
-            <Alert kind={transfer.dryRun ? 'info' : 'success'} title={transfer.dryRun ? 'Dry run — nothing was written' : 'Transfer finished'}>
-              {transfer.dryRun ? 'This is what would be inserted: ' : 'Inserted '}
-              <strong>{transfer.totals?.inserted?.toLocaleString() ?? 0}</strong> of{' '}
-              {transfer.totals?.rows?.toLocaleString() ?? 0} rows
-              {transfer.totals?.skipped ? `, ${transfer.totals.skipped.toLocaleString()} skipped` : ''}.
-            </Alert>
-            <DataTable columns={['Table', 'Rows', 'Inserted', 'Skipped', 'Error']}>
-              {Object.entries(transfer.tables || {}).map(([t, v]) => (
-                <tr key={t}>
-                  <td><code>{t}</code></td>
-                  <td>{(v.rows ?? 0).toLocaleString()}</td>
-                  <td>{(v.inserted ?? 0).toLocaleString()}</td>
-                  <td>{(v.skipped ?? 0).toLocaleString()}</td>
-                  <td style={{ color: v.error ? 'var(--bad)' : 'var(--dim)', maxWidth: 320 }}>{v.error || '—'}</td>
-                </tr>
-              ))}
-            </DataTable>
-          </div>
-        )}
+        <p style={{ color: 'var(--dim)', margin: '0 0 12px' }}>
+          This lives on its own page so a connection string is never typed onto the screen you check
+          backups on.
+        </p>
+        <Button href="/admin/database" icon={<Icons.ArrowRight size={15} />}>Open Database</Button>
       </Card>
     </>
   );
