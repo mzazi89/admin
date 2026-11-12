@@ -192,7 +192,7 @@ export default function ResellersPage() {
             </div>
             <div className="mt-3" style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))' }}>
               {freshCodes.map((c) => (
-                <div key={c.id} className="mono" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--line-soft)', borderRadius: 6, padding: '10px 12px', fontSize: 15, letterSpacing: '0.08em', color: 'var(--ink)' }}>
+                <div key={c.id} className="mono" style={{ background: 'var(--surface-3)', border: '1px solid var(--line-soft)', borderRadius: 6, padding: '10px 12px', fontSize: 15, letterSpacing: '0.08em', color: 'var(--ink)' }}>
                   {c.code}
                 </div>
               ))}

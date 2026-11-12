@@ -1,6 +1,6 @@
 // MZAZI TECH — service worker
 // Minimal PWA worker: caches static build assets for offline-capable installs.
-const CACHE = 'mzazi-admin-v2';
+const CACHE = 'mzazi-admin-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
