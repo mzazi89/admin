@@ -12,28 +12,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        /* ── Brand purple (primary) ─────────────────────────────────── */
+        /* ── Brand blue (primary) ───────────────────────────────────── */
         brand: {
           50:  '#F5F3FF', 100: '#EDE9FE', 200: '#DDD6FE', 300: '#C4B5FD',
           400: '#A78BFA', 500: '#8B5CF6', 600: '#7C3AED', 700: '#6D28D9',
           800: '#5B21B6', 900: '#4C1D95',
           DEFAULT: 'var(--brand)',
         },
-        /* ── Secondary soft blue (accents only) ────────────────────── */
+        /* ── Secondary sky blue (accents only) ─────────────────────── */
         azure: {
           50:  '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE', 300: '#93C5FD',
           400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8',
           800: '#1E40AF', 900: '#1E3A8A',
           DEFAULT: 'var(--blue)',
         },
-        /* ── Pink (accent / highlight / danger family) ──────────────── */
+        /* ── "pink" slot — re-pointed at blue; the palette has no pink ─ */
         pink: {
           50:  '#FDF2F8', 100: '#FCE7F3', 200: '#FBCFE8', 300: '#F9A8D4',
           400: '#F472B6', 500: '#EC4899', 600: '#DB2777', 700: '#BE185D',
           800: '#9D174D', 900: '#831843',
           DEFAULT: 'var(--pink)',
         },
-        /* ── Yellow (attention / premium / warning) ────────────────── */
+        /* ── "yellow" slot — re-pointed at blue; no gold in the palette  */
         yellow: {
           50:  '#FEFCE8', 100: '#FEF9C3', 200: '#FEF08A', 300: '#FDE047',
           400: '#FACC15', 500: '#EAB308', 600: '#CA8A04', 700: '#A16207',
@@ -92,6 +92,18 @@ module.exports = {
         mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
       },
 
+      fontSize: {
+        xs: ['0.6875rem', { lineHeight: '1.05rem' }],
+        sm: ['0.75rem', { lineHeight: '1.1rem' }],
+        base: ['0.8125rem', { lineHeight: '1.25rem' }],
+        lg: ['0.875rem', { lineHeight: '1.35rem' }],
+        xl: ['1rem', { lineHeight: '1.45rem' }],
+        '2xl': ['1.125rem', { lineHeight: '1.5rem' }],
+        '3xl': ['1.35rem', { lineHeight: '1.6rem' }],
+        '4xl': ['1.55rem', { lineHeight: '1.85rem' }],
+        '5xl': ['1.85rem', { lineHeight: '2.15rem' }],
+      },
+
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
@@ -100,7 +112,7 @@ module.exports = {
 
       borderRadius: {
         xs: 'var(--r-xs)', sm: 'var(--r-sm)', md: 'var(--r-md)',
-        lg: 'var(--r-lg)', xl: 'var(--r-xl)', '2xl': '26px',
+        lg: 'var(--r-lg)', xl: 'var(--r-xl)', '2xl': '32px',
       },
 
       boxShadow: {

@@ -42,7 +42,7 @@ export default function AppBackground({
           <div
             aria-hidden="true"
             style={{
-              position: 'absolute', inset: 0, zIndex: -4,
+              position: 'fixed', inset: 0, zIndex: -4,
               backgroundImage: `url("${image}")`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
@@ -53,7 +53,7 @@ export default function AppBackground({
           <div
             aria-hidden="true"
             style={{
-              position: 'absolute', inset: 0, zIndex: -3,
+              position: 'fixed', inset: 0, zIndex: -3,
               background: 'var(--bg)',
               opacity: scrim,
             }}
@@ -68,24 +68,18 @@ export default function AppBackground({
         </>
       )}
 
+      {/* Orbs live in their own clipped layer: absolutely positioned decoration
+          outside the flow otherwise extends the document and leaves a dead
+          scroll area below the footer (a 30vw orb at bottom:-10% adds ~300px). */}
       {orbs && (
-        <>
-          <span
-            aria-hidden="true"
-            className="orb orb-brand anim-drift-a"
-            style={{ width: '34vw', height: '34vw', top: '-8%', left: '-6%' }}
-          />
-          <span
-            aria-hidden="true"
-            className="orb orb-blue anim-drift-b"
-            style={{ width: '30vw', height: '30vw', bottom: '-10%', right: '-6%' }}
-          />
-          <span
-            aria-hidden="true"
-            className="orb orb-pink anim-drift-c"
-            style={{ width: '22vw', height: '22vw', top: '42%', right: '10%' }}
-          />
-        </>
+        <div
+          aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}
+        >
+          <span className="orb orb-brand anim-drift-a" style={{ width: '34vw', height: '34vw', top: '-8%', left: '-6%' }} />
+          <span className="orb orb-blue anim-drift-b" style={{ width: '30vw', height: '30vw', bottom: '-10%', right: '-6%' }} />
+          <span className="orb orb-pink anim-drift-c" style={{ width: '22vw', height: '22vw', top: '42%', right: '10%' }} />
+        </div>
       )}
 
       {children}
