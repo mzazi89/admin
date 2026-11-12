@@ -11,7 +11,7 @@ import jwt from 'jsonwebtoken';
 import { neon } from '@neondatabase/serverless';
 
 import { PROTECTED_TABLES } from '@/lib/backup/scope';
-import { storeReady, readManifest } from '@/lib/backup/store';
+import { storeReady, readManifest, backendInfo } from '@/lib/backup/store';
 import { keyReady, keySource } from '@/lib/backup/crypto';
 import { runSnapshot, KEEP_SNAPSHOTS } from '@/lib/backup/snapshot';
 
@@ -59,6 +59,7 @@ export async function GET() {
 
   return NextResponse.json({
     storeReady: storeReady(),
+    backend: backendInfo(),
     keyReady: keyReady(),
     keySource: keySource(),
     keep: KEEP_SNAPSHOTS,

@@ -133,10 +133,10 @@ export default function AdminBackups() {
       {!status?.storeReady && (
         <Alert kind="warn" title="No backup store is connected">
           <p style={{ margin: '0 0 8px' }}>
-            The archive needs a place to live. In the Vercel dashboard open
-            <strong> Storage → Create → Blob</strong>, connect it to this project, then redeploy —
-            Vercel injects <code>BLOB_READ_WRITE_TOKEN</code> automatically. Until then the schedule
-            below does nothing and the button above will refuse.
+            The archive needs somewhere to write. Set <code>BACKUP_REPO</code> to a private
+            repository (<code>owner/name</code>) — <code>GITHUB_TOKEN</code> is already available —
+            or connect a Vercel Blob store. Snapshots are encrypted either way, so what leaves this
+            deployment is ciphertext.
           </p>
           <p style={{ margin: 0 }}>
             Encryption is already in place ({status?.keyReady ? `key from ${status.keySource}` : 'no key set'}),
@@ -148,7 +148,13 @@ export default function AdminBackups() {
       <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 16 }}>
         <StatCard label="Last snapshot" value={fmtWhen(latest?.createdAt)} hint={latest?.reason === 'cron' ? 'automatic' : latest ? 'manual' : 'no archive yet'} icon={<Icons.Clock size={16} />} />
         <StatCard label="Rows archived" value={latest?.rowTotal?.toLocaleString() || '0'} hint={`across ${status?.tables?.length || 0} tables`} icon={<Icons.Download size={16} />} tone="blue" />
-        <StatCard label="Stored size" value={fmtBytes(latest?.storedBytes)} hint="encrypted, compressed" icon={<Icons.Shield size={16} />} tone="good" />
+        <StatCard
+          label="Stored size"
+          value={fmtBytes(latest?.storedBytes)}
+          hint={status?.backend?.kind === 'github' ? `in ${status.backend.target}` : status?.backend?.kind === 'blob' ? 'Vercel Blob' : 'not connected'}
+          icon={<Icons.Shield size={16} />}
+          tone="good"
+        />
         <StatCard label="Database size" value={fmtBytes(status?.database?.bytes)} hint={status?.database?.error ? 'unreachable' : `${liveTotal.toLocaleString()} rows live`} icon={<Icons.Dashboard size={16} />} tone="pink" />
       </div>
 
