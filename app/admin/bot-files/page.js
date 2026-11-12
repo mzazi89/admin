@@ -7,9 +7,7 @@ import {
   PageHeader, Textarea, Toggle, humaniseError, useToast, Icons,
 } from '@/components/ui';
 
-const EMPTY = { name: '', variant: 'normal', version: '', description: '', price: '', active: true };
-
-const kb = (n) => (n >= 1024 * 1024 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+const EMPTY = { name: '', variant: 'normal', version: '', description: '', price: '', downloadUrl: '', active: true };
 
 // MZAZI ADMIN — bot files.
 //
@@ -24,7 +22,6 @@ export default function AdminBotFiles() {
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
-  const [payload, setPayload] = useState(null); // { name, mime, content, size }
   const [formError, setFormError] = useState('');
   const [saving, setSaving] = useState(false);
   const [target, setTarget] = useState(null);
@@ -47,23 +44,13 @@ export default function AdminBotFiles() {
 
   useEffect(() => { load(); }, [load]);
 
-  const pickFile = async (file) => {
-    if (!file) { setPayload(null); return; }
-    if (file.size > 5 * 1024 * 1024) { setFormError('Files must be 5 MB or smaller.'); return; }
-    const buf = await file.arrayBuffer();
-    let binary = '';
-    const bytes = new Uint8Array(buf);
-    for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
-    setPayload({ name: file.name, mime: file.type || 'application/octet-stream', content: btoa(binary), size: file.size });
-    setFormError('');
-    if (!form.name) setForm((f) => ({ ...f, name: file.name.replace(/\.[^.]+$/, '') }));
-  };
-
   const submit = async (e) => {
     e.preventDefault();
     setFormError('');
     if (!form.name.trim()) { setFormError('Give the file a product name.'); return; }
-    if (!payload) { setFormError('Choose the file to upload.'); return; }
+    const link = form.downloadUrl.trim();
+    if (!link) { setFormError('Paste the download link.'); return; }
+    if (!/^https?:\/\//i.test(link)) { setFormError('The download link must start with http:// or https://'); return; }
 
     setSaving(true);
     try {
@@ -76,9 +63,8 @@ export default function AdminBotFiles() {
           version: form.version.trim() || null,
           description: form.description.trim() || null,
           price: Number(form.price) || 0,
-          file_name: payload.name,
-          mime: payload.mime,
-          content: payload.content,
+          downloadUrl: link,
+          file_name: link.split('/').pop()?.slice(0, 120) || null,
           active: form.active,
         }),
       });
@@ -87,7 +73,6 @@ export default function AdminBotFiles() {
       toast.success(`${form.name} is live in the catalogue.`);
       setOpen(false);
       setForm(EMPTY);
-      setPayload(null);
       load();
     } catch (err) {
       setFormError(humaniseError(err, 'We could not save that file.'));
@@ -134,8 +119,8 @@ export default function AdminBotFiles() {
     <div>
       <PageHeader
         title="Bot files"
-        description="BugBot and standard bot packages sold on the catalogue."
-        actions={<Button onClick={() => setOpen(true)} icon={<Icons.Plus size={16} />}>Upload file</Button>}
+        description="BugBot and standard bot packages sold on the catalogue — each one a download link, not an upload."
+        actions={<Button onClick={() => setOpen(true)} icon={<Icons.Plus size={16} />}>Add file</Button>}
       />
 
       {error ? (
@@ -146,8 +131,8 @@ export default function AdminBotFiles() {
         <EmptyState
           icon={<Icons.Bot size={24} />}
           title="No bot files yet"
-          description="Upload a BugBot or standard bot package and it appears in the website catalogue immediately."
-          action={<Button onClick={() => setOpen(true)}>Upload the first file</Button>}
+          description="Add a download link and it goes on sale in the website catalogue immediately."
+          action={<Button onClick={() => setOpen(true)}>Add the first file</Button>}
         />
       ) : (
         <div className="grid gap-3">
@@ -163,8 +148,16 @@ export default function AdminBotFiles() {
                     {!f.active && <Badge tone="neutral">Hidden</Badge>}
                   </div>
                   <p className="text-muted" style={{ margin: '4px 0 0' }}>
-                    {f.version ? `v${f.version} · ` : ''}{kb(f.size_bytes)} · {f.price > 0 ? fmtKes(f.price) : 'Free'} · {f.downloads} downloads
+                    {f.version ? `v${f.version} · ` : ''}{f.price > 0 ? fmtKes(f.price) : 'Free'} · {f.downloads} downloads
+                    {f.download_url ? '' : ' · no link set'}
                   </p>
+                  {f.download_url && (
+                    <p style={{ margin: '4px 0 0', fontSize: 12 }}>
+                      <a href={f.download_url} target="_blank" rel="noreferrer" className="text-muted">
+                        {f.download_url.length > 64 ? `${f.download_url.slice(0, 64)}…` : f.download_url}
+                      </a>
+                    </p>
+                  )}
                   {f.description && <p className="text-muted" style={{ margin: '6px 0 0' }}>{f.description}</p>}
                 </div>
                 <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
@@ -203,15 +196,24 @@ export default function AdminBotFiles() {
             <Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What the file does, what is included, requirements." />
           </Field>
 
-          <Field label="File (zip, js, json — max 5 MB)" required>
-            <input
-              type="file"
-              className="input"
-              onChange={(e) => pickFile(e.target.files?.[0])}
-              accept=".zip,.js,.json,.rar,.tar,.gz,.txt"
+          <Field
+            label="Download link"
+            required
+            hint="Where the buyer gets the file — Drive, Dropbox, a GitHub release asset, your own host. Must start with https://"
+          >
+            <Input
+              type="url"
+              value={form.downloadUrl}
+              onChange={(e) => setForm({ ...form, downloadUrl: e.target.value })}
+              placeholder="https://drive.google.com/file/d/…"
+              autoComplete="off"
+              spellCheck={false}
             />
           </Field>
-          {payload && <p className="text-muted" style={{ margin: 0 }}>{payload.name} · {kb(payload.size)} ready to upload</p>}
+          <p className="text-muted" style={{ margin: 0, fontSize: 12 }}>
+            Nothing is uploaded here. The site hands this link to whoever has paid — check it opens
+            without a sign-in, or buyers will not be able to collect what they bought.
+          </p>
 
           <div className="flex items-center gap-2">
             <Toggle checked={form.active} onChange={(v) => setForm({ ...form, active: v })} label="Publish immediately" />
@@ -221,7 +223,7 @@ export default function AdminBotFiles() {
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Uploading…' : 'Upload file'}</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Publish file'}</Button>
           </div>
         </form>
       </Modal>
@@ -231,7 +233,7 @@ export default function AdminBotFiles() {
         onClose={() => setTarget(null)}
         onConfirm={remove}
         title="Delete this bot file?"
-        description={`${target?.name || 'This file'} will disappear from the catalogue. Existing buyers keep their download only if you re-upload it.`}
+        description={`${target?.name || 'This file'} will disappear from the catalogue. Existing buyers lose access to it.`}
         confirmLabel="Delete"
       />
     </div>

@@ -42,13 +42,20 @@ async function ensureTable() {
       file_name VARCHAR(120),
       mime VARCHAR(80) DEFAULT 'application/zip',
       size_bytes INTEGER DEFAULT 0,
-      content TEXT NOT NULL,
+      download_url TEXT,
+      content TEXT,
       active BOOLEAN DEFAULT true,
       downloads INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
+  // A file is a LINK now, not bytes: the artefact lives wherever it already
+  // lives (Drive, S3, a release asset) and this table holds the address. The
+  // content column stays for rows published before the change so they keep
+  // working, but nothing writes to it any more.
+  await sql`ALTER TABLE bot_files ADD COLUMN IF NOT EXISTS download_url TEXT`;
+  await sql`ALTER TABLE bot_files ALTER COLUMN content DROP NOT NULL`;
   ready = true;
 }
 
@@ -61,7 +68,7 @@ export async function GET() {
     await ensureTable();
     const files = await sql`
       SELECT id, slug, name, variant, version, description, price, file_name, mime,
-             size_bytes, active, downloads, created_at, updated_at
+             size_bytes, download_url, active, downloads, created_at, updated_at
       FROM bot_files
       ORDER BY created_at DESC
     `;
@@ -77,27 +84,34 @@ export async function POST(request) {
   try {
     await ensureTable();
     const body = await request.json();
-    const { name, variant, version, description, price, file_name, mime, content, active } = body || {};
+    const { name, variant, version, description, price, file_name, mime, downloadUrl, active } = body || {};
 
-    if (!name || !content) return NextResponse.json({ error: 'Name and file are required' }, { status: 400 });
+    if (!name) return NextResponse.json({ error: 'A name is required' }, { status: 400 });
     if (!['bugbot', 'normal'].includes(variant)) return NextResponse.json({ error: 'Variant must be bugbot or normal' }, { status: 400 });
 
-    const bytes = Buffer.from(String(content), 'base64');
-    if (!bytes.length) return NextResponse.json({ error: 'The uploaded file is empty' }, { status: 400 });
-    if (bytes.length > MAX_BYTES) return NextResponse.json({ error: 'File is larger than 5 MB' }, { status: 413 });
+    // The address is the deliverable, so it is the thing worth validating: an
+    // http(s) URL that a browser will actually follow. A typo here would only
+    // surface after somebody had paid, which is the worst possible time.
+    const url = String(downloadUrl || '').trim();
+    if (!url) return NextResponse.json({ error: 'A download link is required' }, { status: 400 });
+    let parsed;
+    try { parsed = new URL(url); } catch { parsed = null; }
+    if (!parsed || !['http:', 'https:'].includes(parsed.protocol)) {
+      return NextResponse.json({ error: 'The download link must start with http:// or https://' }, { status: 400 });
+    }
 
     let slug = slugify(`${name}-${version || ''}`);
     const clash = await sql`SELECT id FROM bot_files WHERE slug = ${slug} LIMIT 1`;
     if (clash[0]) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
 
     const rows = await sql`
-      INSERT INTO bot_files (slug, name, variant, version, description, price, file_name, mime, size_bytes, content, active)
+      INSERT INTO bot_files (slug, name, variant, version, description, price, file_name, mime, size_bytes, download_url, active)
       VALUES (
         ${slug}, ${name}, ${variant}, ${version || null}, ${description || null},
         ${Number(price) || 0}, ${file_name || null}, ${mime || 'application/zip'},
-        ${bytes.length}, ${String(content)}, ${active !== false}
+        0, ${url}, ${active !== false}
       )
-      RETURNING id, slug, name, variant, version, price, size_bytes, active
+      RETURNING id, slug, name, variant, version, price, download_url, active
     `;
     return NextResponse.json({ file: rows[0] }, { status: 201 });
   } catch (error) {
@@ -125,6 +139,7 @@ export async function PATCH(request) {
         version = COALESCE(${patch.version ?? null}, version),
         description = COALESCE(${patch.description ?? null}, description),
         price = COALESCE(${patch.price != null ? Number(patch.price) : null}, price),
+        download_url = COALESCE(${patch.downloadUrl ?? null}, download_url),
         active = COALESCE(${typeof patch.active === 'boolean' ? patch.active : null}, active),
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${id}
