@@ -143,7 +143,7 @@ export default function AdminBotFiles() {
     <div>
       <PageHeader
         title="Bot files"
-        description="BugBot and standard bot packages sold on the catalogue — each one a download link, not an upload."
+        description="BugBot and standard bot packages sold on the catalogue — uploaded here, or linked if you host them elsewhere."
         actions={<Button onClick={() => setOpen(true)} icon={<Icons.Plus size={16} />}>Add file</Button>}
       />
 
@@ -155,17 +155,17 @@ export default function AdminBotFiles() {
         <EmptyState
           icon={<Icons.Bot size={24} />}
           title="No bot files yet"
-          description="Add a download link and it goes on sale in the website catalogue immediately."
+          description="Upload a file or paste a download link, and it goes on sale in the catalogue immediately."
           action={<Button onClick={() => setOpen(true)}>Add the first file</Button>}
         />
       ) : (
         <div className="grid gap-3">
           {files.map((f) => (
-            <Card key={f.id}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <strong>{f.name}</strong>
+            <Card key={f.id} className="min-w-0">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <strong style={{ overflowWrap: 'anywhere' }}>{f.name}</strong>
                     <Badge tone={f.variant === 'bugbot' ? 'warn' : 'brand'}>
                       {f.variant === 'bugbot' ? 'BugBot' : 'Standard'}
                     </Badge>
@@ -177,14 +177,23 @@ export default function AdminBotFiles() {
                   </p>
                   {f.download_url && (
                     <p style={{ margin: '4px 0 0', fontSize: 12 }}>
-                      <a href={f.download_url} target="_blank" rel="noreferrer" className="text-muted">
+                      <a
+                        href={f.download_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-muted"
+                        style={{ overflowWrap: 'anywhere' }}
+                      >
                         {f.download_url.length > 64 ? `${f.download_url.slice(0, 64)}…` : f.download_url}
                       </a>
                     </p>
                   )}
                   {f.description && <p className="text-muted" style={{ margin: '6px 0 0' }}>{f.description}</p>}
                 </div>
-                <div className="flex items-center gap-2" style={{ flexShrink: 0 }}>
+                <div
+                  className="flex w-full items-center justify-between gap-2 border-t pt-3 sm:w-auto sm:justify-end sm:border-0 sm:pt-0"
+                  style={{ flexShrink: 0, borderColor: 'var(--line-soft)' }}
+                >
                   <Toggle checked={f.active} onChange={() => toggle(f)} disabled={busyId === f.id} label="Published" />
                   <Button variant="ghost" onClick={() => setTarget(f)} disabled={busyId === f.id}>Delete</Button>
                 </div>
@@ -207,7 +216,7 @@ export default function AdminBotFiles() {
             </select>
           </Field>
 
-          <div className="grid gap-3" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="Version">
               <Input value={form.version} onChange={(e) => setForm({ ...form, version: e.target.value })} placeholder="1.4.2" maxLength={24} />
             </Field>
