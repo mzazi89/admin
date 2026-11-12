@@ -56,6 +56,7 @@ const GROUPS = [
       { href: '/admin/inquiries', label: 'Inquiries', icon: Icons.Help },
       { href: '/admin/testimonials', label: 'Testimonials', icon: Icons.CheckCircle },
       { href: '/api/admin', label: 'API Admin', icon: Icons.Link },
+      { href: '/admin/backup', label: 'Backups', icon: Icons.Refresh },
       { href: '/admin/settings', label: 'Settings', icon: Icons.Settings },
     ],
   },

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.0",
+    "@vercel/blob": "^2.9.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "cookies-next": "^4.3.0",
