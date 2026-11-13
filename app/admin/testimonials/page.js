@@ -13,7 +13,8 @@ function Stars({ value }) {
 export default function AdminTestimonials() {
   const router = useRouter();
   const [list, setList] = useState(null);
-  const [tab, setTab] = useState('pending');
+  // Reviews publish themselves, so the default view is what the public sees.
+  const [tab, setTab] = useState('approved');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
@@ -54,6 +55,11 @@ export default function AdminTestimonials() {
       <div className="mb-8">
         <div className="eyebrow mb-4">Social proof</div>
         <h1 className="section-title" style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)' }}>Testimonials</h1>
+        <p className="lede mt-3" style={{ fontSize: '0.92rem', maxWidth: 560 }}>
+          Reviews go live the moment a customer submits one — nothing here needs approving first.
+          This page is for taking one down: <strong>Hide</strong> keeps the row but pulls it off the site,
+          <strong> Delete</strong> removes it for good.
+        </p>
       </div>
 
       {msg && (
@@ -64,7 +70,7 @@ export default function AdminTestimonials() {
 
       {/* Segmented filter */}
       <div className="flex gap-2 mb-6">
-        {[['pending', 'Pending'], ['approved', 'Approved'], ['all', 'All']].map(([v, l]) => (
+        {[['approved', 'Live'], ['pending', 'Hidden'], ['all', 'All']].map(([v, l]) => (
           <button key={v} onClick={() => setTab(v)}
             className="mono btn"
             style={{
@@ -83,7 +89,9 @@ export default function AdminTestimonials() {
         <div className="flex items-center justify-center py-16"><div className="spinner" /></div>
       ) : list.length === 0 ? (
         <div className="card p-10 text-center">
-          <p className="mono" style={{ color: 'var(--dim)' }}>No {tab} testimonials.</p>
+          <p className="mono" style={{ color: 'var(--dim)' }}>
+            {tab === 'approved' ? 'Nothing live yet.' : tab === 'pending' ? 'Nothing hidden.' : 'No reviews yet.'}
+          </p>
         </div>
       ) : (
         <div className="card" style={{ padding: '8px 24px' }}>
@@ -95,7 +103,7 @@ export default function AdminTestimonials() {
                   <Stars value={t.rating} />
                 </div>
                 <span className={`tag ${t.approved ? 'tag-green' : 'tag-amber'}`}>
-                  {t.approved ? 'Approved' : 'Pending'}
+                  {t.approved ? 'Live' : 'Hidden'}
                 </span>
               </div>
               <p className="lede mb-2" style={{ fontSize: '0.92rem', maxWidth: 640 }}>{t.message}</p>
@@ -106,7 +114,7 @@ export default function AdminTestimonials() {
                 <div className="flex gap-2">
                   {!t.approved && (
                     <button onClick={() => approve(t.id)} disabled={busy} className="btn btn-primary"
-                      style={{ fontSize: 12, padding: '7px 14px' }}>Approve</button>
+                      style={{ fontSize: 12, padding: '7px 14px' }}>Publish</button>
                   )}
                   {t.approved && (
                     <button onClick={() => hide(t.id)} disabled={busy} className="btn btn-ghost"
