@@ -88,6 +88,23 @@ const GROUPS = [
     ],
   },
   {
+    // Direct Safaricom rail. These values make the M-PESA tile appear on the deposit
+    // page and are read by the site (not the bots), so a change takes effect within
+    // a minute without a redeploy.
+    title: 'M-PESA (Daraja)',
+    icon: <Icons.Phone size={17} />,
+    description: 'Lipa na M-PESA online. Leave blank to offer Paystack only; the M-PESA tile hides itself when these are empty.',
+    fields: [
+      { key: 'mpesa_env', label: 'Environment', placeholder: 'sandbox or production', type: 'text', hint: 'Use sandbox until Safaricom gives you a production app.' },
+      { key: 'mpesa_shortcode', label: 'Shortcode', placeholder: '174379 or your paybill / till', type: 'text' },
+      { key: 'mpesa_type', label: 'Channel', placeholder: 'paybill or till', type: 'text', hint: 'till sends CustomerBuyGoodsOnline instead of CustomerPayBillOnline.' },
+      { key: 'mpesa_consumer_key', label: 'Consumer key', placeholder: 'from the Daraja app', type: 'password' },
+      { key: 'mpesa_consumer_secret', label: 'Consumer secret', placeholder: 'from the Daraja app', type: 'password' },
+      { key: 'mpesa_passkey', label: 'Lipa na M-PESA passkey', placeholder: 'bfb279f9…', type: 'password' },
+      { key: 'mpesa_callback_url', label: 'Callback URL', placeholder: 'https://www.mzazi.shop/api/mpesa/callback', type: 'text', hint: 'Must be public https. Blank = the default above.' },
+    ],
+  },
+  {
     title: 'System',
     icon: <Icons.Settings size={17} />,
     // Renders the panel manager above these fields — see the 'pterodactyl' branch

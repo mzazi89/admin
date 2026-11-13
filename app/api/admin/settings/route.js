@@ -36,6 +36,10 @@ const ALLOWED_KEYS = [
   'autoJoinGroupLink',
   // Paystack
   'paystack_secret_key', 'paystack_public_key',
+  // M-PESA / Daraja (read by the website's deposit rail, not by the bots)
+  'mpesa_env', 'mpesa_shortcode', 'mpesa_type', 'mpesa_consumer_key',
+  'mpesa_consumer_secret', 'mpesa_passkey', 'mpesa_callback_url',
+  'mpesa_callback_secret',
   // Deposit offer (site wallet 2x promo)
   'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl
