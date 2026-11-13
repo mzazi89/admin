@@ -39,7 +39,7 @@ const ALLOWED_KEYS = [
   // M-PESA / Daraja (read by the website's deposit rail, not by the bots)
   'mpesa_env', 'mpesa_shortcode', 'mpesa_type', 'mpesa_consumer_key',
   'mpesa_consumer_secret', 'mpesa_passkey', 'mpesa_callback_url',
-  'mpesa_callback_secret',
+  'mpesa_callback_secret', 'mpesa_party_b',
   // Deposit offer (site wallet 2x promo)
   'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl

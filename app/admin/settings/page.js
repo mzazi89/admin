@@ -98,6 +98,7 @@ const GROUPS = [
       { key: 'mpesa_env', label: 'Environment', placeholder: 'sandbox or production', type: 'text', hint: 'Use sandbox until Safaricom gives you a production app.' },
       { key: 'mpesa_shortcode', label: 'Shortcode', placeholder: '174379 or your paybill / till', type: 'text' },
       { key: 'mpesa_type', label: 'Channel', placeholder: 'paybill or till', type: 'text', hint: 'till sends CustomerBuyGoodsOnline instead of CustomerPayBillOnline.' },
+      { key: 'mpesa_party_b', label: 'Agent / head-office number (till only)', placeholder: '600000', type: 'text', hint: 'The paybill the till sits under. Safaricom rejects a till prompt when this and the store number are the same — "Agent number and Store number do not match".' },
       { key: 'mpesa_consumer_key', label: 'Consumer key', placeholder: 'from the Daraja app', type: 'password' },
       { key: 'mpesa_consumer_secret', label: 'Consumer secret', placeholder: 'from the Daraja app', type: 'password' },
       { key: 'mpesa_passkey', label: 'Lipa na M-PESA passkey', placeholder: 'bfb279f9…', type: 'password' },
