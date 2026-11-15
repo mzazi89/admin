@@ -91,6 +91,20 @@ const GROUPS = [
     // Direct Safaricom rail. These values make the M-PESA tile appear on the deposit
     // page and are read by the site (not the bots), so a change takes effect within
     // a minute without a redeploy.
+    // Safaricom dynamic-offers: the fulfilment call behind /data. The path and
+    // body are configuration because the published contract is thin — whoever
+    // has the portal's API definition can paste it here without a deploy.
+    title: 'Data bundles (offers)',
+    icon: <Icons.Wifi size={17} />,
+    fields: [
+      { key: 'offers_base', label: 'Base URL', type: 'text', placeholder: 'https://sandbox.safaricom.co.ke', hint: 'Leave blank to follow the M-PESA environment. Credentials must belong to the same environment as this URL.' },
+      { key: 'offers_path', label: 'Path suffix', placeholder: 'e.g. purchase', type: 'text', hint: 'Appended to /v1/dynamic-offers/ — from the API definition in the Safaricom portal.' },
+      { key: 'offers_method', label: 'Method', placeholder: 'POST', type: 'text' },
+      { key: 'offers_body', label: 'Body template (JSON)', type: 'textarea', placeholder: '{"msisdn":"{{phone}}","amount":"{{amount}}","offer":"{{plan}}","reference":"{{reference}}"}', hint: 'Placeholders: {{phone}} {{amount}} {{plan}} {{reference}}.' },
+      { key: 'offers_ok', label: 'Success marker', type: 'text', placeholder: 'e.g. "Success"', hint: 'Optional substring that must appear in a 2xx reply for the order to count as delivered.' },
+    ],
+  },
+  {
     title: 'M-PESA (Daraja)',
     icon: <Icons.Phone size={17} />,
     description: 'Lipa na M-PESA online. Leave blank to offer Paystack only; the M-PESA tile hides itself when these are empty.',
