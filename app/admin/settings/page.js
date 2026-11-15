@@ -94,14 +94,20 @@ const GROUPS = [
     // Safaricom dynamic-offers: the fulfilment call behind /data. The path and
     // body are configuration because the published contract is thin — whoever
     // has the portal's API definition can paste it here without a deploy.
-    title: 'Data bundles (offers)',
+    title: 'Data bundles (Dynamic Offers)',
     icon: <Icons.Wifi size={17} />,
     fields: [
-      { key: 'offers_base', label: 'Base URL', type: 'text', placeholder: 'https://sandbox.safaricom.co.ke', hint: 'Leave blank to follow the M-PESA environment. Credentials must belong to the same environment as this URL.' },
-      { key: 'offers_path', label: 'Path suffix', placeholder: 'e.g. purchase', type: 'text', hint: 'Appended to /v1/dynamic-offers/ — from the API definition in the Safaricom portal.' },
-      { key: 'offers_method', label: 'Method', placeholder: 'POST', type: 'text' },
-      { key: 'offers_body', label: 'Body template (JSON)', type: 'textarea', placeholder: '{"msisdn":"{{phone}}","amount":"{{amount}}","offer":"{{plan}}","reference":"{{reference}}"}', hint: 'Placeholders: {{phone}} {{amount}} {{plan}} {{reference}}.' },
-      { key: 'offers_ok', label: 'Success marker', type: 'text', placeholder: 'e.g. "Success"', hint: 'Optional substring that must appear in a 2xx reply for the order to count as delivered.' },
+      { key: 'daraja_env', label: 'Environment', placeholder: 'sandbox or production', type: 'text', hint: 'Sandbox and production have separate credentials and separate tokens.' },
+      { key: 'daraja_consumer_key', label: 'Daraja consumer key', type: 'password' },
+      { key: 'daraja_consumer_secret', label: 'Daraja consumer secret', type: 'password' },
+      { key: 'offers_list_path', label: 'Offers — path', placeholder: 'from your API definition', type: 'text', hint: 'Appended to /v1/dynamic-offers/. Used by POST /api/data/offers.' },
+      { key: 'offers_list_body', label: 'Offers — body', type: 'textarea', placeholder: '{"msisdn":"{{msisdn}}"}' },
+      { key: 'offers_buy_path', label: 'Purchase — path', type: 'text' },
+      { key: 'offers_buy_body', label: 'Purchase — body', type: 'textarea', placeholder: '{"msisdn":"{{msisdn}}","offerId":"{{offer}}","reference":"{{reference}}"}' },
+      { key: 'offers_status_path', label: 'Status — path', type: 'text' },
+      { key: 'offers_status_body', label: 'Status — body', type: 'textarea', placeholder: '{"reference":"{{reference}}"}' },
+      { key: 'offers_method', label: 'HTTP method', placeholder: 'POST', type: 'text' },
+      { key: 'offers_ok', label: 'Success marker', type: 'text', placeholder: 'e.g. Success', hint: 'Optional substring that must appear in a 2xx reply for it to count as confirmed.' },
     ],
   },
   {

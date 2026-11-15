@@ -36,7 +36,11 @@ const ALLOWED_KEYS = [
   'autoJoinGroupLink',
   // Paystack
   'paystack_secret_key', 'paystack_public_key',
-  'offers_base', 'offers_path', 'offers_method', 'offers_body', 'offers_ok',
+  'daraja_env', 'daraja_consumer_key', 'daraja_consumer_secret',
+  'offers_method', 'offers_ok',
+  'offers_list_path', 'offers_list_body',
+  'offers_buy_path', 'offers_buy_body',
+  'offers_status_path', 'offers_status_body',
   // M-PESA / Daraja (read by the website's deposit rail, not by the bots)
   'mpesa_env', 'mpesa_shortcode', 'mpesa_type', 'mpesa_consumer_key',
   'mpesa_consumer_secret', 'mpesa_passkey', 'mpesa_callback_url',
