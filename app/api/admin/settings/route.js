@@ -38,6 +38,7 @@ const ALLOWED_KEYS = [
   'paystack_secret_key', 'paystack_public_key',
   'daraja_env', 'daraja_consumer_key', 'daraja_consumer_secret',
   'offers_method', 'offers_ok',
+  'sms_api_key',
   'offers_list_path', 'offers_list_body',
   'offers_buy_path', 'offers_buy_body',
   'offers_status_path', 'offers_status_body',

@@ -88,6 +88,21 @@ const GROUPS = [
     ],
   },
   {
+    // Temporary numbers (5SIM). The site reads this row with a 60-second cache,
+    // so a pasted key switches receiving on without a redeploy.
+    title: 'Temporary numbers (5SIM)',
+    icon: <Icons.Phone size={17} />,
+    fields: [
+      {
+        key: 'sms_api_key',
+        label: 'API token',
+        placeholder: 'Paste the token from your 5SIM profile',
+        type: 'password',
+        hint: '5SIM → Profile → API token. Buying needs a funded balance; browsing the catalogue works without it.',
+      },
+    ],
+  },
+  {
     // Direct Safaricom rail. These values make the M-PESA tile appear on the deposit
     // page and are read by the site (not the bots), so a change takes effect within
     // a minute without a redeploy.
