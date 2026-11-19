@@ -46,6 +46,8 @@ const ALLOWED_KEYS = [
   'mpesa_env', 'mpesa_shortcode', 'mpesa_type', 'mpesa_consumer_key',
   'mpesa_consumer_secret', 'mpesa_passkey', 'mpesa_callback_url',
   'mpesa_callback_secret', 'mpesa_party_b',
+  // M-PESA B2C (wallet withdrawals)
+  'mpesa_b2c_shortcode', 'mpesa_b2c_initiator', 'mpesa_b2c_security_credential', 'mpesa_b2c_command',
   // Deposit offer (site wallet 2x promo)
   'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl

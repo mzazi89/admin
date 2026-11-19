@@ -141,6 +141,17 @@ const GROUPS = [
     ],
   },
   {
+    title: 'M-PESA payouts (B2C)',
+    icon: <Icons.ArrowUpRight size={17} />,
+    description: 'Lets customers withdraw a wallet balance to their phone. Without these, the Withdraw button explains that payouts are not enabled — no money is ever taken for a payout that cannot be sent.',
+    fields: [
+      { key: 'mpesa_b2c_shortcode', label: 'B2C shortcode', placeholder: '600000', type: 'text', hint: 'The shortcode the payout is debited from. Often the same paybill as deposits. Blank = reuse the deposit shortcode.' },
+      { key: 'mpesa_b2c_initiator', label: 'Initiator name', placeholder: 'testapi', type: 'text', hint: 'From the Daraja portal, on the app that has the B2C product enabled.' },
+      { key: 'mpesa_b2c_security_credential', label: 'Security credential', placeholder: 'base64…', type: 'password', hint: "The initiator password encrypted with Safaricom's public certificate (RSA/ECB/PKCS1). Or set MPESA_B2C_CERT + MPESA_B2C_INITIATOR_PASSWORD in the environment and leave this blank." },
+      { key: 'mpesa_b2c_command', label: 'Command', placeholder: 'BusinessPayment', type: 'text', hint: 'BusinessPayment (default), SalaryPayment or PromotionPayment.' },
+    ],
+  },
+  {
     title: 'System',
     icon: <Icons.Settings size={17} />,
     // Renders the panel manager above these fields — see the 'pterodactyl' branch
