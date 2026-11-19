@@ -149,6 +149,9 @@ const GROUPS = [
       { key: 'cars_whatsapp', label: 'WhatsApp number', placeholder: '2547xxxxxxxx', type: 'text', hint: 'Enquiries open a WhatsApp chat with this number, pre-filled with the vehicle name. Blank = use the phone above.' },
       { key: 'cars_address', label: 'Yard address', placeholder: 'Mombasa Road, Nairobi', type: 'text', hint: 'Shown on the showroom strip and on each vehicle page.' },
       { key: 'cars_hours', label: 'Opening hours', placeholder: 'Mon–Sat, 8am – 6pm', type: 'text', hint: 'Shown under the address.' },
+      { key: 'cars_sales_name', label: 'Sales representative', placeholder: 'Mercy Mwende', type: 'text', hint: 'Named on every vehicle page, and in the WhatsApp message a customer sends.' },
+      { key: 'cars_sales_whatsapp', label: 'Sales WhatsApp', placeholder: '2547xxxxxxxx', type: 'text', hint: 'Enquiries go here instead of the showroom number. Blank = use the showroom WhatsApp above.' },
+      { key: 'cars_sales_title', label: 'Sales title', placeholder: 'sales representative', type: 'text', hint: 'Wording used after the name in the enquiry message.' },
     ],
   },
   {

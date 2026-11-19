@@ -50,6 +50,7 @@ const ALLOWED_KEYS = [
   'mpesa_b2c_shortcode', 'mpesa_b2c_initiator', 'mpesa_b2c_security_credential', 'mpesa_b2c_command',
   // Golden Lion Motors showroom
   'cars_phone', 'cars_whatsapp', 'cars_address', 'cars_hours',
+  'cars_sales_name', 'cars_sales_whatsapp', 'cars_sales_title',
   // Deposit offer (site wallet 2x promo)
   'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl
