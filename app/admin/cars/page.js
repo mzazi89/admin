@@ -20,7 +20,7 @@ import {
   Modal, PageHeader, Select, Skeleton, Textarea, Toggle, humaniseError, useToast, Icons,
 } from '@/components/ui';
 
-const BODY_TYPES = ['Pickup', 'Light Truck', 'Heavy Truck', 'Van', 'Bus', 'SUV', 'Tractor'];
+const BODY_TYPES = ['Pickup', 'Light Truck', 'Heavy Truck', 'Prime Mover', 'Tipper Truck', 'Van', 'Bus', 'SUV', 'Tractor'];
 const CONDITIONS = ['Brand new', 'Foreign used', 'Locally used', 'Refurbished'];
 const FUELS = ['Diesel', 'Petrol', 'Electric', 'Hybrid'];
 const TRANSMISSIONS = ['Manual', 'Automatic'];
@@ -30,7 +30,7 @@ const blank = () => ({
   title: '', model: '', body: 'Pickup', year: new Date().getFullYear(), price_kes: '',
   negotiable: true, mileage_km: '', fuel: 'Diesel', transmission: 'Manual', drive: '4x2',
   engine: '', seats: '', payload_kg: '', color: '', condition: 'Brand new',
-  description: '', features: '', status: 'draft', featured: false,
+  description: '', features: '', specs: '', currency: 'KES', status: 'draft', featured: false,
 });
 
 /** 1600 px, JPEG — a 4 MB camera photo lands around 300 KB. */
@@ -113,7 +113,12 @@ export default function AdminCars() {
       const res = await fetch(`/api/admin/cars/${id}`, { cache: 'no-store' });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(d.error || 'Could not open that vehicle');
-      setEditing({ ...d.car, features: (d.car.features || []).join('\n'), images: d.car.images || [] });
+      setEditing({
+        ...d.car,
+        features: (d.car.features || []).join('\n'),
+        specs: (d.car.specs || []).map((r) => `${r.label}: ${r.value}`).join('\n'),
+        images: d.car.images || [],
+      });
     } catch (e) {
       toast.error(humaniseError(e, 'Could not open that vehicle'));
     }
@@ -123,7 +128,11 @@ export default function AdminCars() {
     if (!editing) return;
     setSaving(true);
     try {
-      const payload = { ...editing, features: String(editing.features || '').split('\n').filter((f) => f.trim()) };
+      const payload = {
+        ...editing,
+        features: String(editing.features || '').split('\n').filter((f) => f.trim()),
+        specs: String(editing.specs || '').split('\n').filter((l) => l.includes(':')),
+      };
       const res = await fetch(
         editing.id ? `/api/admin/cars/${editing.id}` : '/api/admin/cars',
         {
@@ -137,7 +146,7 @@ export default function AdminCars() {
 
       // A brand-new listing stays open so photos can be added straight away.
       if (!editing.id) {
-        setEditing({ ...d.car, features: (d.car.features || []).join('\n'), images: [] });
+        setEditing({ ...d.car, features: (d.car.features || []).join('\n'), specs: '', images: [] });
         toast.success('Saved — now add photos');
         await load();
       } else {
@@ -300,7 +309,9 @@ export default function AdminCars() {
                   </div>
                 </td>
                 <td data-label="Price" style={{ fontWeight: 700 }}>
-                  {c.price_kes ? fmtKes(Number(c.price_kes)) : <span style={{ color: 'var(--dim)', fontWeight: 500 }}>On request</span>}
+                  {c.price_kes
+                    ? `${c.currency || 'KES'} ${Number(c.price_kes).toLocaleString('en-KE')}`
+                    : <span style={{ color: 'var(--dim)', fontWeight: 500 }}>On request</span>}
                 </td>
                 <td data-label="Status">
                   <Badge tone={STATUS_TONE[c.status] || 'brand'}>{c.status}</Badge>
@@ -378,8 +389,14 @@ export default function AdminCars() {
                     {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
                   </Select>
                 </Field>
-                <Field label="Price (KES)" hint="Leave blank to show “Price on request”.">
-                  <Input type="number" value={editing.price_kes || ''} onChange={set('price_kes')} placeholder="4250000" />
+                <Field label="Price" hint="Leave blank to show “Price on request”.">
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <Select value={editing.currency || 'KES'} onChange={set('currency')} style={{ width: 84 }}>
+                      <option value="KES">KES</option>
+                      <option value="USD">USD</option>
+                    </Select>
+                    <Input type="number" value={editing.price_kes || ''} onChange={set('price_kes')} placeholder="6747000" />
+                  </div>
                 </Field>
                 <Field label="Mileage (km)">
                   <Input type="number" value={editing.mileage_km ?? ''} onChange={set('mileage_km')} placeholder="0" />
@@ -415,6 +432,10 @@ export default function AdminCars() {
 
               <Field label="Description" hint="Condition, service history, what it is good for.">
                 <Textarea rows={5} value={editing.description || ''} onChange={set('description')} />
+              </Field>
+
+              <Field label="Extra specifications" hint="One per line, as “Label: value”. Appears in the spec grid after the fixed fields.">
+                <Textarea rows={5} value={editing.specs || ''} onChange={set('specs')} placeholder={'Wheelbase: 3,300 + 1,350 mm\nTyres: 315/80R22.5 18PR\nFuel tank: 700 L'} />
               </Field>
 
               <Field label="Features" hint="One per line.">
