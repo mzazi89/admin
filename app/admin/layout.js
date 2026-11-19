@@ -25,6 +25,7 @@ const GROUPS = [
       { href: '/admin/sessions', label: 'Devices', icon: Icons.Phone },
       { href: '/admin/subscriptions', label: 'Subscriptions', icon: Icons.CreditCard },
       { href: '/admin/transactions', label: 'Payments', icon: Icons.Wallet },
+      { href: '/admin/withdrawals', label: 'Payouts', icon: Icons.Send },
       { href: '/admin/vouchers', label: 'Coupons', icon: Icons.Ticket },
     ],
   },
