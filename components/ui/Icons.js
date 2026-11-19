@@ -98,3 +98,5 @@ export const WhatsApp = ({ size = 18, label, ...rest }) => (
 
 export const Icon = Svg;
 export const Chat = (p) => <Svg {...p}><path d="M20.5 12.4c0 4-3.8 7.2-8.5 7.2-1 0-2-.15-2.9-.42L4.5 21l1.2-4.1A6.9 6.9 0 0 1 3.5 12.4c0-4 3.8-7.2 8.5-7.2s8.5 3.2 8.5 7.2Z" /></Svg>;
+
+export const Car = (p) => <Svg {...p}><path d="M3 13.5 4.6 9a2 2 0 0 1 1.9-1.3h11a2 2 0 0 1 1.9 1.3L21 13.5V18h-2.2M3 18h2.2" /><path d="M3 13.5h18" /><circle cx="7.4" cy="18" r="1.9" /><circle cx="16.6" cy="18" r="1.9" /></Svg>;

@@ -141,6 +141,17 @@ const GROUPS = [
     ],
   },
   {
+    title: 'Car showroom',
+    icon: <Icons.Car size={17} />,
+    description: 'Shown on mzazi.shop/cars and on every vehicle page. Leave blank and the page simply omits the call and WhatsApp buttons.',
+    fields: [
+      { key: 'cars_phone', label: 'Showroom phone', placeholder: '+254 7xx xxx xxx', type: 'text', hint: 'Used for the “call” button. Include the country code.' },
+      { key: 'cars_whatsapp', label: 'WhatsApp number', placeholder: '2547xxxxxxxx', type: 'text', hint: 'Enquiries open a WhatsApp chat with this number, pre-filled with the vehicle name. Blank = use the phone above.' },
+      { key: 'cars_address', label: 'Yard address', placeholder: 'Mombasa Road, Nairobi', type: 'text', hint: 'Shown on the showroom strip and on each vehicle page.' },
+      { key: 'cars_hours', label: 'Opening hours', placeholder: 'Mon–Sat, 8am – 6pm', type: 'text', hint: 'Shown under the address.' },
+    ],
+  },
+  {
     title: 'M-PESA payouts (B2C)',
     icon: <Icons.ArrowUpRight size={17} />,
     description: 'Lets customers withdraw a wallet balance to their phone. Without these, the Withdraw button explains that payouts are not enabled — no money is ever taken for a payout that cannot be sent.',

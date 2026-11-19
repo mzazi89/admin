@@ -48,6 +48,8 @@ const ALLOWED_KEYS = [
   'mpesa_callback_secret', 'mpesa_party_b',
   // M-PESA B2C (wallet withdrawals)
   'mpesa_b2c_shortcode', 'mpesa_b2c_initiator', 'mpesa_b2c_security_credential', 'mpesa_b2c_command',
+  // Golden Lion Motors showroom
+  'cars_phone', 'cars_whatsapp', 'cars_address', 'cars_hours',
   // Deposit offer (site wallet 2x promo)
   'depositOfferEnabled', 'depositOfferMultiplier', 'depositOfferAdText',
   // Pterodactyl
