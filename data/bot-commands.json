@@ -20565,7 +20565,7 @@
    "adminOnly": true,
    "groupOnly": true,
    "enabled": true,
-   "code": "if (!isGroup) return mzazireply(`❌ ${botName.toUpperCase()} - Group only!`);\n  if (!isAdmin && !isOwner) return mzazireply(`❌ ${botName.toUpperCase()} - Admin only!`);\n\n  if (!text) return mzazireply(`⚠️ ${botName.toUpperCase()} - Provide message to send!`);\n\n  const members = participants.map(p => p.id);\n\n  await mzazi.sendMessage(sender, {\n    text: text,\n    mentions: members\n  });",
+   "code": "if (!isGroup) return mzazireply(`❌ ${botName.toUpperCase()} - Group only!`);\nif (!isAdmin && !isOwner) return mzazireply(`❌ ${botName.toUpperCase()} - Admin only!`);\nif (!text) return mzazireply(`⚠️ ${botName.toUpperCase()} - Provide message to send!`);\nconst members = participants.map(p => p.id);\n// Raw socket on purpose: this text is the admin's, so the brand restyler must\n// not rewrite it (it maps ASCII to italic letterforms and breaks any URL).\nconst sock = typeof rawSocket !== \"undefined\" && rawSocket ? rawSocket : mzazi;\nawait sock.sendMessage(sender, { text: text, mentions: members });",
    "profile": "xmd"
   },
   {
