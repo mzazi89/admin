@@ -884,32 +884,6 @@
    "profile": "xmd"
   },
   {
-   "name": "all",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "all",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
    "name": "allgroups",
    "aliases": [],
    "description": "List all bot groups",
@@ -4188,32 +4162,6 @@
    "groupOnly": true,
    "enabled": true,
    "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '📢 Admins!';\nconst list = groupAdmins || [];\nconst mentions = list.filter(Boolean);\nconst tags = mentions.map((a) => '@' + String(a).split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "callall",
-   "aliases": [],
-   "description": "Call/tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "callall",
-   "aliases": [],
-   "description": "Call/tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
    "profile": "xmd"
   },
   {
@@ -12295,58 +12243,6 @@
    "profile": "xmd"
   },
   {
-   "name": "hidetag",
-   "aliases": [],
-   "description": "",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(`❌ ${botName.toUpperCase()} - Group only!`);\n  if (!isAdmin && !isOwner) return mzazireply(`❌ ${botName.toUpperCase()} - Admin only!`);\n\n  if (!text) return mzazireply(`⚠️ ${botName.toUpperCase()} - Provide message to send!`);\n\n  const members = participants.map(p => p.id);\n\n  await mzazi.sendMessage(sender, {\n    text: text,\n    mentions: members\n  });",
-   "profile": ""
-  },
-  {
-   "name": "hidetag",
-   "aliases": [],
-   "description": "",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(`❌ ${botName.toUpperCase()} - Group only!`);\n  if (!isAdmin && !isOwner) return mzazireply(`❌ ${botName.toUpperCase()} - Admin only!`);\n\n  if (!text) return mzazireply(`⚠️ ${botName.toUpperCase()} - Provide message to send!`);\n\n  const members = participants.map(p => p.id);\n\n  await mzazi.sendMessage(sender, {\n    text: text,\n    mentions: members\n  });",
-   "profile": "xmd"
-  },
-  {
-   "name": "hidetagall",
-   "aliases": [],
-   "description": "Tag all members (hidden text)",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "hidetagall",
-   "aliases": [],
-   "description": "Tag all members (hidden text)",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
    "name": "highcard",
    "aliases": [],
    "description": "🃏 High card game",
@@ -16712,58 +16608,6 @@
    "profile": "xmd"
   },
   {
-   "name": "mention",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "mention",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "mentionall",
-   "aliases": [],
-   "description": "Mention all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "mentionall",
-   "aliases": [],
-   "description": "Mention all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
    "name": "menu0",
    "aliases": [],
    "description": "Load menu image",
@@ -18273,58 +18117,6 @@
    "profile": "xmd"
   },
   {
-   "name": "notifyall",
-   "aliases": [],
-   "description": "Notify all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "notifyall",
-   "aliases": [],
-   "description": "Notify all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "notifyall2",
-   "aliases": [],
-   "description": "Notify all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "notifyall2",
-   "aliases": [],
-   "description": "Notify all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
    "name": "numberedlist",
    "aliases": [
     "numlist",
@@ -19699,32 +19491,6 @@
    "groupOnly": false,
    "enabled": true,
    "code": "try {\n\nconst start = Date.now();\n\nawait mzazi.sendPresenceUpdate(\"composing\", sender);\n\nconst speed = Date.now() - start;\n\nconst used = process.memoryUsage();\n\nconst ram = `${(used.heapUsed / 1024 / 1024).toFixed(2)} MB`;\nconst total = `${(used.heapTotal / 1024 / 1024).toFixed(2)} MB`;\n\nconst txt = `\n╔══════════════╗\n║ PING STATUS\n╚══════════════╝\n\n⚡ Speed: ${speed} ms\n🕒 Runtime: ${runtime(process.uptime())}\n💾 RAM Used: ${ram}\n📦 Total RAM: ${total}\n🖥 Platform: ${os.platform()}\n📱 Device: ${os.hostname()}\n🚀 Status: Online\n`;\n\nmzazireply(txt);\n\n} catch (e) {\n\nlogger.info(e);\n\nmzazireply(\"❌ Failed to check ping\");\n\n}",
-   "profile": "xmd"
-  },
-  {
-   "name": "pingall",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "pingall",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
    "profile": "xmd"
   },
   {
@@ -26279,32 +26045,6 @@
    "profile": "xmd"
   },
   {
-   "name": "tag",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "tag",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
    "name": "tagadmin",
    "aliases": [
     "mentionadmin"
@@ -26332,58 +26072,6 @@
    "groupOnly": true,
    "enabled": true,
    "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\n        const adminTag = text || \"📢 Attention admins!\";\n        let adminTagTxt = `👑 *ADMIN MENTION*\\n\\n${adminTag}\\n\\n`;\n        for (const jid of groupAdmins) { adminTagTxt += `➤ @${jidToNumber(await resolveJid(jid))}\\n`; }\n        await mzazi.sendMessage(sender, { text: adminTagTxt, mentions: groupAdmins }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "tagall",
-   "aliases": [],
-   "description": "🎀 Cute header",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ This command can only be used in groups.\");\n    if (!isAdmin && !isOwner) return mzazireply(\"❌ Only admins or owner can tag all members.\");\n    \n\n    try {\n        const metadata = await mzazi.groupMetadata(sender);\n        const participants = metadata.participants || [];\n        const memberCount = participants.length;\n\n        if (memberCount === 0) return mzazireply(\"❌ No members found.\");\n\n        // 🎀 Cute header\n        let cuteMessage = `🌸 *✨ TAG ALL MEMBERS ✨* 🌸\\n`;\n        cuteMessage += `╔═══════════════════════╗\\n`;\n        cuteMessage += `║  👥 Total: ${memberCount} members  ║\\n`;\n        cuteMessage += `╚═══════════════════════╝\\n\\n`;\n\n        // Limit visible members to 40 to avoid message too long\n        const maxVisible = 40;\n        const displayList = participants.slice(0, maxVisible);\n        const hiddenCount = memberCount - maxVisible;\n\n        // Cute bullet emojis (alternating)\n        const bullets = [\"🌸\", \"🌼\", \"🌺\", \"🌸\", \"🌻\", \"🌷\", \"🌹\", \"💐\"];\n\n        displayList.forEach((p, i) => {\n            const emoji = bullets[i % bullets.length];\n            const name = p.id.split('@')[0];\n            cuteMessage += `${emoji}  @${name}\\n`;\n        });\n\n        if (hiddenCount > 0) {\n            cuteMessage += `\\n✨ ... and ${hiddenCount} more lovely members ✨`;\n        }\n\n        cuteMessage += `\\n\\n *Everyone has been mentioned!* `;\n\n        await mzazi.sendMessage(sender, {\n            text: cuteMessage,\n            mentions: participants.map(p => p.id) // Tags all members\n        });\n\n    } catch (err) {\n        logger.error(\"Tagall error:\", err);\n        mzazireply(\"❌ Failed to tag all members. Make sure I have admin privileges.\");\n    }\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "tagall",
-   "aliases": [],
-   "description": "🎀 Cute header",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": false,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ This command can only be used in groups.\");\n   \n    \n\n    try {\n        const metadata = await mzazi.groupMetadata(sender);\n        const participants = metadata.participants || [];\n        const memberCount = participants.length;\n\n        if (memberCount === 0) return mzazireply(\"❌ No members found.\");\n\n        // 🎀 Cute header\n        let cuteMessage = `🌸 *✨ TAG ALL MEMBERS ✨* 🌸\\n`;\n        cuteMessage += `╔═══════════════════════╗\\n`;\n        cuteMessage += `║  👥 Total: ${memberCount} members  ║\\n`;\n        cuteMessage += `╚═══════════════════════╝\\n\\n`;\n\n        // Limit visible members to 40 to avoid message too long\n        const maxVisible = 40;\n        const displayList = participants.slice(0, maxVisible);\n        const hiddenCount = memberCount - maxVisible;\n\n        // Cute bullet emojis (alternating)\n        const bullets = [\"🌸\", \"🌼\", \"🌺\", \"🌸\", \"🌻\", \"🌷\", \"🌹\", \"💐\"];\n\n        displayList.forEach((p, i) => {\n            const emoji = bullets[i % bullets.length];\n            const name = p.id.split('@')[0];\n            cuteMessage += `${emoji}  @${name}\\n`;\n        });\n\n        if (hiddenCount > 0) {\n            cuteMessage += `\\n✨ ... and ${hiddenCount} more lovely members ✨`;\n        }\n\n        cuteMessage += `\\n\\n *Everyone has been mentioned!* `;\n\n        await mzazi.sendMessage(sender, {\n            text: cuteMessage,\n            mentions: participants.map(p => p.id) // Tags all members\n        });\n\n    } catch (err) {\n        logger.error(\"Tagall error:\", err);\n        mzazireply(\"❌ Failed to tag all members. Make sure I have admin privileges.\");\n    }\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "tagall2",
-   "aliases": [],
-   "description": "Tag all members with a message",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "tagall2",
-   "aliases": [],
-   "description": "Tag all members with a message",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
    "profile": "xmd"
   },
   {
@@ -26440,62 +26128,6 @@
    "groupOnly": false,
    "enabled": true,
    "code": "const q = (text || '').trim();\nif (!q) return mzazireply(`Usage: ${prefix}${command} <text>`);\nawait mzazireply('⏳ Thinking...');\ntry {\n  const { data: res } = await axios.post('https://mzazi.shop/api/ai/chat', { question: 'Create a memorable tagline for the following.\\n\\n' + q }, { timeout: 50000 });\n  if (res && res.response) return mzazireply(String(res.response).slice(0, 4000));\n  return mzazireply('❌ ' + ((res && res.error) || 'No response from the AI.'));\n} catch (e) { return mzazireply('❌ AI request failed: ' + (e.message || e)); }\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "tagmember",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "tagmember",
-   "aliases": [],
-   "description": "Tag all members",
-   "category": "Group",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply('❌ Group only.');\nif (!isAdmin && !isOwner) return mzazireply('❌ Admins only.');\nconst msg = (text || '').trim() || '🔔 Attention all members!';\nconst list = participants || [];\nconst mentions = list.map((p) => p.id).filter(Boolean);\nconst tags = list.map((p) => '@' + String(p.id || '').split('@')[0]).join(' ');\nawait mzazi.sendMessage(sender, { text: msg + '\\n\\n' + tags, mentions }, { quoted: m });\nreturn;",
-   "profile": "xmd"
-  },
-  {
-   "name": "tagmembers",
-   "aliases": [
-    "mentionall"
-   ],
-   "description": "",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\n        if (!isAdmin && !isOwner) return mzazireply(\"❌ Admins only!\");\n        const tagMsg = text || \"📢 Attention everyone!\";\n        const allMembers = participants.map(p => normalizeJid(p.id)).filter(Boolean);\n        let tagTxt = `📢 *${groupName}*\\n\\n${tagMsg}\\n\\n`;\n        for (const jid of allMembers) { tagTxt += `➤ @${jidToNumber(await resolveJid(jid))}\\n`; }\n        await mzazi.sendMessage(sender, { text: tagTxt, mentions: allMembers }, { quoted: m });\nreturn;",
-   "profile": ""
-  },
-  {
-   "name": "tagmembers",
-   "aliases": [
-    "mentionall"
-   ],
-   "description": "",
-   "category": "General",
-   "usage": "",
-   "ownerOnly": false,
-   "adminOnly": true,
-   "groupOnly": true,
-   "enabled": true,
-   "code": "if (!isGroup) return mzazireply(\"❌ Group only!\");\n        if (!isAdmin && !isOwner) return mzazireply(\"❌ Admins only!\");\n        const tagMsg = text || \"📢 Attention everyone!\";\n        const allMembers = participants.map(p => normalizeJid(p.id)).filter(Boolean);\n        let tagTxt = `📢 *${groupName}*\\n\\n${tagMsg}\\n\\n`;\n        for (const jid of allMembers) { tagTxt += `➤ @${jidToNumber(await resolveJid(jid))}\\n`; }\n        await mzazi.sendMessage(sender, { text: tagTxt, mentions: allMembers }, { quoted: m });\nreturn;",
    "profile": "xmd"
   },
   {
