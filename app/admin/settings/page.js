@@ -82,6 +82,9 @@ const GROUPS = [
     fields: [
       { key: 'paystack_secret_key', label: 'Paystack secret key', placeholder: 'sk_live_…', type: 'password' },
       { key: 'paystack_public_key', label: 'Paystack public key', placeholder: 'pk_live_…', type: 'password' },
+      { key: 'intasend_publishable_key', label: 'IntaSend publishable key', placeholder: 'ISPubKey_live_…', type: 'password', secret: true, hint: 'Server three. The site reads this before the environment, so saving here turns IntaSend on within a minute.' },
+      { key: 'intasend_secret_key', label: 'IntaSend secret key', placeholder: 'ISSecretKey_live_…', type: 'password', secret: true, hint: 'Optional — used for status checks. The publishable key alone can start a checkout.' },
+      { key: 'intasend_webhook_challenge', label: 'IntaSend webhook challenge', placeholder: 'a long random string', type: 'password', secret: true, hint: 'Must match the webhook you create at IntaSend → https://www.mzazi.shop/api/webhooks/intasend. Without it every webhook is refused (503).' },
       { key: 'depositOfferEnabled', label: 'Deposit offer active', placeholder: '1 = active, 0 = paused', type: 'text' },
       { key: 'depositOfferMultiplier', label: 'Deposit multiplier (2 = double)', placeholder: '2', type: 'text' },
       { key: 'depositOfferAdText', label: 'Deposit ad banner text', placeholder: '🎁 DOUBLE DEPOSIT — get 2× your money!', type: 'text' },

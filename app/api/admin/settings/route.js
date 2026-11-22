@@ -34,8 +34,12 @@ const ALLOWED_KEYS = [
   'xmd_remote_api_url', 'xmd_bot_api_key', 'xmd_connection_image',
   // WhatsApp
   'autoJoinGroupLink',
-  // Paystack
+  // Paystack (server two)
   'paystack_secret_key', 'paystack_public_key',
+  // IntaSend (server three) — hosted checkout + its webhook.
+  // The site reads these before it reads the environment, so a key pasted here
+  // is live within a minute and no redeploy is needed.
+  'intasend_publishable_key', 'intasend_secret_key', 'intasend_webhook_challenge',
   'daraja_env', 'daraja_consumer_key', 'daraja_consumer_secret',
   'offers_method', 'offers_ok',
   'sms_api_key',
