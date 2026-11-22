@@ -35,6 +35,10 @@ export const ChevronRight = (p) => <Svg {...p}><path d="m9 6 6 6-6 6" /></Svg>;
 export const ChevronLeft = (p) => <Svg {...p}><path d="m15 6-6 6 6 6" /></Svg>;
 export const ArrowRight = (p) => <Svg {...p}><path d="M5 12h14M13 6l6 6-6 6" /></Svg>;
 export const ArrowLeft = (p) => <Svg {...p}><path d="M19 12H5M11 18l-6-6 6-6" /></Svg>;
+// Used by the admin settings page (M-PESA payouts card). Without this export
+// `Icons.ArrowUpRight` is undefined, and React throws "Element type is invalid"
+// — the whole page falls to the error boundary rather than failing quietly.
+export const ArrowUpRight = (p) => <Svg {...p}><path d="M7 17 17 7M9 7h8v8" /></Svg>;
 export const MoreVertical = (p) => <Svg {...p}><circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" /><circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none" /></Svg>;
 export const ExternalLink = (p) => <Svg {...p}><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></Svg>;
 
