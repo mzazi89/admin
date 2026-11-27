@@ -36,6 +36,7 @@ export default function AdminDatabase() {
 
   const [objectUrl, setObjectUrl] = useState('latest');
   const [syncing, setSyncing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const [result, setResult] = useState(null);
   const [confirmSync, setConfirmSync] = useState(false);
   const [replace, setReplace] = useState(false);
@@ -77,6 +78,29 @@ export default function AdminDatabase() {
       toast.error(humaniseError(e));
     } finally {
       setTesting(false);
+    }
+  };
+
+  // Restore the newest snapshot into THIS deployment's database. Same archive
+  // machinery as the transfer, with the target fixed to us — for the case where
+  // the current database is the one that needs recovering.
+  const runRestore = async () => {
+    setRestoring(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/admin/backup/restore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ objectUrl: objectUrl || 'latest', dryRun: false }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(d.error || 'Restore failed');
+      setResult(d);
+      toast.success(`Restored ${d.totals?.inserted ?? 0} rows into this database`);
+    } catch (e) {
+      toast.error(humaniseError(e));
+    } finally {
+      setRestoring(false);
     }
   };
 
@@ -244,6 +268,20 @@ export default function AdminDatabase() {
               {syncing ? 'Syncing…' : 'Sync now'}
             </Button>
           )}
+
+          {/* Recovery path. Everything above moves data to a NEW database; this
+              puts the newest archive back into the one this panel is already
+              running on — what you need when the current database is the broken
+              one (a provider quota lock, a dropped table, a bad migration). */}
+          <Button
+            variant="ghost"
+            onClick={runRestore}
+            loading={restoring}
+            disabled={!snapshots.length || syncing}
+            icon={<Icons.Refresh size={15} />}
+          >
+            {restoring ? 'Restoring…' : 'Restore latest into this database'}
+          </Button>
         </div>
 
         {result && (
